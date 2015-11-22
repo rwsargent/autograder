@@ -28,7 +28,7 @@ public class Configuration {
 	}
 	
 	private Configuration() {
-		// make the default constructo private so it cannot be instantiated outside of this class
+		// make the default constructor private so it cannot be instantiated outside of this class
 	}
 	
 	private void loadConfiguration() {
