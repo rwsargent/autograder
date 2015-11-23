@@ -3,6 +3,7 @@ package autograder.configuration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -37,7 +38,11 @@ public class CmdLineParser {
 		mOptions.addOption(helpOption);
 		mOptions.addOption(pathToTaCSV);
 		mOptions.addOption(pathToConfiguration);
-										  
+	}
+	
+	public void printHelp() {
+		HelpFormatter help = new HelpFormatter();
+		help.printHelp("autograder", mOptions);
 	}
 
 	public CommandLine parse(String[] commandLineString) {

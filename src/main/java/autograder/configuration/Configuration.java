@@ -8,21 +8,30 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import com.sun.istack.internal.Nullable;
+
 public class Configuration {
 	
 	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
 	public String testClassName;
+	
 	public String smtpUsername;
 	public String smtpPassword;
 	public String smtpHost = "smtp.gmail.com";
 	public String smtpPort = "587";
 	
 	private volatile static Configuration mInstance;
+	
 	public static synchronized Configuration getConfiguration() {
+		return getConfiguration(null);
+	}
+	
+	public static synchronized Configuration getConfiguration(@Nullable String configPath) {
 		if(mInstance == null) {
 			mInstance = new Configuration();
-			mInstance.loadConfiguration();
+			File configFile = mInstance.findPropertyFile(configPath);
+			mInstance.loadConfiguration(configFile);
 		}
 		return mInstance;
 	}
@@ -31,8 +40,7 @@ public class Configuration {
 		// make the default constructor private so it cannot be instantiated outside of this class
 	}
 	
-	private void loadConfiguration() {
-		File configFile = findPropertyFile();
+	private void loadConfiguration(File configFile) {
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(configFile));
@@ -63,15 +71,15 @@ public class Configuration {
 		}
 	}
 
-	private File findPropertyFile() {
-		String confiruationFileName = System.getProperty("configuration");
-		if(confiruationFileName == null) {
-			confiruationFileName = Constants.DEFAULT_CONFIGURATION;
+	private File findPropertyFile(String filePath) {
+		String configurationFileName = filePath;
+		if(configurationFileName == null) {
+			configurationFileName = Constants.DEFAULT_CONFIGURATION;
 		}
 		
-		File configFile = new File(confiruationFileName);
+		File configFile = new File(configurationFileName);
 		if(!configFile.exists()) {
-			URL configUrl = getClass().getClassLoader().getResource(confiruationFileName);
+			URL configUrl = getClass().getClassLoader().getResource(configurationFileName);
 			if(configUrl == null) {
 				throw new ConfigurationException("Could not find configuration.properties file");
 			}

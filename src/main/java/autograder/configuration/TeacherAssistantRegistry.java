@@ -31,7 +31,7 @@ public class TeacherAssistantRegistry {
 			List<CSVRecord> records = parser.getRecords();
 			for(CSVRecord record : records) {
 				instance.taMap.put(record.get(Constants.TaConfiguration.TA_NAME_HEADER), 
-						new TAInfo(record.get(Constants.TaConfiguration.TA_NAME_HEADER), record.get(Constants.TaConfiguration.TA_EMAIL_HEADER), Double.parseDouble(record.get(Constants.TaConfiguration.TA_PERCENTAGE_HEADER))));
+						new TAInfo(record.get(Constants.TaConfiguration.TA_NAME_HEADER), record.get(Constants.TaConfiguration.TA_EMAIL_HEADER), Double.parseDouble(record.get(Constants.TaConfiguration.TA_HOURS_HEADER))));
 			}
 		} catch (IOException e) {
 			LOGGER.severe("An issue with the CSV for TAs. " + e.getMessage());
