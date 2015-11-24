@@ -14,12 +14,17 @@ public class Configuration {
 	
 	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
-	public String testClassName;
+	public String graderName;
 	
 	public String smtpUsername;
 	public String smtpPassword;
 	public String smtpHost = "smtp.gmail.com";
 	public String smtpPort = "587";
+	
+	public String canvasUsername;
+	public String canvasPassword;
+	public String canvasCourseId;
+	
 	
 	private volatile static Configuration mInstance;
 	

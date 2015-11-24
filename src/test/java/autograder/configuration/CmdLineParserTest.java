@@ -15,5 +15,4 @@ public class CmdLineParserTest {
 		assertTrue((cl.hasOption("h")));
 	}
 	
-	
 }

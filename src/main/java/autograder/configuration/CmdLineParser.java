@@ -16,14 +16,13 @@ public class CmdLineParser {
 	}
 	
 	private void buildOptions() {
-		Option testFileName = Option.builder("t").hasArg().numberOfArgs(1)
-				.required()
-				.longOpt("tester")
-				.desc("The name of the Java tester class, package included. E.g. package02.Tester")
+		Option testFileName = Option.builder("g").required().longOpt("grader")
+				.hasArg().numberOfArgs(1)
+				.desc("The name of the Java grader class, package included. E.g. package02.SortUtilGrader")
 				.build();
 		
 		Option helpOption = Option.builder("h").longOpt("help").desc("Help").required(false).build();
-		Option pathToTaCSV = Option.builder("a").longOpt("tacsv").desc("Path to the TA csv.")
+		Option pathToTaCSV = Option.builder("").longOpt("tacsv").desc("Path to the TA csv.")
 				.hasArg().numberOfArgs(1)
 				.required(false)
 				.build();

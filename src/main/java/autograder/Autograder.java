@@ -34,7 +34,7 @@ public class Autograder {
 		String configPath = commandLine.getOptionValue("c", null);
 		Configuration config = Configuration.getConfiguration(configPath);
 		
-		config.testClassName = commandLine.getOptionValue("t");
+		config.graderName = commandLine.getOptionValue("g");
 		
 		//load TA config
 		String taFilePath = commandLine.getOptionValue('a', "ta.csv");
