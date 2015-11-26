@@ -1,30 +1,28 @@
 package autograder.configuration;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.List;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.FileHeader;
 
 import org.junit.Test;
 
 public class ZipFileTest {
 
 	@Test
-	public void test() {
+	public void testzip4j() {
 		try {
-			@SuppressWarnings("resource")
-			ZipFile zip = new ZipFile(new File("src/test/resources/submissions.zip"));
-			Enumeration<? extends ZipEntry> entries = zip.entries();
-			while(entries.hasMoreElements()) {
-				ZipEntry entry = entries.nextElement();
-				System.out.println(entry.getName());
-			}
+			ZipFile zip = new net.lingala.zip4j.core.ZipFile(new File("src/test/resources/submissions.zip"));
+			List<FileHeader> fileHeaders = zip.getFileHeaders();
+			for(FileHeader header : fileHeaders) {
+				if (header.getFileName().endsWith(".zip")) {
 					
-		} catch (IOException e) {
-			e.printStackTrace();
+				}
+			}
+		} catch (ZipException e) {
+			
 		}
-		
 	}
-
-}
+}	

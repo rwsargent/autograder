@@ -10,6 +10,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import autograder.Constants;
+
 public class TeacherAssistantRegistry {
 	public static TeacherAssistantRegistry instance;
 	private final static Logger LOGGER = Logger.getLogger(TeacherAssistantRegistry.class.getName()); 

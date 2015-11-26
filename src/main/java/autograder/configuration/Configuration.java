@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import autograder.Constants;
+
 import com.sun.istack.internal.Nullable;
 
 public class Configuration {

@@ -1,4 +1,4 @@
-package autograder.configuration;
+package autograder;
 
 public interface Constants {
 

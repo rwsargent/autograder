@@ -1,7 +1,6 @@
 package autograder.filehandling;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -10,7 +9,7 @@ import autograder.configuration.ConfigurationException;
 
 
 public class ZipReader {
-
+	
 	public void unzipSubmissions(String filePath) {
 		ZipFile submissionZip;
 		try {
@@ -28,9 +27,7 @@ public class ZipReader {
 	        }
 	        if(!extension.contains("java")) {
 	        	continue;
-	        }
-	        
-	        InputStream stream = submissionZip.getInputStream(entry);
+	        }		        
 	    } 
 	}
 	
