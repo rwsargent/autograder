@@ -1,5 +1,7 @@
 package autograder;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 
 import autograder.configuration.CmdLineParser;
@@ -7,6 +9,8 @@ import autograder.configuration.Configuration;
 import autograder.configuration.TeacherAssistantRegistry;
 
 public class Autograder {
+
+	
 
 	public static void main(String[] args) {
 		Autograder grader = new Autograder();
@@ -40,5 +44,7 @@ public class Autograder {
 		String taFilePath = commandLine.getOptionValue('a', "ta.csv");
 		taFilePath = getClass().getClassLoader().getResource(taFilePath).toString();
 		TeacherAssistantRegistry.loadConfiguration(taFilePath);
+		
+		new File(Constants.SUBMISSIONS).mkdir();
 	}
 }

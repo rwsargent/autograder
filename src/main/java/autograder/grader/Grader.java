@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class Tester {
+public class Grader {
 	String mStudent;
 	String mTestClassName;
 	ProcessBuilder processBuilder;
-	public Tester(String studentName, String mainClass) {
+	public Grader(String studentName, String mainClass) {
 		mStudent = studentName;
 		mTestClassName = mainClass;
 	}
