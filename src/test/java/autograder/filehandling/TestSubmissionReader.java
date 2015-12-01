@@ -6,12 +6,18 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import autograder.Constants;
 
 public class TestSubmissionReader {
 
+	@BeforeClass
+	public static void init() {
+		System.setProperty("sun.zip.disableMemoryMapping", "true");
+	}
+	
 	@Before
 	public void setup() {
 		File subDir = new File(Constants.SUBMISSIONS);
@@ -39,10 +45,28 @@ public class TestSubmissionReader {
 	}
 	
 	@Test
-	public void test() {
-		SubmissionReader sr = new SubmissionReader();
-		String filePath = getClass().getClassLoader().getResource("submissions.zip").getPath();
-		sr.unzipSubmissions(filePath);
+	public void testFull() {
+		runTest("submissions.zip");
+	}
+	
+	@Test
+	public void testHalf() {
+		runTest("half_submissions.zip");
+	}
+	
+	@Test
+	public void testTwo() {
+		runTest("only_two.zip");
+	}
+	
+	@Test
+	public void testA_through_D() {
+		runTest("A_through_D.zip");
 	}
 
+	private void runTest(String fileName) {
+		SubmissionReader sr = new SubmissionReader();
+		String filePath = getClass().getClassLoader().getResource(fileName).getPath();
+		sr.unzipSubmissions(filePath);
+	}
 }
