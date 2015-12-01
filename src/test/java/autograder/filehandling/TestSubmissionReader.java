@@ -27,7 +27,7 @@ public class TestSubmissionReader {
 	}
 	
 	@AfterClass
-	public void cleanUp() {
+	public static void cleanUp() {
 		File subDir = new File(Constants.SUBMISSIONS);
 		if(subDir.exists()) {
 			try {
