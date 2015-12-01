@@ -10,7 +10,7 @@ public interface Constants {
 		public static final String[] TA_CSV_HEADERS = new String[] {TA_NAME_HEADER,TA_EMAIL_HEADER, TA_HOURS_HEADER};
 	}
 	
-	public static final String FILE_REGEX = "([a-zA-Z]+--[a-z]+)(-late)?_(\\d*)_(\\d*)_(.*)";
+	public static final String FILE_REGEX = "([a-zA-Z\\-]+)(-late)?_(\\d*)_(\\d*)_(.*)";
 	public static final int NAME_GROUP = 1;
 	public static final int CANVAS_ID_GROUP = 3;
 	public static final int LATE_GROUP = 2;

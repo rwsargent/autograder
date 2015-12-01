@@ -3,6 +3,7 @@ package autograder.filehandling;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -11,7 +12,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import net.lingala.zip4j.io.ZipInputStream;
+import org.apache.commons.io.FilenameUtils;
+
 import autograder.Constants;
 import autograder.configuration.ConfigurationException;
 import autograder.configuration.Student;
@@ -61,15 +63,16 @@ public class SubmissionReader {
 				}
 			} else {
 				if (zipEntry.getName().endsWith(".java")) {
-					writeSubmissionToFile(new File(student.getSourceDirectoryPath() +"/" +  zipEntry.getName()), zipEntry, zip);
+					String fileName = FilenameUtils.getName(zipEntry.getName());
+					writeSubmissionToFile(new File(student.getSourceDirectoryPath() +"/" +  fileName), zipEntry, zip);
 				}
 			}
 		}
 	}
 
 	private void writeSubmissionToFile(File file, ZipEntry zipEntry, ZipFile zipFile) {
-		try(FileOutputStream fos = new FileOutputStream(file)) {
-			ZipInputStream zin = (ZipInputStream) zipFile.getInputStream(zipEntry);
+		try(FileOutputStream fos = new FileOutputStream(file); 
+				InputStream zin = zipFile.getInputStream(zipEntry)) {
 			int length;
 			while((length = zin.read(buffer)) > 0) {
 				fos.write(buffer, 0, length);
