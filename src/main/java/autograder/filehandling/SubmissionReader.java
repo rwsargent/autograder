@@ -28,6 +28,7 @@ public class SubmissionReader {
 	
 	public void unzipSubmissions(String filePath) {
 		ZipFile submissionZip;
+		System.setProperty("sun.zip.disableMemoryMapping", "true");
 		try {
 			submissionZip = new ZipFile(filePath);
 			unzip("submissions", submissionZip, null);

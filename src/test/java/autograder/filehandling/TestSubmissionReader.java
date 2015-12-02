@@ -4,20 +4,14 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import autograder.Constants;
 
 public class TestSubmissionReader {
 
-	@BeforeClass
-	public static void init() {
-		System.setProperty("sun.zip.disableMemoryMapping", "true");
-	}
-	
 	@Before
 	public void setup() {
 		File subDir = new File(Constants.SUBMISSIONS);
@@ -32,17 +26,17 @@ public class TestSubmissionReader {
 		}
 	}
 	
-	@AfterClass
-	public static void cleanUp() {
-		File subDir = new File(Constants.SUBMISSIONS);
-		if(subDir.exists()) {
-			try {
-				FileUtils.deleteDirectory(subDir);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	@AfterClass
+//	public static void cleanUp() {
+//		File subDir = new File(Constants.SUBMISSIONS);
+//		if(subDir.exists()) {
+//			try {
+//				FileUtils.deleteDirectory(subDir);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	
 	@Test
 	public void testFull() {
@@ -50,16 +44,19 @@ public class TestSubmissionReader {
 	}
 	
 	@Test
+	@Ignore
 	public void testHalf() {
 		runTest("half_submissions.zip");
 	}
 	
 	@Test
+	@Ignore
 	public void testTwo() {
 		runTest("only_two.zip");
 	}
 	
 	@Test
+	@Ignore
 	public void testA_through_D() {
 		runTest("A_through_D.zip");
 	}
