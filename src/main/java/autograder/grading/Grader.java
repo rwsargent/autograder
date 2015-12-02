@@ -1,4 +1,4 @@
-package autograder.grader;
+package autograder.grading;
 
 import java.io.File;
 import java.io.IOException;
