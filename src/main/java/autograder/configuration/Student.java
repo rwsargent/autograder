@@ -26,4 +26,8 @@ public class Student {
 	public String getSourceDirectoryPath() {
 		return studentDirectory.getAbsolutePath() + "/source";
 	}
+	
+	public String toString() {
+		return name;
+	}
 }

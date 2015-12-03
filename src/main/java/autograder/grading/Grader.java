@@ -4,16 +4,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import autograder.configuration.Configuration;
+import autograder.configuration.Student;
+
 public class Grader {
-	String mStudent;
+	Student mStudent;
 	String mTestClassName;
 	ProcessBuilder processBuilder;
-	public Grader(String studentName, String mainClass) {
-		mStudent = studentName;
+	public Grader(String mainClass) {
 		mTestClassName = mainClass;
 	}
 	
-	public void compileAndRunTester() {
+	public Grader() {
+		mTestClassName = Configuration.getConfiguration().graderName;
+	}
+	
+	public void compileAndRunTester(Student student) {
+		mStudent = student;
 		try {
 			compile();
 		} catch (Exception e) {

@@ -2,6 +2,10 @@ package autograder.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import autograder.grading.WorkJob;
 
 public class StudentSubmissionRegistry {
 	
@@ -19,6 +23,12 @@ public class StudentSubmissionRegistry {
 		mIdMap = new HashMap<>();
 		mNameMap = new HashMap<>();
 	}; 
+	
+	public Queue<WorkJob> buildQueueFromSubmissions() {
+		Queue<WorkJob> queue = new LinkedBlockingQueue<>(mNameMap.size());
+		mNameMap.forEach((k,v)->queue.add(new WorkJob(v)));
+		return queue;
+	}
 	
 	public synchronized void createStudentSubmission(String name, int canvasId) {
 		addStudent(new Student(name, canvasId));

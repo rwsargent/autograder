@@ -32,11 +32,17 @@ public class CmdLineParser {
 				.required(false)
 				.build();
 		
+		Option pathToSubmissions = Option.builder("s").longOpt("submission").desc("Path to the submission zip file")
+				.argName("submissionPath").hasArg().numberOfArgs(1)
+				.required(false)
+				.build();
+		
 		mOptions = new Options();
 		mOptions.addOption(testFileName);
 		mOptions.addOption(helpOption);
 		mOptions.addOption(pathToTaCSV);
 		mOptions.addOption(pathToConfiguration);
+		mOptions.addOption(pathToSubmissions);
 	}
 	
 	public void printHelp() {
