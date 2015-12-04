@@ -6,9 +6,9 @@ public class GraderThread extends Thread {
 
 	Queue<WorkJob> mQueue;
 	Grader mGrader;
-	public GraderThread(Queue<WorkJob> workQueue, Grader grader) {
+	public GraderThread(Queue<WorkJob> workQueue) {
 		mQueue = workQueue;
-		mGrader = grader;
+		mGrader = new Grader();
 	}
 	
 	@Override
