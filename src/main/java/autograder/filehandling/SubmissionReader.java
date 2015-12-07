@@ -16,8 +16,8 @@ import org.apache.commons.io.FilenameUtils;
 
 import autograder.Constants;
 import autograder.configuration.ConfigurationException;
-import autograder.configuration.Student;
-import autograder.configuration.StudentSubmissionRegistry;
+import autograder.student.Student;
+import autograder.student.StudentSubmissionRegistry;
 
 
 public class SubmissionReader {
