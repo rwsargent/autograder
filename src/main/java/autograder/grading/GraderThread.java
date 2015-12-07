@@ -13,9 +13,6 @@ public class GraderThread extends Thread {
 	
 	@Override
 	public void run() {
-		WorkJob job = null;
-		while((job = mQueue.poll()) != null) {
-			job.gradeStudentSubmission(mGrader);
-		}
+		
 	}
 }

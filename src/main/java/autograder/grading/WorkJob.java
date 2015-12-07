@@ -1,6 +1,6 @@
 package autograder.grading;
 
-import autograder.configuration.Student;
+import autograder.student.Student;
 
 public class WorkJob {
 	private Student mStudent;
@@ -11,5 +11,9 @@ public class WorkJob {
 	
 	public void gradeStudentSubmission(Grader grader) {
 		grader.compileAndRunTester(mStudent);
+	}
+	
+	public Student getStudent() {
+		return mStudent;
 	}
 }

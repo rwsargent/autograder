@@ -2,21 +2,38 @@ package autograder.grading;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import autograder.configuration.Configuration;
-import autograder.configuration.Student;
+import autograder.student.Student;
 
-public class Grader {
+public class Grader extends Thread {
 	Student mStudent;
 	String mTestClassName;
 	ProcessBuilder processBuilder;
-	public Grader(String mainClass) {
-		mTestClassName = mainClass;
+	Queue<WorkJob> workQueue;
+	Logger logger;
+	public Grader(Queue<WorkJob> queue) {
+		workQueue = queue;
 	}
 	
 	public Grader() {
 		mTestClassName = Configuration.getConfiguration().graderName;
+		logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
+	}
+	
+	@Override
+	public void run() {
+		WorkJob job = null;
+		while((job = workQueue.poll()) != null) {
+			try {
+				compileAndRunTester(job.getStudent());
+			} catch (Exception e ) {
+				logger.severe(e.getMessage());
+			}
+		}
 	}
 	
 	public void compileAndRunTester(Student student) {
@@ -50,28 +67,27 @@ public class Grader {
 	}
 	
 	private void compile() throws IOException, InterruptedException {
-		File src = createClassesDirectoryInSourceDir();
+		File src = mStudent.studentDirectory; 
+		createClassesDirectoryInSourceDir();
 		processBuilder = new ProcessBuilder(("javac *.java -d classes").split(" ")); 
 		processBuilder.directory(src);
 		Process compilation = processBuilder.start();
 		if(compilation.waitFor(30, TimeUnit.SECONDS)) {
 			if (compilation.exitValue() != 0) {
-				throw new RuntimeException("Compilation failed with error code: " + compilation.exitValue());
+				throw new RuntimeException("Compilation failed on " + mStudent + " with error code: " + compilation.exitValue());
 			}
 		} else {
-			throw new RuntimeException("Compiliation timed out");
+			throw new RuntimeException("Compiliation timed out on " + mStudent);
 		}
 	}
 
-	private File createClassesDirectoryInSourceDir() {
-		File src = new File(mStudent + "_src");
-		File classes = new File(src.getAbsolutePath() + "/classes");
+	private void createClassesDirectoryInSourceDir() {
+		File classes = new File(mStudent.getSourceDirectoryPath() + "/classes");
 		if (!classes.exists()) {
 			if(!classes.mkdir()) {
 				throw new RuntimeException("Could not create classes directory");
 			}
 		}
-		return src;
 	}
 	
 	private void runTester() throws IOException, InterruptedException {
