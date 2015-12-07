@@ -28,19 +28,36 @@ public abstract class AbstractProperties {
 			for(Object key : properties.keySet()) {
 				Field field = this.getClass().getField((String)key);
 				String property = properties.getProperty((String)key);
-				String value = property != null && !property.isEmpty() ? property : (String) field.get(object);
-				if(value == null || value.isEmpty()) {
-					value = System.getProperty(field.getName());
-					if(value == null) {
-						throw new ConfigurationException("The required configuration " + field.getName() + " was not specified. Please look to make sure the property file has all the required fields, or add as a VM"
-								+ " argument. (-DfieldName=value)");
+				Object value = null;
+				if(field.isAnnotationPresent(PropertyType.class)) {
+					PropertyType type = field.getAnnotation(PropertyType.class);
+					switch(type.type()) {
+					case BOOLEAN:
+						value = Boolean.getBoolean(property);
+						break;
+					case STRING:
+					default:
+						value = handleString(property, field, object);
 					}
 				}
+				
 				field.set(this, value);
 			}
 		} catch (ClassCastException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			throw new ConfigurationException(e);
 		}
+	}
+
+	private Object handleString(String property, Field field, AbstractProperties object) throws IllegalArgumentException, IllegalAccessException {
+		String value = property != null && !property.isEmpty() ? property : (String) field.get(object);
+		if(value == null || value.isEmpty()) {
+			value = System.getProperty(field.getName());
+			if(value == null) {
+				throw new ConfigurationException("The required configuration " + field.getName() + " was not specified. Please look to make sure the property file has all the required fields, or add as a VM"
+						+ " argument. (-DfieldName=value)");
+			}
+		}
+		return value;
 	}
 
 	public File findPropertyFile(String filePath) {
