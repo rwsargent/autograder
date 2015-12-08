@@ -15,6 +15,7 @@ import autograder.grading.Grader;
 import autograder.grading.GraderThread;
 import autograder.grading.WorkJob;
 import autograder.student.StudentSubmissionRegistry;
+import autograder.student.SubmissionSet;
 
 public class Autograder {
 	
@@ -41,10 +42,8 @@ public class Autograder {
 	
 	private void pairSubmissions() {
 		StudentSubmissionRegistry.getInstance().forEach((name, student) -> {
-			student.createAssignmentProperties();
-			
+			AssignmentProperties assignmentProp = student.createAssignmentProperties();
 		});
-		
 	}
 
 	private String setup(String[] args) {
@@ -53,7 +52,7 @@ public class Autograder {
 		if(commandLine.hasOption("h")) {
 			parser.printHelp();
 			System.exit(0);
-			return null;
+			return null; // unreachable code, being explicit about control flow
 		}
 		
 		String configPath = commandLine.getOptionValue("c", null);

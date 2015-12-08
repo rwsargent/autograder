@@ -3,6 +3,7 @@ package autograder.student;
 import java.io.File;
 
 import autograder.configuration.AssignmentProperties;
+import autograder.configuration.ConfigurationException;
 
 public class Student {
 	public File studentDirectory;
@@ -35,7 +36,12 @@ public class Student {
 		return name;
 	}
 
-	public void createAssignmentProperties() {
-		assignProps = new AssignmentProperties(studentDirectory.getAbsolutePath() + "/assignment.properties");
+	public AssignmentProperties createAssignmentProperties() {
+		try {
+			assignProps = new AssignmentProperties(studentDirectory.getAbsolutePath() + "/assignment.properties");
+		} catch (ConfigurationException e) {
+			StudentErrorRegistry.getInstance().addInvalidAssignmentProperties(this);
+		}
+		return assignProps;
 	}
 }

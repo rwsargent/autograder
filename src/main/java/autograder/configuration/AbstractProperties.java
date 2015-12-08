@@ -28,7 +28,7 @@ public abstract class AbstractProperties {
 			for(Object key : properties.keySet()) {
 				Field field = this.getClass().getField((String)key);
 				String property = properties.getProperty((String)key);
-				Object value = null;
+				Object value = handleString(property, field, object); // this is the default case, if no annotation is present.
 				if(field.isAnnotationPresent(PropertyType.class)) {
 					PropertyType type = field.getAnnotation(PropertyType.class);
 					switch(type.type()) {
@@ -40,7 +40,6 @@ public abstract class AbstractProperties {
 						value = handleString(property, field, object);
 					}
 				}
-				
 				field.set(this, value);
 			}
 		} catch (ClassCastException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
