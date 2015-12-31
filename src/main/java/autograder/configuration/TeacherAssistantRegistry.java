@@ -12,7 +12,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import autograder.Constants;
 
-public class TeacherAssistantRegistry {
+public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 	public static TeacherAssistantRegistry instance;
 	private final static Logger LOGGER = Logger.getLogger(TeacherAssistantRegistry.class.getName()); 
 	
@@ -54,21 +54,28 @@ public class TeacherAssistantRegistry {
 	
 	private TeacherAssistantRegistry() {}
 	
-	@SuppressWarnings("unused")
-	private static class TAInfo {
-		public String name;
-		public String email;
-		public double percentage;
-		public List<String> students;
+	@Override
+	protected String getFileName() {
 		
-		public TAInfo(String name, String email) {
-			this.name = name;
-			this.email = email;
-		}
-		
-		public TAInfo(String name, String email, double percentage) {
-			this(name, email);
-			this.percentage = percentage;
-		}
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String[] getCsvHeaders() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected autograder.configuration.TAInfo constructObject(CSVRecord record) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String getKey(CSVRecord record) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

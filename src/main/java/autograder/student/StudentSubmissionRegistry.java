@@ -59,9 +59,9 @@ public class StudentSubmissionRegistry {
 		mIdMap.put(student.canvasId, student);
 		mNameMap.put(student.name, student);
 	}
-
-	public void forEach(BiConsumer<String, Student> map) {
-		mNameMap.forEach(map);
-	}
 	
+	public void forEach(BiConsumer<String, Student> func) {
+		mNameMap.forEach(func);
+	}
+
 }

@@ -1,21 +1,21 @@
 package autograder;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 
-import autograder.configuration.AssignmentProperties;
 import autograder.configuration.CmdLineParser;
 import autograder.configuration.Configuration;
 import autograder.configuration.TeacherAssistantRegistry;
 import autograder.filehandling.SubmissionReader;
 import autograder.grading.Grader;
-import autograder.grading.GraderThread;
 import autograder.grading.WorkJob;
 import autograder.student.StudentSubmissionRegistry;
-import autograder.student.SubmissionSet;
+import autograder.student.SubmissionPair;
 
 public class Autograder {
 	
@@ -32,7 +32,7 @@ public class Autograder {
 		SubmissionReader reader = new SubmissionReader();
 		reader.unzipSubmissions(submissionPath);
 		// build workQueue
-		Queue<WorkJob>workQueue = StudentSubmissionRegistry.getInstance().buildQueueFromSubmissions();
+		Queue<WorkJob> workQueue = StudentSubmissionRegistry.getInstance().buildQueueFromSubmissions();
 		// execute workQueue
 		Grader[] threads = startGraderThreads(workQueue);
 		// pair submissions
@@ -41,8 +41,9 @@ public class Autograder {
 	}
 	
 	private void pairSubmissions() {
+		Set<SubmissionPair> pairs = new HashSet<>();
 		StudentSubmissionRegistry.getInstance().forEach((name, student) -> {
-			AssignmentProperties assignmentProp = student.createAssignmentProperties();
+			
 		});
 	}
 

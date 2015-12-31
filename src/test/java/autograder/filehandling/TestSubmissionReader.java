@@ -39,6 +39,11 @@ public class TestSubmissionReader {
 //	}
 	
 	@Test
+	public void testCustom() {
+		runTest("custom_submissions.zip");
+	}
+	
+	@Test
 	public void testFull() {
 		runTest("submissions.zip");
 	}
