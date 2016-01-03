@@ -1,17 +1,19 @@
 package autograder.student;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 import autograder.configuration.AssignmentProperties;
 import autograder.configuration.ConfigurationException;
 
 public class Student {
+	private static Logger LOGGER = Logger.getLogger(Student.class.getName());
 	public File studentDirectory;
 	public String name;
 	public int canvasId;
 	public boolean isLate;
 	
-	AssignmentProperties assignProps;
+	public AssignmentProperties assignProps;
 
 	public Student() {
 	}
@@ -36,12 +38,11 @@ public class Student {
 		return name;
 	}
 
-	public AssignmentProperties createAssignmentProperties() {
+	public void createAssignmentProperties() {
 		try {
 			assignProps = new AssignmentProperties(studentDirectory.getAbsolutePath() + "/assignment.properties");
 		} catch (ConfigurationException e) {
-			StudentErrorRegistry.getInstance().addInvalidAssignmentProperties(this);
+			LOGGER.warning(this.name + " does not have a valid assignment.properties file");
 		}
-		return assignProps;
 	}
 }

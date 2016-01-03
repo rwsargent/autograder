@@ -2,9 +2,11 @@ package autograder;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -14,8 +16,13 @@ import autograder.configuration.TeacherAssistantRegistry;
 import autograder.filehandling.SubmissionReader;
 import autograder.grading.Grader;
 import autograder.grading.WorkJob;
+import autograder.student.ClassListRegistry;
+import autograder.student.Student;
+import autograder.student.StudentInfo;
 import autograder.student.StudentSubmissionRegistry;
 import autograder.student.SubmissionPair;
+import autograder.tas.PartitionSubmissions;
+import autograder.tas.TAInfo;
 
 public class Autograder {
 	
@@ -24,6 +31,7 @@ public class Autograder {
 	public static void main(String[] args) {
 		Autograder grader = new Autograder();
 		String submissionPath = grader.setup(args);
+		System.out.println("Submission Path at: " + submissionPath);
 		grader.run(submissionPath);
 	}
 	
@@ -36,15 +44,49 @@ public class Autograder {
 		// execute workQueue
 		Grader[] threads = startGraderThreads(workQueue);
 		// pair submissions
-		pairSubmissions();
-		// email tas
+		Set<SubmissionPair> pairs = pairSubmissions();
+		//wait for grading to finish
+		for(Grader graderThread : threads) {
+			try {
+				graderThread.join();
+			} catch (InterruptedException e) {
+				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
+			}
+		}
+		// combine, and email the tas
+		calculateTaGrading(pairs.size());
+		PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(),
+				pairs.stream().collect(Collectors.toList()));
 	}
 	
-	private void pairSubmissions() {
+	private void calculateTaGrading(int totalSubmissions) {
+		Map<String, TAInfo> tas = TeacherAssistantRegistry.getInstance().getMap();
+		double totalHours = tas.entrySet().stream().mapToDouble(ta -> ta.getValue().hours).sum();
+		tas.forEach((name, ta) -> ta.assignmentsToGrade = (int) Math.round((ta.hours / totalHours) * totalSubmissions));
+	}
+
+	private Set<SubmissionPair> pairSubmissions() {
 		Set<SubmissionPair> pairs = new HashSet<>();
+		Set<Student> invalidProperties = new HashSet<>();
+		StudentSubmissionRegistry registry = StudentSubmissionRegistry.getInstance();
+		Map<String, StudentInfo> classList = ClassListRegistry.getInstance().getMap();
 		StudentSubmissionRegistry.getInstance().forEach((name, student) -> {
-			
+			if(student.assignProps != null) {
+				invalidProperties.add(student);
+				return;
+			}
+			Student submitter, partner;
+			if(student.assignProps.submitted) {
+				submitter = student;
+				partner = registry.getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
+			} else {
+				partner = student;
+				submitter = registry.getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
+			}
+			SubmissionPair pair = new SubmissionPair(submitter, partner);
+			pairs.add(pair);
 		});
+		return pairs;
 	}
 
 	private String setup(String[] args) {
@@ -64,9 +106,10 @@ public class Autograder {
 		//load TA config
 		String taFilePath = commandLine.getOptionValue('a', "ta.csv");
 		taFilePath = getClass().getClassLoader().getResource(taFilePath).toString();
-		TeacherAssistantRegistry.loadConfiguration(taFilePath);
-		
+		Configuration.getConfiguration().taFilePath = taFilePath;
+ 		System.out.println("TA Filepath found at " + taFilePath + " and loaded successfully.");
 		new File(Constants.SUBMISSIONS).mkdir();
+		System.out.println("Created submission folder");
 		
 		return commandLine.getOptionValue("s");
 	}

@@ -25,7 +25,9 @@ public class Configuration extends AbstractProperties {
 	public String canvasPassword;
 	public String canvasCourseId;
 	
-	public String taFilePath;
+	public String canvasToken;
+	
+	public String taFilePath = "ta.csv";
 	public String studentFilePath;
 	
 	

@@ -1,6 +1,8 @@
 package autograder.student;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -58,6 +60,10 @@ public class StudentSubmissionRegistry {
 	private synchronized void addStudent(Student student) {
 		mIdMap.put(student.canvasId, student);
 		mNameMap.put(student.name, student);
+	}
+	
+	public List<Student> toList() {
+		return new ArrayList<Student>(mIdMap.values());
 	}
 	
 	public void forEach(BiConsumer<String, Student> func) {

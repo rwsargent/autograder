@@ -1,6 +1,7 @@
 package autograder.configuration;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ public abstract class AbstractCsvRegistry<RegistryObject> {
 	protected Map<String, RegistryObject> map;
 	protected static Logger LOGGER;
 	
-	public void configure() {
+	protected void configure() {
 		map = new HashMap<>();
 		String filename = getFileName();
 		CSVFormat format = CSVFormat.DEFAULT.withHeader(getCsvHeaders());
@@ -33,7 +34,15 @@ public abstract class AbstractCsvRegistry<RegistryObject> {
 	public RegistryObject get(String key) {
 		return map.get(key);
 	}
-
+	
+	public Map<String, RegistryObject> getMap() {
+		return map;
+	}
+	
+	public List<RegistryObject> toList() {
+		return new ArrayList(map.values());
+	}
+	
 	protected abstract String getFileName();
 	protected abstract String[] getCsvHeaders();
 	protected abstract RegistryObject constructObject(CSVRecord record);

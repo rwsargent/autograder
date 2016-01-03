@@ -51,6 +51,9 @@ public class SubmissionReader {
 					}
 					if(isValidFile(fileName)) {
 						writeSubmissionToFile(new File(studentSubmission.studentDirectory.getPath() + "/" + fileName), zipEntry, zip);
+						if(fileName.endsWith(".properties")) {
+							studentSubmission.createAssignmentProperties();
+						}
 					} 
 					else if (fileName.endsWith(".zip")) {
 						File tempFile = new File("temp_" + studentName);
