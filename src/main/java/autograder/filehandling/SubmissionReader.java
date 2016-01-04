@@ -59,7 +59,7 @@ public class SubmissionReader {
 						File tempFile = new File("temp_" + studentName);
 						writeSubmissionToFile(tempFile, zipEntry, zip);
 						unzip(destDirectory + "/" + studentName, new ZipFile(tempFile), studentSubmission);
-						tempFile.delete();
+						tempFile.deleteOnExit();
 					}
 				} else {
 					LOGGER.info(entryName + " did not match.");

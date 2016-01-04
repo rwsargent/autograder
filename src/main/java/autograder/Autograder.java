@@ -30,7 +30,8 @@ public class Autograder {
 
 	public static void main(String[] args) {
 		Autograder grader = new Autograder();
-		String submissionPath = grader.setup(args);
+		grader.setup(args);
+		String submissionPath = Configuration.getConfiguration().submission;
 		System.out.println("Submission Path at: " + submissionPath);
 		grader.run(submissionPath);
 	}
@@ -89,29 +90,20 @@ public class Autograder {
 		return pairs;
 	}
 
-	private String setup(String[] args) {
+	private void setup(String[] args) {
 		CmdLineParser parser = new CmdLineParser();
 		CommandLine commandLine = parser.parse(args);
 		if(commandLine.hasOption("h")) {
 			parser.printHelp();
 			System.exit(0);
-			return null; // unreachable code, being explicit about control flow
+			return; // unreachable code, being explicit about control flow
 		}
 		
-		String configPath = commandLine.getOptionValue("c", null);
+		String configPath = commandLine.getOptionValue("c", Constants.DEFAULT_CONFIGURATION);
 		Configuration config = Configuration.getConfiguration(configPath);
 		
-		config.graderName = commandLine.getOptionValue("g");
-		
-		//load TA config
-		String taFilePath = commandLine.getOptionValue('a', "ta.csv");
-		taFilePath = getClass().getClassLoader().getResource(taFilePath).toString();
-		Configuration.getConfiguration().taFilePath = taFilePath;
- 		System.out.println("TA Filepath found at " + taFilePath + " and loaded successfully.");
 		new File(Constants.SUBMISSIONS).mkdir();
 		System.out.println("Created submission folder");
-		
-		return commandLine.getOptionValue("s");
 	}
 	
 	private Grader[] startGraderThreads(Queue<WorkJob> queue) {

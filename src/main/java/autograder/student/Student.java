@@ -20,6 +20,7 @@ public class Student {
 	
 	public Student(String name, int canvasId) {
 		this.canvasId = canvasId;
+		this.name = name;
 		studentDirectory = new File(String.format("submissions/%s_%d", name, canvasId));
 		studentDirectory.mkdirs();
 		new File(studentDirectory.getAbsolutePath() + "/source").mkdir();
@@ -42,7 +43,7 @@ public class Student {
 		try {
 			assignProps = new AssignmentProperties(studentDirectory.getAbsolutePath() + "/assignment.properties");
 		} catch (ConfigurationException e) {
-			LOGGER.warning(this.name + " does not have a valid assignment.properties file");
+			LOGGER.warning(this.name + " does not have a valid assignment.properties file. " + e.getMessage());
 		}
 	}
 }

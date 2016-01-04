@@ -53,7 +53,7 @@
 		<version>4.11</version>
 	</dependency>
   </dependencies>
-  <!-- <build>
+  <build>
     <pluginManagement>
 	    <plugins>
 	        <plugin>
@@ -67,5 +67,5 @@
 	        </plugin>
 	    </plugins>
     </pluginManagement>
-  </build> -->
+  </build>
 </project>

@@ -20,7 +20,7 @@ public class ClassListRegistry extends AbstractCsvRegistry<StudentInfo> {
 	
 	@Override
 	protected String getFileName() {
-		return "classList.csv";
+		return "class-list.csv";
 	}
 
 	@Override

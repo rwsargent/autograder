@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import com.sun.istack.internal.Nullable;
-
 import autograder.Constants;
 
 public class Configuration extends AbstractProperties {
@@ -28,7 +26,9 @@ public class Configuration extends AbstractProperties {
 	public String canvasToken;
 	
 	public String taFilePath = "ta.csv";
+	public String classList;
 	public String studentFilePath;
+	public String submission;
 	
 	
 	private volatile static Configuration mInstance;
@@ -37,7 +37,7 @@ public class Configuration extends AbstractProperties {
 		return getConfiguration(null);
 	}
 	
-	public static synchronized Configuration getConfiguration(@Nullable String configPath) {
+	public static synchronized Configuration getConfiguration(String configPath) {
 		if(mInstance == null) {
 			mInstance = new Configuration();
 			File configFile = mInstance.findPropertyFile(configPath);
