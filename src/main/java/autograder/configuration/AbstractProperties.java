@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Properties;
 
+import autograder.Constants;
+
 
 public abstract class AbstractProperties {
 	
@@ -66,6 +68,8 @@ public abstract class AbstractProperties {
 		}
 		
 		File configFile = new File(configurationFileName);
+		//test
+		File classList = new File(Constants.DEFAULT_CLASS_LIST);
 		if(!configFile.exists()) {
 			URL configUrl = getClass().getClassLoader().getResource(configurationFileName);
 			if(configUrl == null) {

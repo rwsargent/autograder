@@ -26,6 +26,7 @@ public interface Constants {
 	public static String[] VALID_FILE_TYPES = new String[] { ".pdf", ".properties", ".java"};
 	
 	public static final String DEFAULT_CONFIGURATION = "configuration.properties";
+	public static final String DEFAULT_CLASS_LIST = "class_list.csv";
 	
 	public static final String SUBMISSIONS = "submissions";
 }

@@ -2,6 +2,7 @@ package autograder.student;
 
 import org.apache.commons.csv.CSVRecord;
 
+import autograder.Constants;
 import autograder.Constants.ClassList;
 import autograder.configuration.AbstractCsvRegistry;
 
@@ -20,7 +21,7 @@ public class ClassListRegistry extends AbstractCsvRegistry<StudentInfo> {
 	
 	@Override
 	protected String getFileName() {
-		return "class-list.csv";
+		return Constants.DEFAULT_CLASS_LIST;
 	}
 
 	@Override

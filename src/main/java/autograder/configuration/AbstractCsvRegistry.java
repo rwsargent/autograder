@@ -1,6 +1,8 @@
 package autograder.configuration;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +20,19 @@ public abstract class AbstractCsvRegistry<RegistryObject> {
 	
 	protected void configure() {
 		map = new HashMap<>();
-		String filename = getFileName();
+		File csvFile = new File(getFileName());
+		String fullPath = csvFile.getAbsolutePath();
+		if(csvFile.exists()) {
+			fullPath = csvFile.getAbsolutePath();
+		} else {
+			URL url;
+			if ((url = getClass().getResource(csvFile.getAbsolutePath())) == null) {
+				throw new ConfigurationException("Can't find " + getFileName() + ".");
+			}
+			fullPath = url.getPath();
+		}
 		CSVFormat format = CSVFormat.DEFAULT.withHeader(getCsvHeaders());
-		try {
-			CSVParser parser = CSVParser.parse(filename, format);
+		try(CSVParser parser = CSVParser.parse(fullPath, format)) {
 			List<CSVRecord> records = parser.getRecords();
 			for(CSVRecord record : records) {
 				map.put(getKey(record), constructObject(record));
@@ -40,7 +51,7 @@ public abstract class AbstractCsvRegistry<RegistryObject> {
 	}
 	
 	public List<RegistryObject> toList() {
-		return new ArrayList(map.values());
+		return new ArrayList<RegistryObject>(map.values());
 	}
 	
 	protected abstract String getFileName();
