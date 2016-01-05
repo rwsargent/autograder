@@ -1,10 +1,18 @@
 package autograder.grading;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFileFilter;
+
+import com.sun.org.glassfish.external.probe.provider.annotations.Probe;
 
 import autograder.configuration.Configuration;
 import autograder.student.Student;
@@ -67,10 +75,11 @@ public class Grader extends Thread {
 	}
 	
 	private void compile() throws IOException, InterruptedException {
-		File src = mStudent.studentDirectory; 
+		File src = new File(mStudent.getSourceDirectoryPath()); 
 		createClassesDirectoryInSourceDir();
-		processBuilder = new ProcessBuilder(("javac *.java -d classes").split(" ")); 
+		processBuilder = new ProcessBuilder(createJavacCommand().split(" ")); 
 		processBuilder.directory(src);
+		processBuilder.redirectError(Redirect.appendTo(new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.txt")));
 		Process compilation = processBuilder.start();
 		if(compilation.waitFor(30, TimeUnit.SECONDS)) {
 			if (compilation.exitValue() != 0) {
@@ -79,6 +88,14 @@ public class Grader extends Thread {
 		} else {
 			throw new RuntimeException("Compiliation timed out on " + mStudent);
 		}
+		compilation.destroy();
+	}
+
+	private String createJavacCommand() {
+		File source = mStudent.sourceDirectory;
+		StringBuilder sb = new StringBuilder("javac -d classes ");
+		sb.append(source.listFiles(file -> FilenameUtils.getExtension(file.getName()).equals("java")));
+		return sb.toString();
 	}
 
 	private void createClassesDirectoryInSourceDir() {

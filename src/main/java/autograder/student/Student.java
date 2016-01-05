@@ -9,6 +9,7 @@ import autograder.configuration.ConfigurationException;
 public class Student {
 	private static Logger LOGGER = Logger.getLogger(Student.class.getName());
 	public File studentDirectory;
+	public File sourceDirectory;
 	public String name;
 	public int canvasId;
 	public boolean isLate;
@@ -23,7 +24,8 @@ public class Student {
 		this.name = name;
 		studentDirectory = new File(String.format("submissions/%s_%d", name, canvasId));
 		studentDirectory.mkdirs();
-		new File(studentDirectory.getAbsolutePath() + "/source").mkdir();
+		sourceDirectory = new File(studentDirectory.getAbsolutePath() + "/source");
+		sourceDirectory.mkdir();
 	}
 	
 	public Student(String name, int canvasId, boolean late) {
