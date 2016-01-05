@@ -51,9 +51,12 @@ public abstract class AbstractProperties {
 
 	private Object handleString(String property, Field field, AbstractProperties object) throws IllegalArgumentException, IllegalAccessException {
 		String value = property != null && !property.isEmpty() ? property : (String) field.get(object);
+		if(field.isAnnotationPresent(Optional.class)) {
+			return field.getAnnotation(Optional.class).defaultValue();
+		}
 		if(value == null || value.isEmpty()) {
 			value = System.getProperty(field.getName());
-			if(value == null) {
+			if(value == null ) {
 				throw new ConfigurationException("The required configuration " + field.getName() + " was not specified. Please look to make sure the property file has all the required fields, or add as a VM"
 						+ " argument. (-DfieldName=value)");
 			}

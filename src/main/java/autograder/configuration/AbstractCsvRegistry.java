@@ -27,7 +27,7 @@ public abstract class AbstractCsvRegistry<RegistryObject> {
 		if(!csvFile.exists()) {
 			throw new ConfigurationException("Can't find " + getFileName() + ".");
 		}
-		CSVFormat format = CSVFormat.DEFAULT.withHeader(getCsvHeaders());
+		CSVFormat format = CSVFormat.DEFAULT.withHeader(getCsvHeaders()).withSkipHeaderRecord();
 		try(CSVParser parser = CSVParser.parse(csvFile, Charset.defaultCharset(),  format)) {
 			List<CSVRecord> records = parser.getRecords();
 			for(CSVRecord record : records) {

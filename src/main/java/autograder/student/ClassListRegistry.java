@@ -15,6 +15,7 @@ public class ClassListRegistry extends AbstractCsvRegistry<StudentInfo> {
 		if(mInstance == null) {
 			mInstance = new ClassListRegistry();
 			mInstance.configure();
+			mInstance.map.put("-1", new StudentInfo("placeholder", "-1", "-1"));
 		}
 		return mInstance;
 	}

@@ -70,19 +70,20 @@ public class Autograder {
 		Set<SubmissionPair> pairs = new HashSet<>();
 		Set<Student> invalidProperties = new HashSet<>();
 		StudentSubmissionRegistry registry = StudentSubmissionRegistry.getInstance();
-		Map<String, StudentInfo> classList = ClassListRegistry.getInstance().getMap();
 		StudentSubmissionRegistry.getInstance().forEach((name, student) -> {
 			if(student.assignProps == null) {
 				invalidProperties.add(student);
 				return;
 			}
+			
+			Map<String, StudentInfo> classList = ClassListRegistry.getInstance().getMap();
 			Student submitter, partner;
 			if(student.assignProps.submitted) {
 				submitter = student;
-				partner = registry.getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
+				partner = StudentSubmissionRegistry.getInstance().getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
 			} else {
 				partner = student;
-				submitter = registry.getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
+				submitter = StudentSubmissionRegistry.getInstance().getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
 			}
 			SubmissionPair pair = new SubmissionPair(submitter, partner);
 			pairs.add(pair);

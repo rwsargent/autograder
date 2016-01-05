@@ -18,6 +18,7 @@ public class StudentSubmissionRegistry {
 	public static synchronized StudentSubmissionRegistry getInstance() {
 		if(mInstance == null ) {
 			mInstance = new StudentSubmissionRegistry();
+			mInstance.addStudent(new Student("placeholder", -1));
 		}
 		return mInstance;
 	}

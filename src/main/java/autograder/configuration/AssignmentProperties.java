@@ -5,7 +5,11 @@ import autograder.configuration.PropertyType.DataType;
 public class AssignmentProperties extends AbstractProperties {
 	
 	public String name,uid;
-	public String partner_name, partner_uid;
+	
+	@Optional(defaultValue = "default")
+	public String partner_name;
+	@Optional(defaultValue = "-1")
+	public String partner_uid;
 	
 	@PropertyType(type = DataType.BOOLEAN)
 	public boolean submitted;
