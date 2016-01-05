@@ -72,7 +72,7 @@ public class Autograder {
 		StudentSubmissionRegistry registry = StudentSubmissionRegistry.getInstance();
 		Map<String, StudentInfo> classList = ClassListRegistry.getInstance().getMap();
 		StudentSubmissionRegistry.getInstance().forEach((name, student) -> {
-			if(student.assignProps != null) {
+			if(student.assignProps == null) {
 				invalidProperties.add(student);
 				return;
 			}
