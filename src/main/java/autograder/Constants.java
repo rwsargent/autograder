@@ -29,4 +29,5 @@ public interface Constants {
 	public static final String DEFAULT_CLASS_LIST = "class_list.csv";
 	
 	public static final String SUBMISSIONS = "submissions";
+	public static final String ZIPS = "outgoing";
 }

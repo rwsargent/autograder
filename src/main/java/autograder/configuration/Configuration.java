@@ -12,6 +12,9 @@ public class Configuration extends AbstractProperties {
 	
 	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
+
+	public String assignment; 
+	
 	public String graderClassName;
 	public String graderFile;
 	
@@ -19,6 +22,7 @@ public class Configuration extends AbstractProperties {
 	public String smtpPassword;
 	public String smtpHost = "smtp.gmail.com";
 	public String smtpPort = "587";
+	public String senderEmail;
 	
 	public String canvasUsername;
 	public String canvasPassword;

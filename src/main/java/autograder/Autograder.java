@@ -1,6 +1,7 @@
 package autograder;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -49,6 +50,10 @@ public class Autograder {
 		// execute workQueue
 		Grader[] threads = startGraderThreads(workQueue);
 		//wait for grading to finish
+		calculateTaGrading(pairs.size());
+		// seperate submissions
+		HashMap<String, Set<SubmissionPair>> studentsForTas = PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(), pairs.stream().collect(Collectors.toList()));
+		
 		for(Grader graderThread : threads) {
 			try {
 				graderThread.join();
@@ -56,10 +61,7 @@ public class Autograder {
 				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
 			}
 		}
-		// combine, and email the tas
-		calculateTaGrading(pairs.size());
-		PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(),
-				pairs.stream().collect(Collectors.toList()));
+		
 	}
 	
 	private Queue<WorkJob> buildQueueFromPairs(Set<SubmissionPair> pairs) {
@@ -116,6 +118,7 @@ public class Autograder {
 		Configuration config = Configuration.getConfiguration(configPath);
 		
 		new File(Constants.SUBMISSIONS).mkdir();
+		new File(Constants.ZIPS).mkdir();
 		System.out.println("Created submission folder");
 	}
 	
