@@ -2,9 +2,11 @@ package autograder;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -37,15 +39,15 @@ public class Autograder {
 	}
 	
 	public void run(String submissionPath) {
-		// get assignments
 		SubmissionReader reader = new SubmissionReader();
+		// get assignments
 		reader.unzipSubmissions(submissionPath);
-		// build workQueue
-		Queue<WorkJob> workQueue = StudentSubmissionRegistry.getInstance().buildQueueFromSubmissions();
-		// execute workQueue
-		Grader[] threads = startGraderThreads(workQueue);
 		// pair submissions
 		Set<SubmissionPair> pairs = pairSubmissions();
+		// build workQueue
+		Queue<WorkJob> workQueue = buildQueueFromPairs(pairs);
+		// execute workQueue
+		Grader[] threads = startGraderThreads(workQueue);
 		//wait for grading to finish
 		for(Grader graderThread : threads) {
 			try {
@@ -60,6 +62,15 @@ public class Autograder {
 				pairs.stream().collect(Collectors.toList()));
 	}
 	
+	private Queue<WorkJob> buildQueueFromPairs(Set<SubmissionPair> pairs) {
+		Queue<WorkJob> queue = new LinkedBlockingQueue<>(pairs.size());
+		for(Iterator<SubmissionPair> it = pairs.iterator(); it.hasNext();) {
+			SubmissionPair pair = it.next();
+			queue.add(new WorkJob(pair.submitter));
+		}
+		return queue;
+	}
+
 	private void calculateTaGrading(int totalSubmissions) {
 		Map<String, TAInfo> tas = TeacherAssistantRegistry.getInstance().getMap();
 		double totalHours = tas.entrySet().stream().mapToDouble(ta -> ta.getValue().hours).sum();
