@@ -64,6 +64,7 @@ public class Autograder {
 		Map<String, TAInfo> tas = TeacherAssistantRegistry.getInstance().getMap();
 		double totalHours = tas.entrySet().stream().mapToDouble(ta -> ta.getValue().hours).sum();
 		tas.forEach((name, ta) -> ta.assignmentsToGrade = (int) Math.round((ta.hours / totalHours) * totalSubmissions));
+		String s = File.pathSeparator;
 	}
 
 	private Set<SubmissionPair> pairSubmissions() {

@@ -1,37 +1,42 @@
 package autograder.grading;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.FileFileFilter;
-
-import com.sun.org.glassfish.external.probe.provider.annotations.Probe;
 
 import autograder.configuration.Configuration;
 import autograder.student.Student;
 
 public class Grader extends Thread {
 	Student mStudent;
-	String mTestClassName;
+	String mGraderClassName, mGraderPath;
 	ProcessBuilder processBuilder;
 	Queue<WorkJob> workQueue;
 	Logger logger;
 	public Grader(Queue<WorkJob> queue) {
+		this();
 		workQueue = queue;
 	}
 	
 	public Grader() {
-		mTestClassName = Configuration.getConfiguration().graderName;
+		mGraderClassName = Configuration.getConfiguration().graderClassName;
+		mGraderPath = findFile(Configuration.getConfiguration().graderFile);
 		logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
 	}
 	
+	private String findFile(String configPath) {
+		File grader = new File(configPath);
+		if (grader.exists()) {
+			return grader.getAbsolutePath();
+		}
+		return getClass().getResource(configPath).toString();
+	}
+
 	@Override
 	public void run() {
 		WorkJob job = null;
@@ -47,17 +52,15 @@ public class Grader extends Thread {
 	public void compileAndRunTester(Student student) {
 		mStudent = student;
 		try {
-			compile();
-		} catch (Exception e) {
-			outputExecption("compilation", e);
-			return;
-		}
-		try {
-			runTester();
+			if(compile()) {
+				runTester();
+			} else {
+				
+			}
 		} catch (IOException | InterruptedException e) {
 			outputExecption("execution", e);
 		}
-		cleanUp();
+//		cleanUp();
 	}
 
 	private void cleanUp() {
@@ -74,27 +77,37 @@ public class Grader extends Thread {
 		System.out.println(String.format("There was an error in %s of the test for %s. %s was thrown, with message %s", new Object[] {step, mStudent, e.getClass().getName(), e.getMessage()}));
 	}
 	
-	private void compile() throws IOException, InterruptedException {
+	private boolean compile() throws IOException, InterruptedException {
 		File src = new File(mStudent.getSourceDirectoryPath()); 
 		createClassesDirectoryInSourceDir();
-		processBuilder = new ProcessBuilder(createJavacCommand().split(" ")); 
+		String command = createJavacCommand();
+		processBuilder = new ProcessBuilder(command.split(" ")); 
 		processBuilder.directory(src);
 		processBuilder.redirectError(Redirect.appendTo(new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.txt")));
 		Process compilation = processBuilder.start();
 		if(compilation.waitFor(30, TimeUnit.SECONDS)) {
-			if (compilation.exitValue() != 0) {
-				throw new RuntimeException("Compilation failed on " + mStudent + " with error code: " + compilation.exitValue());
+			if(compilation.exitValue() == 1) { 
+				logger.info(mStudent.name + " failed compilation. Check comp_error.txt for full details");
+				return false;
+			} else if (compilation.exitValue() == 2) {
+				logger.info("Something is wrong with this javac command: " + command);
+				return false;
 			}
 		} else {
 			throw new RuntimeException("Compiliation timed out on " + mStudent);
 		}
 		compilation.destroy();
+		return false;
 	}
 
 	private String createJavacCommand() {
 		File source = mStudent.sourceDirectory;
 		StringBuilder sb = new StringBuilder("javac -d classes ");
-		sb.append(source.listFiles(file -> FilenameUtils.getExtension(file.getName()).equals("java")));
+		for(File sourceFile : source.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("java"))) {
+			sb.append(sourceFile.getName());
+			sb.append(' ');
+		}
+		sb.append(mGraderPath);
 		return sb.toString();
 	}
 
@@ -108,7 +121,7 @@ public class Grader extends Thread {
 	}
 	
 	private void runTester() throws IOException, InterruptedException {
-		String[] testCommand = ("java -cp ./classes " + mTestClassName).split(" ");
+		String[] testCommand = ("java -cp ./classes " + mGraderClassName).split(" ");
 		processBuilder.command(testCommand);
 		processBuilder.redirectOutput(new File("./output/" + mStudent));
 		processBuilder.redirectError(new File("./output/" + mStudent + "_error"));

@@ -12,7 +12,8 @@ public class Configuration extends AbstractProperties {
 	
 	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
-	public String graderName;
+	public String graderClassName;
+	public String graderFile;
 	
 	public String smtpUsername;
 	public String smtpPassword;
