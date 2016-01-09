@@ -17,8 +17,8 @@ public class SubmissionPair {
 			return false;
 		}
 		pair = (SubmissionPair)obj;
-		return pair.partner.canvasId == this.partner.canvasId && 
-				pair.submitter.canvasId == this.submitter.canvasId;
+		return pair.partner.equals(this.partner) && 
+				pair.submitter.equals(this.submitter);
 	}
 	
 	@Override

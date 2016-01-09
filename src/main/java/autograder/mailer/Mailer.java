@@ -26,7 +26,7 @@ public class Mailer {
 		configureProperties();
 	}
 	
-	public void sendMailWithAttachment(String recipient, String text, String subject, String body, File attachmentFile) {
+	public void sendMailWithAttachment(String recipient, String subject, String body, File attachmentFile) {
 		Session session = Session.getDefaultInstance(mMailProps);
 		MimeMessage message = new MimeMessage(session);
 		try {

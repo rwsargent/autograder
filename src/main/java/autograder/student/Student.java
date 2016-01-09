@@ -48,4 +48,19 @@ public class Student {
 			LOGGER.warning(this.name + " does not have a valid assignment.properties file. " + e.getMessage());
 		}
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Student)) {
+			return false;
+		}
+		Student rhs = (Student)obj;
+		return this.canvasId == rhs.canvasId;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.canvasId;
+	}
+	
 }

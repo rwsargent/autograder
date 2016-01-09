@@ -16,4 +16,8 @@ public class WorkJob {
 	public Student getStudent() {
 		return mStudent;
 	}
+	
+	public String toString() {
+		return mStudent.name;
+	}
 }

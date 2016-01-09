@@ -2,7 +2,6 @@ package autograder;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -16,14 +15,16 @@ import org.apache.commons.cli.CommandLine;
 import autograder.configuration.CmdLineParser;
 import autograder.configuration.Configuration;
 import autograder.configuration.TeacherAssistantRegistry;
+import autograder.filehandling.Bundler;
 import autograder.filehandling.SubmissionReader;
 import autograder.grading.Grader;
 import autograder.grading.WorkJob;
-import autograder.student.ClassListRegistry;
+import autograder.mailer.Mailer;
 import autograder.student.Student;
-import autograder.student.StudentInfo;
 import autograder.student.StudentSubmissionRegistry;
 import autograder.student.SubmissionPair;
+import autograder.student.SubmissionPairer;
+import autograder.student.SubmissionPairer.SubmissionData;
 import autograder.tas.PartitionSubmissions;
 import autograder.tas.TAInfo;
 
@@ -44,9 +45,12 @@ public class Autograder {
 		// get assignments
 		reader.unzipSubmissions(submissionPath);
 		// pair submissions
-		Set<SubmissionPair> pairs = pairSubmissions();
+		SubmissionPairer pairer = new SubmissionPairer();
+		SubmissionData submissionData = pairer.pairSubmissions(StudentSubmissionRegistry.getInstance().toList());
+		Set<SubmissionPair> pairs = submissionData.pairs;
 		// build workQueue
 		Queue<WorkJob> workQueue = buildQueueFromPairs(pairs);
+		maybeAddInvalidStudentToWorkQueue(workQueue, submissionData.invalidStudents);
 		// execute workQueue
 		Grader[] threads = startGraderThreads(workQueue);
 		//wait for grading to finish
@@ -61,7 +65,30 @@ public class Autograder {
 				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
 			}
 		}
-		
+		// email out the zipped files of the students. 
+		emailTAs(studentsForTas);
+	}
+
+	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<Student> invalidStudents) {
+		for(Student student : invalidStudents) {
+			if(student.assignProps != null) {
+				if(student.assignProps.submitted) {
+					workQueue.add(new WorkJob(student));
+				}
+			}
+		}
+	}
+
+	private void emailTAs(HashMap<String, Set<SubmissionPair>> studentsForTas) {
+		Map<String, File> zippedFiles = Bundler.bundleStudents(studentsForTas);
+		Mailer mailer = new Mailer();
+		TeacherAssistantRegistry tas = TeacherAssistantRegistry.getInstance();
+		String subject = "[CS2420] Submissions for " + Configuration.getConfiguration().assignment;
+		String body = "Happy grading!\n\n Tas Rule!";
+		for(String ta : zippedFiles.keySet()) {
+			TAInfo taInfo = tas.get(ta);
+			mailer.sendMailWithAttachment(taInfo.email, subject, body, zippedFiles.get(ta));
+		}
 	}
 	
 	private Queue<WorkJob> buildQueueFromPairs(Set<SubmissionPair> pairs) {
@@ -77,32 +104,6 @@ public class Autograder {
 		Map<String, TAInfo> tas = TeacherAssistantRegistry.getInstance().getMap();
 		double totalHours = tas.entrySet().stream().mapToDouble(ta -> ta.getValue().hours).sum();
 		tas.forEach((name, ta) -> ta.assignmentsToGrade = (int) Math.round((ta.hours / totalHours) * totalSubmissions));
-		String s = File.pathSeparator;
-	}
-
-	private Set<SubmissionPair> pairSubmissions() {
-		Set<SubmissionPair> pairs = new HashSet<>();
-		Set<Student> invalidProperties = new HashSet<>();
-		StudentSubmissionRegistry registry = StudentSubmissionRegistry.getInstance();
-		StudentSubmissionRegistry.getInstance().forEach((name, student) -> {
-			if(student.assignProps == null) {
-				invalidProperties.add(student);
-				return;
-			}
-			
-			Map<String, StudentInfo> classList = ClassListRegistry.getInstance().getMap();
-			Student submitter, partner;
-			if(student.assignProps.submitted) {
-				submitter = student;
-				partner = StudentSubmissionRegistry.getInstance().getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
-			} else {
-				partner = student;
-				submitter = StudentSubmissionRegistry.getInstance().getStudentById(classList.get(student.assignProps.partner_uid).canvasid);
-			}
-			SubmissionPair pair = new SubmissionPair(submitter, partner);
-			pairs.add(pair);
-		});
-		return pairs;
 	}
 
 	private void setup(String[] args) {
@@ -115,7 +116,7 @@ public class Autograder {
 		}
 		
 		String configPath = commandLine.getOptionValue("c", Constants.DEFAULT_CONFIGURATION);
-		Configuration config = Configuration.getConfiguration(configPath);
+		Configuration.getConfiguration(configPath);
 		
 		new File(Constants.SUBMISSIONS).mkdir();
 		new File(Constants.ZIPS).mkdir();

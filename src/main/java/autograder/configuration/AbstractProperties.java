@@ -7,8 +7,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Properties;
 
-import autograder.Constants;
-
 
 public abstract class AbstractProperties {
 	
@@ -51,7 +49,7 @@ public abstract class AbstractProperties {
 
 	private Object handleString(String property, Field field, AbstractProperties object) throws IllegalArgumentException, IllegalAccessException {
 		String value = property != null && !property.isEmpty() ? property : (String) field.get(object);
-		if(field.isAnnotationPresent(Optional.class)) {
+		if(value == null && field.isAnnotationPresent(Optional.class)) {
 			return field.getAnnotation(Optional.class).defaultValue();
 		}
 		if(value == null || value.isEmpty()) {
@@ -71,8 +69,6 @@ public abstract class AbstractProperties {
 		}
 		
 		File configFile = new File(configurationFileName);
-		//test
-		File classList = new File(Constants.DEFAULT_CLASS_LIST);
 		if(!configFile.exists()) {
 			URL configUrl = getClass().getClassLoader().getResource(configurationFileName);
 			if(configUrl == null) {
