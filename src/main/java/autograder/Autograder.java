@@ -66,7 +66,7 @@ public class Autograder {
 			}
 		}
 		// email out the zipped files of the students. 
-		emailTAs(studentsForTas);
+//		emailTAs(studentsForTas);
 	}
 
 	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<Student> invalidStudents) {

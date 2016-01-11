@@ -6,10 +6,12 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -21,16 +23,23 @@ import autograder.configuration.Configuration;
 
 public class Mailer {
 
-	Properties mMailProps;
+	private Properties mMailProps;
 	public Mailer() {
 		configureProperties();
 	}
 	
 	public void sendMailWithAttachment(String recipient, String subject, String body, File attachmentFile) {
-		Session session = Session.getDefaultInstance(mMailProps);
+		Configuration config = Configuration.getConfiguration();
+		Session session = Session.getInstance(mMailProps, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(config.smtpUsername, config.smtpPassword);
+			}
+		});
+		
 		MimeMessage message = new MimeMessage(session);
 		try {
-			message.setFrom(new InternetAddress(Configuration.getConfiguration().senderEmail));
+			message.setFrom(new InternetAddress(config.senderEmail));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
 			message.setSubject(subject);
 			
@@ -47,11 +56,7 @@ public class Mailer {
 	        
 	        message.setContent(multipart);
             
-            Configuration config = Configuration.getConfiguration();
-            Transport transport = session.getTransport("smtp");
-            transport.connect(config.smtpHost, config.senderEmail, config.smtpPassword);
-            transport.sendMessage(message, message.getAllRecipients());
-            transport.close();
+	        Transport.send(message);
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}

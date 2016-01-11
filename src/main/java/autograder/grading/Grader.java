@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Complement;
+
 import autograder.configuration.Configuration;
 import autograder.student.Student;
 
@@ -60,17 +62,6 @@ public class Grader extends Thread {
 		} catch (IOException | InterruptedException e) {
 			outputExecption("execution", e);
 		}
-//		cleanUp();
-	}
-
-	private void cleanUp() {
-		File errorFile = new File("/output" + mStudent + "_error");
-		if(errorFile.canWrite()) {
-			System.out.println("Can write...");
-			if(!errorFile.delete()) {
-				System.out.println("Can't delete!!");
-			}	
-		}
 	}
 
 	private void outputExecption(String step, Exception e) {
@@ -80,24 +71,27 @@ public class Grader extends Thread {
 	private boolean compile() throws IOException, InterruptedException {
 		File src = new File(mStudent.getSourceDirectoryPath()); 
 		createClassesDirectoryInSourceDir();
+		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.txt");
+		
 		String command = createJavacCommand();
 		processBuilder = new ProcessBuilder(command.split(" ")); 
 		processBuilder.directory(src);
-		processBuilder.redirectError(Redirect.appendTo(new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.txt")));
+		processBuilder.redirectError(Redirect.appendTo(compErrorFile));
 		Process compilation = processBuilder.start();
-		if(compilation.waitFor(30, TimeUnit.SECONDS)) {
-			if(compilation.exitValue() == 1) { 
-				logger.info(mStudent.name + " failed compilation. Check comp_error.txt for full details");
-				return false;
-			} else if (compilation.exitValue() == 2) {
-				logger.info("Something is wrong with this javac command: " + command);
-				return false;
-			}
+		int compCode = compilation.waitFor();
+		if(compCode == 1) { 
+			logger.info(mStudent.name + " failed compilation. Check comp_error.txt for full details");
+			return false;
+		} else if (compCode == 2) {
+			logger.info("Something is wrong with this javac command: " + command);
+			return false;
 		} else {
-			throw new RuntimeException("Compiliation timed out on " + mStudent);
+			if(!compErrorFile.delete()) {
+				compErrorFile.deleteOnExit();
+			}
 		}
 		compilation.destroy();
-		return false;
+		return true;
 	}
 
 	private String createJavacCommand() {
@@ -121,14 +115,32 @@ public class Grader extends Thread {
 	}
 	
 	private void runTester() throws IOException, InterruptedException {
-		String[] testCommand = ("java -cp ./classes " + mGraderClassName).split(" ");
+		String[] testCommand = generateJavaGraderCommand().split(" ");
+		File errorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output_error.txt");
+		
 		processBuilder.command(testCommand);
-		processBuilder.redirectOutput(new File("./output/" + mStudent));
-		processBuilder.redirectError(new File("./output/" + mStudent + "_error"));
+		processBuilder.directory(mStudent.studentDirectory);
+		processBuilder.redirectOutput(Redirect.to(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.txt")));
+		processBuilder.redirectError(Redirect.to(errorFile));
 		Process test = processBuilder.start();
-		if(test.waitFor() != 0 ) {
+		int returnCode = test.waitFor();
+		if(returnCode != 0 ) {
 			throw new RuntimeException("Java didn't work: " + test.exitValue());
+		} else {
+			if(!errorFile.delete()) {
+				errorFile.deleteOnExit();
+			}
 		}
 		test.destroy();
+	}
+
+	private String generateJavaGraderCommand() {
+		StringBuilder sb = new StringBuilder("java -cp ");
+		sb.append("./source/classes");
+		sb.append(File.pathSeparatorChar);
+		sb.append(Configuration.getConfiguration().extraClassPathFiles);
+		sb.append(' ');
+		sb.append(mGraderClassName);
+		return sb.toString();
 	}
 }

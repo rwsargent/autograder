@@ -17,6 +17,7 @@ public class Configuration extends AbstractProperties {
 	
 	public String graderClassName;
 	public String graderFile;
+	public String extraClassPathFiles;
 	
 	public String smtpUsername;
 	public String smtpPassword;
