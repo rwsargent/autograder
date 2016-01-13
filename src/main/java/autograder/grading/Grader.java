@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Queue;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
-
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Complement;
 
 import autograder.configuration.Configuration;
 import autograder.student.Student;
@@ -44,20 +41,18 @@ public class Grader extends Thread {
 		WorkJob job = null;
 		while((job = workQueue.poll()) != null) {
 			try {
-				compileAndRunTester(job.getStudent());
+				compileAndRunGrader(job.getStudent());
 			} catch (Exception e ) {
 				logger.severe(e.getMessage());
 			}
 		}
 	}
 	
-	public void compileAndRunTester(Student student) {
+	public void compileAndRunGrader(Student student) {
 		mStudent = student;
 		try {
 			if(compile()) {
-				runTester();
-			} else {
-				
+				runGrader();
 			}
 		} catch (IOException | InterruptedException e) {
 			outputExecption("execution", e);
@@ -114,7 +109,7 @@ public class Grader extends Thread {
 		}
 	}
 	
-	private void runTester() throws IOException, InterruptedException {
+	private void runGrader() throws IOException, InterruptedException {
 		String[] testCommand = generateJavaGraderCommand().split(" ");
 		File errorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output_error.txt");
 		

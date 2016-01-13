@@ -9,10 +9,6 @@ public class WorkJob {
 		mStudent = student;
 	}
 	
-	public void gradeStudentSubmission(Grader grader) {
-		grader.compileAndRunTester(mStudent);
-	}
-	
 	public Student getStudent() {
 		return mStudent;
 	}

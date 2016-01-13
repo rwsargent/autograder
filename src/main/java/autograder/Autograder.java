@@ -31,6 +31,7 @@ import autograder.tas.TAInfo;
 public class Autograder {
 	
 	public static Logger LOGGER = Logger.getLogger(Autograder.class.getName());
+	private boolean shouldMail = false;
 
 	public static void main(String[] args) {
 		Autograder grader = new Autograder();
@@ -53,11 +54,12 @@ public class Autograder {
 		maybeAddInvalidStudentToWorkQueue(workQueue, submissionData.invalidStudents);
 		// execute workQueue
 		Grader[] threads = startGraderThreads(workQueue);
-		//wait for grading to finish
-		calculateTaGrading(pairs.size());
+		
 		// seperate submissions
+		calculateTaGrading(pairs.size());
 		HashMap<String, Set<SubmissionPair>> studentsForTas = PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(), pairs.stream().collect(Collectors.toList()));
 		
+		//wait for grading to finish
 		for(Grader graderThread : threads) {
 			try {
 				graderThread.join();
@@ -65,8 +67,12 @@ public class Autograder {
 				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
 			}
 		}
-		// email out the zipped files of the students. 
-//		emailTAs(studentsForTas);
+		// email out the zipped files of the students.
+		if(shouldMail) {
+			emailTAs(studentsForTas);
+		}
+		
+		LOGGER.info("Completed");
 	}
 
 	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<Student> invalidStudents) {
@@ -113,6 +119,8 @@ public class Autograder {
 			parser.printHelp();
 			System.exit(0);
 			return; // unreachable code, being explicit about control flow
+		} else if (commandLine.hasOption('m') || commandLine.hasOption("mail")) {
+			shouldMail = true;
 		}
 		
 		String configPath = commandLine.getOptionValue("c", Constants.DEFAULT_CONFIGURATION);

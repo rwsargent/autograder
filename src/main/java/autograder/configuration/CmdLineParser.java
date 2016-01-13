@@ -23,10 +23,15 @@ public class CmdLineParser {
 				.required(false)
 				.build();
 		
+		Option mailerFlag = Option.builder("m").longOpt("mail").desc("If this flag is present, the TAs will be mailed their partition.")
+				.required(false)
+				.build();
+		
 		
 		mOptions = new Options();
 		mOptions.addOption(helpOption);
 		mOptions.addOption(pathToConfiguration);
+		mOptions.addOption(mailerFlag);
 	}
 	
 	public void printHelp() {
