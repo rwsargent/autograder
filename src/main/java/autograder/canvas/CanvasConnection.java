@@ -1,31 +1,12 @@
 package autograder.canvas;
 
-import java.io.IOException;
-import java.util.zip.ZipFile;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.impl.client.HttpClients;
+import autograder.canvas.responses.User;
+import autograder.configuration.Configuration;
 
 public class CanvasConnection {
 	
-	public static ZipFile getSubmissionZipFile(String courseId, String assignmentId) {
-		HttpClient client = HttpClients.createDefault();
-		String uri = createSubmissionURI(courseId, assignmentId);
-		HttpGet request = (HttpGet) RequestBuilder.get(uri)
-				.addHeader("", "")
-				.build();
-		try {
-			client.execute(request);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public static User[] getAllStudents() {
+		String url = String.format("courses/%s/users", Configuration.getConfiguration().canvasCourseId);
+		return Network.httpGetCall(url, User[].class);
 	}
-
-	private static String createSubmissionURI(String courseId, String assignmentId) {
-		return String.format("/api/v1/courses/%s/assignments/%s/submissions", courseId, assignmentId);
-	}
-	
 }
