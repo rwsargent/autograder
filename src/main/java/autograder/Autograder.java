@@ -66,10 +66,14 @@ public class Autograder {
 			} catch (InterruptedException e) {
 				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
 			}
+		
 		}
+		//bundle files per ta
+		Map<String, File> zippedFiles = Bundler.bundleStudents(studentsForTas);
+		
 		// email out the zipped files of the students.
 		if(shouldMail) {
-			emailTAs(studentsForTas);
+			emailTAs(zippedFiles);
 		}
 		
 		LOGGER.info("Completed");
@@ -85,8 +89,7 @@ public class Autograder {
 		}
 	}
 
-	private void emailTAs(HashMap<String, Set<SubmissionPair>> studentsForTas) {
-		Map<String, File> zippedFiles = Bundler.bundleStudents(studentsForTas);
+	private void emailTAs(Map<String, File> zippedFiles) {
 		Mailer mailer = new Mailer();
 		TeacherAssistantRegistry tas = TeacherAssistantRegistry.getInstance();
 		String subject = "[CS2420] Submissions for " + Configuration.getConfiguration().assignment;
