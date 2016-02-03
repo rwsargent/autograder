@@ -3,6 +3,7 @@ package autograder.canvas;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -10,6 +11,7 @@ import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
@@ -40,19 +42,35 @@ public class Network {
         return gson.fromJson(responseAsJSONString, responseClass);
     }
 	
-	protected static <T extends BaseResponse> T httpGetCall(String url, Class<T> responseClass) {
+	protected static <T> T httpGetCall(String url, Class<T> responseClass) {
 		HttpClient client = HttpClients.createDefault();
-		HttpGet request = new HttpGet();
+		HttpGet request = new HttpGet(BASE_URL + url);
 		configureRequest(request);
-		String jsonString = null;
-		try {
-			HttpResponse httpResponse = client.execute(request);
-			jsonString = validateResponse(httpResponse);
-		} catch (IOException e) {
-			LOGGER.severe(e.getMessage());
-		}
+		String jsonString = "{}";
+		executeRequest(request, responseClass);
+//		try {
+//			HttpResponse httpResponse = client.execute(request);
+//			jsonString = validateResponse(httpResponse);
+//		} catch (IOException e) {
+//			LOGGER.severe(e.getMessage());
+//		}
 		Gson gson = new Gson();
 		return gson.fromJson(jsonString, responseClass);
+	}
+	
+	protected static <Response> Response executeRequest(HttpRequestBase request, Class<Response> responseClazz) {
+		HttpClient httpClient = HttpClients.createDefault();
+		try {
+			HttpResponse httpResponse = httpClient.execute(request);
+			validateResponse(httpResponse);
+			Header[] headers = httpResponse.getHeaders("Link");
+			for(Header header : headers) {
+				System.out.println(header.getValue());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private static void configureRequest(HttpRequest request) { 
