@@ -1,7 +1,11 @@
 package autograder.canvas;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -17,23 +21,36 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 
+import autograder.Constants;
 import autograder.configuration.Configuration;
 
 public class Network {
 	
 	private static final Logger LOGGER = Logger.getLogger(Network.class.getName()); 
-	private static final String BASE_URL = "https://utah.instructure.com/api/v1/";
+	public static final String BASE_URL = "https://utah.instructure.com/api/v1/";
 	protected static final String token = Configuration.getConfiguration().canvasToken;
+	
+	protected static byte[] downloadFile(String url) {
+		HttpClient client = HttpClients.createDefault();
+		HttpGet request = new HttpGet(url);
+		try {
+			HttpResponse response = client.execute(request);
+			return EntityUtils.toByteArray(response.getEntity());
+		} catch (IOException e) {
+			return new byte[0];
+		}
+	}
 	
 	protected static <E extends BaseResponse> E httpPostCall(String url, String contentType, HttpEntity data, Class<E> responseClass) {
         HttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(BASE_URL + url);
         configureRequest(request);
         request.addHeader("Content-type","application/json");
-        String responseAsJSONString;
+        String responseAsJSONString = null;
         request.setEntity(data);
         try {
-            responseAsJSONString = validateResponse(client.execute(request));
+        	client.execute(request);
+//            responseAsJSONString = validResponse());
         } catch (IOException e) {
         	LOGGER.severe(e.getMessage());
         	responseAsJSONString = String.format("{\"appError\" : \"%s\"}", e.getMessage());
@@ -44,25 +61,52 @@ public class Network {
 	
 	protected static <T> T httpGetCall(String url, Class<T> responseClass) {
 		HttpClient client = HttpClients.createDefault();
+		Gson gson = new Gson();
 		HttpGet request = new HttpGet(BASE_URL + url);
 		configureRequest(request);
-		String jsonString = "{}";
-		executeRequest(request, responseClass);
-//		try {
-//			HttpResponse httpResponse = client.execute(request);
-//			jsonString = validateResponse(httpResponse);
-//		} catch (IOException e) {
-//			LOGGER.severe(e.getMessage());
-//		}
-		Gson gson = new Gson();
+		StringBuilder sb = new StringBuilder();
+		httpGetRecur(client, request, sb);
+		if(sb.length() == 0) {
+			sb.append("{ \"appError\" : \"Something went wrong\" }"); // make an empty object
+		}
+		String jsonString = sb.toString().replaceAll("\\]\\s*\\[", ",");
 		return gson.fromJson(jsonString, responseClass);
 	}
 	
+	private static void httpGetRecur(HttpClient client, HttpGet request, StringBuilder responseStringBuilder) {
+		HttpResponse httpResponse;
+		try {
+			httpResponse = client.execute(request);
+			if(validResponse(httpResponse)) {
+				responseStringBuilder.append(EntityUtils.toString(httpResponse.getEntity()));
+				Header[] headers = httpResponse.getHeaders("Link");
+				Pattern regex = Pattern.compile(Constants.LINK_REGEX);
+				for(Header header : headers) {
+					Matcher matcher = regex.matcher(header.getValue());
+					if(matcher.find()) {
+						request.setURI(new URI(matcher.group(1)));
+						httpGetRecur(client, request, responseStringBuilder);
+					}
+				}
+			} else {
+				responseStringBuilder.append(buildErrorMessage(httpResponse));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static String buildErrorMessage(HttpResponse httpResponse) {
+		return String.format("{\"appError\" : \"Error code is: %d\" }", httpResponse.getStatusLine().getStatusCode());
+	}
+
 	protected static <Response> Response executeRequest(HttpRequestBase request, Class<Response> responseClazz) {
 		HttpClient httpClient = HttpClients.createDefault();
 		try {
 			HttpResponse httpResponse = httpClient.execute(request);
-			validateResponse(httpResponse);
+			validResponse(httpResponse);
 			Header[] headers = httpResponse.getHeaders("Link");
 			for(Header header : headers) {
 				System.out.println(header.getValue());
@@ -77,11 +121,7 @@ public class Network {
 		request.addHeader("Authorization", "Bearer " + token);
 	}
 	
-	private static String validateResponse(HttpResponse response) throws ParseException, IOException {
-		int statusCode = response.getStatusLine().getStatusCode();
-		if(statusCode == 200 ){
-			return EntityUtils.toString(response.getEntity());
-		}
-		return "{}"; // return empty json object
+	private static boolean validResponse(HttpResponse response) throws ParseException, IOException {
+		return response.getStatusLine().getStatusCode() == 200;
 	}
 }

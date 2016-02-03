@@ -1,5 +1,6 @@
 package autograder.tas;
 
+import java.io.File;
 import java.util.List;
 
 public class TAInfo {
@@ -8,6 +9,8 @@ public class TAInfo {
 	public double hours;
 	public int assignmentsToGrade;
 	public List<String> students;
+	
+	public File taDirectory;
 
 	public TAInfo(String name, String email, double hours) {
 		this.name = name;

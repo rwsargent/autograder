@@ -27,11 +27,16 @@ public class CmdLineParser {
 				.required(false)
 				.build();
 		
+		Option lateFlag = Option.builder("l").longOpt("late").desc("Run the autograder only on late submissions.")
+				.required(false)
+				.build();
+		
 		
 		mOptions = new Options();
 		mOptions.addOption(helpOption);
 		mOptions.addOption(pathToConfiguration);
 		mOptions.addOption(mailerFlag);
+		mOptions.addOption(lateFlag);
 	}
 	
 	public void printHelp() {

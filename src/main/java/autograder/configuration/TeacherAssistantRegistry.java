@@ -1,5 +1,7 @@
 package autograder.configuration;
 
+import java.io.File;
+
 import org.apache.commons.csv.CSVRecord;
 
 import autograder.Constants;
@@ -7,6 +9,7 @@ import autograder.tas.TAInfo;
 
 public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 	public static TeacherAssistantRegistry instance;
+	private File taFile;
 	
 	public synchronized static TeacherAssistantRegistry getInstance() {
 		if (instance == null) {
@@ -16,7 +19,10 @@ public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 		return instance;
 	}
 	
-	private TeacherAssistantRegistry() {}
+	private TeacherAssistantRegistry() {
+		taFile = new File("tas");
+		taFile.mkdirs();
+	}
 	
 	@Override
 	protected String getFileName() {
@@ -30,7 +36,10 @@ public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 
 	@Override
 	protected TAInfo constructObject(CSVRecord record) {
-		return new TAInfo(record.get(Constants.TaConfiguration.TA_NAME_HEADER), record.get(Constants.TaConfiguration.TA_EMAIL_HEADER), Double.parseDouble(record.get(Constants.TaConfiguration.TA_HOURS_HEADER)));
+		TAInfo taInfo = new TAInfo(record.get(Constants.TaConfiguration.TA_NAME_HEADER), record.get(Constants.TaConfiguration.TA_EMAIL_HEADER), Double.parseDouble(record.get(Constants.TaConfiguration.TA_HOURS_HEADER)));
+		taInfo.taDirectory = new File(taFile.getAbsolutePath() + "/" + taInfo.name);
+		taInfo.taDirectory.mkdir();
+		return taInfo;
 	}
 
 	@Override

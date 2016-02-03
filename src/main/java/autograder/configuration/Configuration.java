@@ -28,6 +28,7 @@ public class Configuration extends AbstractProperties {
 	public String canvasUsername;
 	public String canvasPassword;
 	public String canvasCourseId;
+	public String canvasAssignmentId;
 	
 	public String canvasToken;
 	

@@ -32,6 +32,7 @@ public class Autograder {
 	
 	public static Logger LOGGER = Logger.getLogger(Autograder.class.getName());
 	private boolean shouldMail = false;
+	private boolean onlyLate;
 
 	public static void main(String[] args) {
 		Autograder grader = new Autograder();
@@ -42,6 +43,8 @@ public class Autograder {
 	}
 	
 	public void run(String submissionPath) {
+		// Set up TA's
+		TeacherAssistantRegistry taRegistry = TeacherAssistantRegistry.getInstance();
 		SubmissionReader reader = new SubmissionReader();
 		// get assignments
 		reader.unzipSubmissions(submissionPath);
@@ -124,6 +127,8 @@ public class Autograder {
 			return; // unreachable code, being explicit about control flow
 		} else if (commandLine.hasOption('m') || commandLine.hasOption("mail")) {
 			shouldMail = true;
+		} else if (commandLine.hasOption('l') || commandLine.hasOption("late")) {
+			onlyLate = true;
 		}
 		
 		String configPath = commandLine.getOptionValue("c", Constants.DEFAULT_CONFIGURATION);

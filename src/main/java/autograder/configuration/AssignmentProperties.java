@@ -1,5 +1,7 @@
 package autograder.configuration;
 
+import java.util.Properties;
+
 import autograder.configuration.PropertyType.DataType;
 
 public class AssignmentProperties extends AbstractProperties {
@@ -16,6 +18,10 @@ public class AssignmentProperties extends AbstractProperties {
 	
 	public AssignmentProperties(String filePath) {
 		mapProperties(filePath);	
+	}
+	
+	public AssignmentProperties(Properties propmMap) {
+		fillProperties(propmMap, this);
 	}
 
 	@Override
