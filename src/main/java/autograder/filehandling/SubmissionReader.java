@@ -18,6 +18,7 @@ import autograder.Constants;
 import autograder.configuration.ConfigurationException;
 import autograder.student.Student;
 import autograder.student.StudentSubmissionRegistry;
+
 public class SubmissionReader {
 	private static Logger LOGGER = Logger.getLogger(SubmissionReader.class.getName());
 	private byte[] buffer = new byte[1024]; // no need to allocate this more than once an object;
@@ -26,7 +27,7 @@ public class SubmissionReader {
 	
 	public void unzipSubmissions(String filePath) {
 		ZipFile submissionZip;
-		System.setProperty("sun.zip.disableMemoryMapping", "true");
+		
 		try {
 			submissionZip = new ZipFile(filePath);
 			unzip("submissions", submissionZip, null);

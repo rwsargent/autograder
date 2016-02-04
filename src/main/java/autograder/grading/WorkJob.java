@@ -14,6 +14,6 @@ public class WorkJob {
 	}
 	
 	public String toString() {
-		return mStudent.name;
+		return mStudent.studentInfo.name;
 	}
 }

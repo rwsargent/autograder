@@ -2,6 +2,7 @@ package autograder;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -12,19 +13,24 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 
+import autograder.canvas.CanvasConnection;
+import autograder.canvas.responses.User;
 import autograder.configuration.CmdLineParser;
 import autograder.configuration.Configuration;
 import autograder.configuration.TeacherAssistantRegistry;
 import autograder.filehandling.Bundler;
+import autograder.filehandling.SubmissionDownloader;
 import autograder.filehandling.SubmissionReader;
 import autograder.grading.Grader;
 import autograder.grading.WorkJob;
 import autograder.mailer.Mailer;
 import autograder.student.Student;
+import autograder.student.StudentMap;
 import autograder.student.StudentSubmissionRegistry;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer;
 import autograder.student.SubmissionPairer.SubmissionData;
+import autograder.student.SubmissionRecord;
 import autograder.tas.PartitionSubmissions;
 import autograder.tas.TAInfo;
 
@@ -45,10 +51,11 @@ public class Autograder {
 	public void run(String submissionPath) {
 		// Set up TA's
 		TeacherAssistantRegistry taRegistry = TeacherAssistantRegistry.getInstance();
-		SubmissionReader reader = new SubmissionReader();
-		// get assignments
-		reader.unzipSubmissions(submissionPath);
-		// pair submissions
+		StudentMap students =  new StudentMap(CanvasConnection.getAllStudents());
+		Set<SubmissionRecord> submissionRecords = new HashSet<>();
+		SubmissionDownloader downloader = new SubmissionDownloader(submissionRecords);
+		downloader.downloadSubmissions(students);
+		
 		SubmissionPairer pairer = new SubmissionPairer();
 		SubmissionData submissionData = pairer.pairSubmissions(StudentSubmissionRegistry.getInstance().toList());
 		Set<SubmissionPair> pairs = submissionData.pairs;
@@ -119,6 +126,7 @@ public class Autograder {
 	}
 
 	private void setup(String[] args) {
+//		System.setProperty("sun.zip.disableMemoryMapping", "true");
 		CmdLineParser parser = new CmdLineParser();
 		CommandLine commandLine = parser.parse(args);
 		if(commandLine.hasOption("h")) {

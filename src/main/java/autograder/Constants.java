@@ -1,5 +1,7 @@
 package autograder;
 
+import java.util.Arrays;
+import java.util.List;
 
 public interface Constants {
 
@@ -24,7 +26,7 @@ public interface Constants {
 	public static final int LATE_GROUP = 2;
 	public static final int SUBMISSION_NAME_GROUP = 5;
 	
-	public static String[] VALID_FILE_TYPES = new String[] { ".pdf", ".properties", ".java"};
+	public static List<String> VALID_FILE_TYPES = Arrays.asList(".pdf", ".properties", ".java");
 	
 	public static final String DEFAULT_CONFIGURATION = "configuration.properties";
 	public static final String DEFAULT_CLASS_LIST = "class_list.csv";

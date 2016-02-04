@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 import autograder.grading.WorkJob;
 
 public class StudentSubmissionRegistry {
-	
+	/*
 	private static StudentSubmissionRegistry mInstance;
 	private Map<Integer, Student> mIdMap;
 	private Map<String, Student> mNameMap;
@@ -70,5 +70,5 @@ public class StudentSubmissionRegistry {
 	public void forEach(BiConsumer<String, Student> func) {
 		mNameMap.forEach(func);
 	}
-
+	 */
 }

@@ -3,6 +3,7 @@ package autograder.student;
 import java.io.File;
 import java.util.logging.Logger;
 
+import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
 import autograder.configuration.ConfigurationException;
 
@@ -10,27 +11,19 @@ public class Student {
 	private static Logger LOGGER = Logger.getLogger(Student.class.getName());
 	public File studentDirectory;
 	public File sourceDirectory;
-	public String name;
-	public int canvasId;
-	public boolean isLate;
+	public User studentInfo;
 	
 	public AssignmentProperties assignProps;
 
 	public Student() {
 	}
 	
-	public Student(String name, int canvasId) {
-		this.canvasId = canvasId;
-		this.name = name;
-		studentDirectory = new File(String.format("submissions/%s_%d", name, canvasId));
+	public Student(User student) {
+		studentInfo = student;
+		studentDirectory = new File(String.format("submissions/%s_%d", student.sortableName, student.id));
 		studentDirectory.mkdirs();
 		sourceDirectory = new File(studentDirectory.getAbsolutePath() + "/source");
 		sourceDirectory.mkdir();
-	}
-	
-	public Student(String name, int canvasId, boolean late) {
-		this(name, canvasId);
-		this.isLate = late;
 	}
 	
 	public String getSourceDirectoryPath() {
@@ -38,14 +31,14 @@ public class Student {
 	}
 	
 	public String toString() {
-		return name;
+		return studentInfo.sortableName;
 	}
 
 	public void createAssignmentProperties() {
 		try {
 			assignProps = new AssignmentProperties(studentDirectory.getAbsolutePath() + "/assignment.properties");
 		} catch (ConfigurationException e) {
-			LOGGER.warning(this.name + " does not have a valid assignment.properties file. " + e.getMessage());
+			LOGGER.warning(studentInfo.name + " does not have a valid assignment.properties file. " + e.getMessage());
 		}
 	}
 	
@@ -55,12 +48,11 @@ public class Student {
 			return false;
 		}
 		Student rhs = (Student)obj;
-		return this.canvasId == rhs.canvasId;
+		return studentInfo.id == studentInfo.id;
 	}
 	
 	@Override
 	public int hashCode() {
-		return this.canvasId;
+		return studentInfo.id;
 	}
-	
 }

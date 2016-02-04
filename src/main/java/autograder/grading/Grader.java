@@ -75,7 +75,7 @@ public class Grader extends Thread {
 		Process compilation = processBuilder.start();
 		int compCode = compilation.waitFor();
 		if(compCode == 1) { 
-			logger.info(mStudent.name + " failed compilation. Check comp_error.txt for full details");
+			logger.info(mStudent.studentInfo.name + " failed compilation. Check comp_error.txt for full details");
 			return false;
 		} else if (compCode == 2) {
 			logger.info("Something is wrong with this javac command: " + command);

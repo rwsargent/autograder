@@ -43,15 +43,15 @@ public class Bundler {
 	}
 
 	private static void writeFilesToZip(Student student, ZipOutputStream zipWriter) throws IOException {
-		if(student.name.equals("placeholder")) { // skip nonexistant students
-			return; 
-		}
-		zipWriter.putNextEntry(new ZipEntry(student.name));
-		zipWriter.closeEntry();
-		zipWriter.putNextEntry(new ZipEntry(student.name + "/src/"));
-		zipWriter.closeEntry();
-		
-		recursiveWriteToZip(zipWriter, student.studentDirectory, student.name);
+//		if(student.name.equals("placeholder")) { // skip nonexistant students
+//			return; 
+//		}
+//		zipWriter.putNextEntry(new ZipEntry(student.name));
+//		zipWriter.closeEntry();
+//		zipWriter.putNextEntry(new ZipEntry(student.name + "/src/"));
+//		zipWriter.closeEntry();
+//		
+//		recursiveWriteToZip(zipWriter, student.studentDirectory, student.name);
 	}
 
 	private static void recursiveWriteToZip(ZipOutputStream zipWriter, File studentRoot, String name) throws IOException {
