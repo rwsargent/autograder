@@ -2,12 +2,35 @@ package autograder.student;
 
 public class SubmissionPair {
 
+	private Student[] students;
 	public Student submitter;
 	public Student partner;
+	public boolean sorted;
 	
 	public SubmissionPair(Student submitter, Student partner) {
 		this.submitter = submitter;
 		this.partner = partner;
+	}
+	
+	public SubmissionPair(Student... students) {
+		this.students = students;
+		if(students[0].assignProps.submitted && students[1].assignProps.submitted) {
+			// they're both idiots.
+			this.submitter = students[0];
+			this.partner = students[1];
+		} else if (students[0].assignProps.submitted) {
+			sorted = true;
+			this.submitter = students[0];
+			this.partner = students[1];
+		} else if (students[0].assignProps.submitted) {
+			sorted = true;
+			this.submitter = students[1];
+			this.partner = students[0];
+		} else {
+			// they're still idiots
+			this.submitter = students[0];
+			this.partner = students[1];
+		}
 	}
 	
 	@Override

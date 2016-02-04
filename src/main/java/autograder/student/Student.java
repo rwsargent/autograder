@@ -20,6 +20,7 @@ public class Student {
 	
 	public Student(User student) {
 		studentInfo = student;
+		student.sortableName = student.sortableName.replaceAll(", ", "_");
 		studentDirectory = new File(String.format("submissions/%s_%d", student.sortableName, student.id));
 		studentDirectory.mkdirs();
 		sourceDirectory = new File(studentDirectory.getAbsolutePath() + "/source");
@@ -48,7 +49,7 @@ public class Student {
 			return false;
 		}
 		Student rhs = (Student)obj;
-		return studentInfo.id == studentInfo.id;
+		return studentInfo.id == rhs.studentInfo.id;
 	}
 	
 	@Override

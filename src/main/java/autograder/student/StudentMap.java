@@ -35,6 +35,12 @@ public class StudentMap {
 		mCanvasMap.put(user.id, student);
 		mStudents.add(student);
 	}
+	
+	public void addStudent(Student student) {
+		mUIdMap.put(student.studentInfo.sis_user_id, student);
+		mCanvasMap.put(student.studentInfo.id, student);
+		mStudents.add(student);
+	}
 
 	public Student get(int canvasId) {
 		return mCanvasMap.get(canvasId);

@@ -1,8 +1,6 @@
 package autograder.student;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -10,18 +8,15 @@ public class SubmissionPairer {
 	
 	private static final Logger LOGGER = Logger.getLogger(SubmissionPairer.class.getName());
 
-	public SubmissionData pairSubmissions(List<Student> students){
+	public SubmissionData pairSubmissions(StudentMap studentMap){
 		SubmissionData submissionData = new SubmissionData();
-		StudentSubmissionRegistry registry = StudentSubmissionRegistry.getInstance();
-		Map<String, StudentInfo> classList = ClassListRegistry.getInstance().getMap();
-		
-		for(Student student : students) {
+		for(Student student : studentMap.listStudents()) {
 			if(student.assignProps == null) {
 				submissionData.invalidStudents.add(student);
 				continue;
 			}
 			
-			Student partner = getPartner(student, registry, classList);
+			Student partner = getPartner(student, studentMap);
 			if(partner != null) {
 				createPair(partner, student, submissionData);
 			} else {
@@ -40,6 +35,7 @@ public class SubmissionPairer {
 	}
 
 	private void createPair(Student partner, Student student, SubmissionData submissionData) {
+		submissionData.pairs.add(new SubmissionPair(partner, student));
 		if(student.assignProps.submitted) {
 			submissionData.pairs.add(new SubmissionPair(student, partner));
 		} else {
@@ -47,15 +43,11 @@ public class SubmissionPairer {
 		}
 	}
 
-	private Student getPartner(Student student, StudentSubmissionRegistry registry, Map<String, StudentInfo> classList) {
-		StudentInfo partnerInfo = classList.get(student.assignProps.partner_uid);
-		if(partnerInfo == null) {
+	private Student getPartner(Student student, StudentMap studentMap) {
+		Student partner = studentMap.get(student.assignProps.partner_uid);
+		if(partner == null) {
 			LOGGER.warning(String.format("Could not match %s to the partner with %s (%s)", student.studentInfo.name, student.assignProps.partner_name, student.assignProps.partner_uid));
 			return null;
-		}
-		Student partner = registry.getStudentById(partnerInfo.canvasid);
-		if(partner == null) {
-			LOGGER.warning(String.format("Could not match %s to the %s, with canvas id: %s", student.studentInfo.name, partnerInfo.name, partnerInfo.canvasid));
 		}
 		return partner;
 	}

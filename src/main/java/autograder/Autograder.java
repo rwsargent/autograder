@@ -2,7 +2,6 @@ package autograder;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -25,11 +24,9 @@ import autograder.grading.WorkJob;
 import autograder.mailer.Mailer;
 import autograder.student.Student;
 import autograder.student.StudentMap;
-import autograder.student.StudentSubmissionRegistry;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer;
 import autograder.student.SubmissionPairer.SubmissionData;
-import autograder.student.SubmissionRecord;
 import autograder.tas.PartitionSubmissions;
 import autograder.tas.TAInfo;
 
@@ -48,23 +45,21 @@ public class Autograder {
 	}
 	
 	public void run(String submissionPath) {
-		// Set up TA's
-		TeacherAssistantRegistry taRegistry = TeacherAssistantRegistry.getInstance();
+		System.out.println("Download all students");
 		Map<Integer, User> userMap = buildUserMap(CanvasConnection.getAllStudents());
-		StudentMap students =  new StudentMap();
-		Set<SubmissionRecord> submissionRecords = new HashSet<>();
+		System.out.println("Download Submissions");
 		SubmissionDownloader downloader = new SubmissionDownloader();
-		downloader.downloadSubmissions(userMap);
-		
+		StudentMap submissions = downloader.downloadSubmissions(userMap, onlyLate);
 		SubmissionPairer pairer = new SubmissionPairer();
-		SubmissionData submissionData = pairer.pairSubmissions(StudentSubmissionRegistry.getInstance().toList());
+		System.out.println("Pair submissions");
+		SubmissionData submissionData = pairer.pairSubmissions(submissions);
 		Set<SubmissionPair> pairs = submissionData.pairs;
 		// build workQueue
 		Queue<WorkJob> workQueue = buildQueueFromPairs(pairs);
 		maybeAddInvalidStudentToWorkQueue(workQueue, submissionData.invalidStudents);
 		// execute workQueue
+		System.out.println("Starting grading");
 		Grader[] threads = startGraderThreads(workQueue);
-		
 		// seperate submissions
 		calculateTaGrading(pairs.size());
 		HashMap<String, Set<SubmissionPair>> studentsForTas = PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(), pairs.stream().collect(Collectors.toList()));
@@ -78,6 +73,7 @@ public class Autograder {
 			}
 		
 		}
+		
 		//bundle files per ta
 		Map<String, File> zippedFiles = Bundler.bundleStudents(studentsForTas);
 		
@@ -130,7 +126,7 @@ public class Autograder {
 	private void calculateTaGrading(int totalSubmissions) {
 		Map<String, TAInfo> tas = TeacherAssistantRegistry.getInstance().getMap();
 		double totalHours = tas.entrySet().stream().mapToDouble(ta -> ta.getValue().hours).sum();
-		tas.forEach((name, ta) -> ta.assignmentsToGrade = (int) Math.round((ta.hours / totalHours) * totalSubmissions));
+		tas.forEach((name, ta) -> ta.assignmentsToGrade = (int) Math.round((ta.hours / totalHours) * totalSubmissions));	
 	}
 
 	private void setup(String[] args) {

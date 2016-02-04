@@ -3,13 +3,11 @@ package autograder.student;
 import java.util.ArrayList;
 import java.util.List;
 
-import autograder.canvas.responses.User;
-
 public class StudentErrorRegistry {
 	public static StudentErrorRegistry mInstance;
 	
-	private List<Student> mInvalidAssignmentProperties;
-	private List<Student> mInvalidSubmissions;
+	private List<Student> mInvalidAssignmentProperties = new ArrayList<>();
+	private List<Student> mInvalidSubmissions = new ArrayList<>();
 	
 	public synchronized static StudentErrorRegistry getInstance() {
 		if(mInstance == null ){

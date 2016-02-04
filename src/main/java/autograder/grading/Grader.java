@@ -66,7 +66,7 @@ public class Grader extends Thread {
 	private boolean compile() throws IOException, InterruptedException {
 		File src = new File(mStudent.getSourceDirectoryPath()); 
 		createClassesDirectoryInSourceDir();
-		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.txt");
+		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.rws");
 		
 		String command = createJavacCommand();
 		processBuilder = new ProcessBuilder(command.split(" ")); 
@@ -91,7 +91,10 @@ public class Grader extends Thread {
 
 	private String createJavacCommand() {
 		File source = mStudent.sourceDirectory;
-		StringBuilder sb = new StringBuilder("javac -d classes ");
+		String classPath = System.getProperty("java.class.path");
+		StringBuilder sb = new StringBuilder("javac -d classes -cp ");
+		sb.append(classPath);
+		sb.append(' ');
 		for(File sourceFile : source.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("java"))) {
 			sb.append(sourceFile.getName());
 			sb.append(' ');
@@ -111,11 +114,11 @@ public class Grader extends Thread {
 	
 	private void runGrader() throws IOException, InterruptedException {
 		String[] testCommand = generateJavaGraderCommand().split(" ");
-		File errorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output_error.txt");
+		File errorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output_error.rws");
 		
 		processBuilder.command(testCommand);
 		processBuilder.directory(mStudent.studentDirectory);
-		processBuilder.redirectOutput(Redirect.to(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.txt")));
+		processBuilder.redirectOutput(Redirect.to(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.rws")));
 		processBuilder.redirectError(Redirect.to(errorFile));
 		Process test = processBuilder.start();
 		int returnCode = test.waitFor();

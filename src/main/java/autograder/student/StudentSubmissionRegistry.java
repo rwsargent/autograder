@@ -59,11 +59,6 @@ public class StudentSubmissionRegistry {
 		return mNameMap.get(name);
 	}
 	
-	private synchronized void addStudent(Student student) {
-//		mIdMap.put(student.canvasId, student);
-//		mNameMap.put(student.name, student);
-	}
-	
 	public List<Student> toList() {
 		return new ArrayList<Student>(mIdMap.values());
 	}
