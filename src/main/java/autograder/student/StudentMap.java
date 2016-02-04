@@ -19,16 +19,21 @@ public class StudentMap {
 	}
 	
 	public StudentMap(User[] students) {
+		this();
 		fillMaps(students);
 	}
 	
 	private void fillMaps(User[] students) {
 		for(User user : students) {
-			Student student = new Student(user);
-			mUIdMap.put(user.sis_user_id, student);
-			mCanvasMap.put(user.id, student);
-			mStudents.add(student);
+			addStudent(user);
 		}
+	}
+
+	public void addStudent(User user) {
+		Student student = new Student(user);
+		mUIdMap.put(user.sis_user_id, student);
+		mCanvasMap.put(user.id, student);
+		mStudents.add(student);
 	}
 
 	public Student get(int canvasId) {

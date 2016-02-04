@@ -10,16 +10,16 @@ import java.util.function.BiConsumer;
 
 import autograder.grading.WorkJob;
 
+@Deprecated
 public class StudentSubmissionRegistry {
-	/*
 	private static StudentSubmissionRegistry mInstance;
 	private Map<Integer, Student> mIdMap;
 	private Map<String, Student> mNameMap;
 	public static synchronized StudentSubmissionRegistry getInstance() {
-		if(mInstance == null ) {
-			mInstance = new StudentSubmissionRegistry();
-			mInstance.addStudent(new Student("placeholder", -1));
-		}
+//		if(mInstance == null ) {
+//			mInstance = new StudentSubmissionRegistry();
+//			mInstance.addStudent(new Student("placeholder", -1));
+//		}
 		return mInstance;
 	}
 	
@@ -35,14 +35,15 @@ public class StudentSubmissionRegistry {
 	}
 	
 	public synchronized void createStudentSubmission(String name, int canvasId) {
-		addStudent(new Student(name, canvasId));
+//		addStudent(new Student(name, canvasId));
 	}
 	
 	public synchronized Student createStudentSubmission(String name, String canvasId) {
-		int id = Integer.parseInt(canvasId);
-		Student student = new Student(name, id); 
-		addStudent(student);
-		return student;
+//		int id = Integer.parseInt(canvasId);
+//		Student student = new Student(name, id); 
+//		addStudent(student);
+//		return student;
+		return null;
 	}
 	
 	public synchronized Student getStudentById(int id) {
@@ -59,8 +60,8 @@ public class StudentSubmissionRegistry {
 	}
 	
 	private synchronized void addStudent(Student student) {
-		mIdMap.put(student.canvasId, student);
-		mNameMap.put(student.name, student);
+//		mIdMap.put(student.canvasId, student);
+//		mNameMap.put(student.name, student);
 	}
 	
 	public List<Student> toList() {
@@ -70,5 +71,4 @@ public class StudentSubmissionRegistry {
 	public void forEach(BiConsumer<String, Student> func) {
 		mNameMap.forEach(func);
 	}
-	 */
 }

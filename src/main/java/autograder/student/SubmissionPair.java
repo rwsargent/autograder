@@ -23,7 +23,7 @@ public class SubmissionPair {
 	
 	@Override
 	public int hashCode() {
-		int hash = (submitter.canvasId + partner.canvasId);
+		int hash = (submitter.studentInfo.id + partner.studentInfo.id);
 		return (hash << 5) - hash ; // hash * 31
 	}
 }

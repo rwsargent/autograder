@@ -50,12 +50,12 @@ public class SubmissionPairer {
 	private Student getPartner(Student student, StudentSubmissionRegistry registry, Map<String, StudentInfo> classList) {
 		StudentInfo partnerInfo = classList.get(student.assignProps.partner_uid);
 		if(partnerInfo == null) {
-			LOGGER.warning(String.format("Could not match %s to the partner with %s (%s)", student.name, student.assignProps.partner_name, student.assignProps.partner_uid));
+			LOGGER.warning(String.format("Could not match %s to the partner with %s (%s)", student.studentInfo.name, student.assignProps.partner_name, student.assignProps.partner_uid));
 			return null;
 		}
 		Student partner = registry.getStudentById(partnerInfo.canvasid);
 		if(partner == null) {
-			LOGGER.warning(String.format("Could not match %s to the %s, with canvas id: %s", student.name, partnerInfo.name, partnerInfo.canvasid));
+			LOGGER.warning(String.format("Could not match %s to the %s, with canvas id: %s", student.studentInfo.name, partnerInfo.name, partnerInfo.canvasid));
 		}
 		return partner;
 	}

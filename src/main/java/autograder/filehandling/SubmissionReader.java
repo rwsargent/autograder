@@ -27,7 +27,6 @@ public class SubmissionReader {
 	
 	public void unzipSubmissions(String filePath) {
 		ZipFile submissionZip;
-		
 		try {
 			submissionZip = new ZipFile(filePath);
 			unzip("submissions", submissionZip, null);

@@ -20,7 +20,6 @@ import autograder.configuration.Configuration;
 import autograder.configuration.TeacherAssistantRegistry;
 import autograder.filehandling.Bundler;
 import autograder.filehandling.SubmissionDownloader;
-import autograder.filehandling.SubmissionReader;
 import autograder.grading.Grader;
 import autograder.grading.WorkJob;
 import autograder.mailer.Mailer;
@@ -51,10 +50,11 @@ public class Autograder {
 	public void run(String submissionPath) {
 		// Set up TA's
 		TeacherAssistantRegistry taRegistry = TeacherAssistantRegistry.getInstance();
-		StudentMap students =  new StudentMap(CanvasConnection.getAllStudents());
+		Map<Integer, User> userMap = buildUserMap(CanvasConnection.getAllStudents());
+		StudentMap students =  new StudentMap();
 		Set<SubmissionRecord> submissionRecords = new HashSet<>();
-		SubmissionDownloader downloader = new SubmissionDownloader(submissionRecords);
-		downloader.downloadSubmissions(students);
+		SubmissionDownloader downloader = new SubmissionDownloader();
+		downloader.downloadSubmissions(userMap);
 		
 		SubmissionPairer pairer = new SubmissionPairer();
 		SubmissionData submissionData = pairer.pairSubmissions(StudentSubmissionRegistry.getInstance().toList());
@@ -87,6 +87,14 @@ public class Autograder {
 		}
 		
 		LOGGER.info("Completed");
+	}
+
+	private Map<Integer, User> buildUserMap(User[] allStudents) {
+		HashMap<Integer, User> map = new HashMap<>();
+		for(User user : allStudents) {
+			map.put(user.id, user);
+		}
+		return map;
 	}
 
 	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<Student> invalidStudents) {

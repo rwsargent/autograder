@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,7 +23,7 @@ import autograder.student.StudentMap;
 
 public class SubmissionDownloader {
 	
-	public StudentMap downloadSubmissions(HashMap<Integer, User> students) {
+	public StudentMap downloadSubmissions(Map<Integer, User> students) {
 		Submission[] submissions = CanvasConnection.getAllSubmissions();
 		StudentMap studentMap = new StudentMap();
 		for(Submission sub : submissions) {
@@ -36,6 +36,7 @@ public class SubmissionDownloader {
 				}
 			}
 		}
+		return studentMap;
 	}
 
 	private void handleZipFile(String url, String submissionDir, Student student) { 
