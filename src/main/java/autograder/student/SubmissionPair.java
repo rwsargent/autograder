@@ -1,19 +1,24 @@
 package autograder.student;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class SubmissionPair {
 
-	private Student[] students;
+	private Set<Student> students;
 	public Student submitter;
 	public Student partner;
 	public boolean sorted;
 	
-	public SubmissionPair(Student submitter, Student partner) {
-		this.submitter = submitter;
-		this.partner = partner;
-	}
+//	public SubmissionPair(Student submitter, Student partner) {
+//		this.submitter = submitter;
+//		this.partner = partner;
+//	}
 	
 	public SubmissionPair(Student... students) {
-		this.students = students;
+		this.students = new HashSet<>();
+		this.students.addAll(Arrays.asList(students));
 		if(students[0].assignProps.submitted && students[1].assignProps.submitted) {
 			// they're both idiots.
 			this.submitter = students[0];
@@ -40,8 +45,14 @@ public class SubmissionPair {
 			return false;
 		}
 		pair = (SubmissionPair)obj;
-		return pair.partner.equals(this.partner) && 
-				pair.submitter.equals(this.submitter);
+		return pair.students.equals(this.students);
+//		if(pair.sorted && this.sorted) {
+//			return pair.partner.equals(this.partner) && 
+//					pair.submitter.equals(this.submitter);
+//		} else {
+//			return ((submitter.equals(pair.submitter) || submitter.equals(pair.partner)) &&
+//				(partner.equals(pair.submitter) || partner.equals(pair.partner)));
+//		}
 	}
 	
 	@Override

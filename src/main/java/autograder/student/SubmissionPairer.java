@@ -36,11 +36,6 @@ public class SubmissionPairer {
 
 	private void createPair(Student partner, Student student, SubmissionData submissionData) {
 		submissionData.pairs.add(new SubmissionPair(partner, student));
-		if(student.assignProps.submitted) {
-			submissionData.pairs.add(new SubmissionPair(student, partner));
-		} else {
-			submissionData.pairs.add(new SubmissionPair(partner, student));
-		}
 	}
 
 	private Student getPartner(Student student, StudentMap studentMap) {
