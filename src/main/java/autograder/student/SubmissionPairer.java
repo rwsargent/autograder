@@ -29,8 +29,7 @@ public class SubmissionPairer {
 	
 	private void removeFalseNegatives(SubmissionData submissionData) {
 		for(SubmissionPair pair : submissionData.pairs) {
-			submissionData.invalidStudents.remove(pair.submitter);
-			submissionData.invalidStudents.remove(pair.partner);
+			submissionData.invalidStudents.removeAll(pair.getStudents());
 		}
 	}
 

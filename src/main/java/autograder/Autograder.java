@@ -119,6 +119,9 @@ public class Autograder {
 		for(Iterator<SubmissionPair> it = pairs.iterator(); it.hasNext();) {
 			SubmissionPair pair = it.next();
 			queue.add(new WorkJob(pair.submitter));
+			if(!pair.sorted) {
+				queue.add(new WorkJob(pair.partner));
+			}
 		}
 		return queue;
 	}

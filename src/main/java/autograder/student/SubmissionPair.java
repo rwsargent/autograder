@@ -11,11 +11,6 @@ public class SubmissionPair {
 	public Student partner;
 	public boolean sorted;
 	
-//	public SubmissionPair(Student submitter, Student partner) {
-//		this.submitter = submitter;
-//		this.partner = partner;
-//	}
-	
 	public SubmissionPair(Student... students) {
 		this.students = new HashSet<>();
 		this.students.addAll(Arrays.asList(students));
@@ -38,6 +33,10 @@ public class SubmissionPair {
 		}
 	}
 	
+	public Set<Student> getStudents() {
+		return students;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		SubmissionPair pair;
@@ -46,13 +45,6 @@ public class SubmissionPair {
 		}
 		pair = (SubmissionPair)obj;
 		return pair.students.equals(this.students);
-//		if(pair.sorted && this.sorted) {
-//			return pair.partner.equals(this.partner) && 
-//					pair.submitter.equals(this.submitter);
-//		} else {
-//			return ((submitter.equals(pair.submitter) || submitter.equals(pair.partner)) &&
-//				(partner.equals(pair.submitter) || partner.equals(pair.partner)));
-//		}
 	}
 	
 	@Override
