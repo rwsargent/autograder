@@ -53,4 +53,8 @@ public class StudentMap {
 	public List<Student> listStudents() {
 		return mStudents;
 	}
+	
+	public int size() {
+		return mStudents.size();
+	}
 }

@@ -42,8 +42,21 @@ public abstract class AbstractProperties {
 				}
 				field.set(this, value);
 			}
+			fillRemainingProperties();
 		} catch (ClassCastException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			throw new ConfigurationException(e);
+		}
+	}
+
+	private void fillRemainingProperties() throws IllegalArgumentException, IllegalAccessException {
+		for(Field field : this.getClass().getFields()) {
+			if(field.get(this) == null) {
+				if(field.isAnnotationPresent(Optional.class)) {
+					field.set(this, field.getAnnotation(Optional.class).defaultValue());
+				} else if(!(this instanceof Configuration)) {
+					throw new ConfigurationException("Non-optional field is left blank.");
+				}
+			}
 		}
 	}
 

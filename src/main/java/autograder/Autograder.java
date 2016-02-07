@@ -8,7 +8,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -60,10 +59,13 @@ public class Autograder {
 		// execute workQueue
 		System.out.println("Starting grading");
 		Grader[] threads = startGraderThreads(workQueue);
+//		Grader grader = new Grader(workQueue);
+//		grader.run();
 		// seperate submissions
-		calculateTaGrading(pairs.size());
-		HashMap<String, Set<SubmissionPair>> studentsForTas = PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(), pairs.stream().collect(Collectors.toList()));
+		calculateTaGrading(submissionData.pairs.size());
 		
+		HashMap<String, Set<SubmissionPair>> studentsForTas = PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(), submissionData);
+		System.out.println("Partitioned students");
 		//wait for grading to finish
 		for(Grader graderThread : threads) {
 			try {
@@ -71,17 +73,21 @@ public class Autograder {
 			} catch (InterruptedException e) {
 				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
 			}
-		
 		}
-		
+//		try {
+//			grader.join(300 * 1000);
+//		} catch (InterruptedException e) {
+//			LOGGER.severe("You gotta be KIDDING me! Grader thread " + grader.getId() + " was interrupted somehow.");
+//		}
+		System.out.println("Finished grading");
 		//bundle files per ta
 		Map<String, File> zippedFiles = Bundler.bundleStudents(studentsForTas);
-		
+		System.out.println("Bundled");
 		// email out the zipped files of the students.
 		if(shouldMail) {
+			System.out.println("Emailing");
 			emailTAs(zippedFiles);
 		}
-		
 		LOGGER.info("Completed");
 	}
 
@@ -115,7 +121,7 @@ public class Autograder {
 	}
 	
 	private Queue<WorkJob> buildQueueFromPairs(Set<SubmissionPair> pairs) {
-		Queue<WorkJob> queue = new LinkedBlockingQueue<>(pairs.size());
+		Queue<WorkJob> queue = new LinkedBlockingQueue<>(pairs.size()<<1);
 		for(Iterator<SubmissionPair> it = pairs.iterator(); it.hasNext();) {
 			SubmissionPair pair = it.next();
 			queue.add(new WorkJob(pair.submitter));

@@ -11,15 +11,20 @@ public class SubmissionPairer {
 	public SubmissionData pairSubmissions(StudentMap studentMap){
 		SubmissionData submissionData = new SubmissionData();
 		for(Student student : studentMap.listStudents()) {
-			if(student.assignProps == null) {
-				submissionData.invalidStudents.add(student);
-				continue;
-			}
-			
-			Student partner = getPartner(student, studentMap);
-			if(partner != null) {
-				createPair(partner, student, submissionData);
-			} else {
+			try {
+				if(student.assignProps == null) {
+					submissionData.invalidStudents.add(student);
+					continue;
+				}
+				
+				Student partner = getPartner(student, studentMap);
+				if(partner != null) {
+					createPair(partner, student, submissionData);
+				} else {
+					submissionData.invalidStudents.add(student);
+				}
+			} catch (Exception e) {
+				LOGGER.severe("Exception thrown when trying to pair " + student.studentInfo.name +". " + e.getMessage());
 				submissionData.invalidStudents.add(student);
 			}
 		}
@@ -38,7 +43,7 @@ public class SubmissionPairer {
 	}
 
 	private Student getPartner(Student student, StudentMap studentMap) {
-		Student partner = studentMap.get(student.assignProps.partner_uid);
+		Student partner = studentMap.get(student.assignProps.partner_uid.toLowerCase());
 		if(partner == null) {
 			LOGGER.warning(String.format("Could not match %s to the partner with %s (%s)", student.studentInfo.name, student.assignProps.partner_name, student.assignProps.partner_uid));
 			return null;

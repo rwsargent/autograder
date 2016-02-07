@@ -1,9 +1,11 @@
 package autograder.grading;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
@@ -39,13 +41,20 @@ public class Grader extends Thread {
 	@Override
 	public void run() {
 		WorkJob job = null;
-		while((job = workQueue.poll()) != null) {
+		System.out.println("Thread: " + currentThread() + " is starting to grade");
+		while(!workQueue.isEmpty()) {
+			job = workQueue.poll();
+			if(job == null) {
+				continue;
+			}
 			try {
+				System.out.println("Grading: " + job.getStudent());
 				compileAndRunGrader(job.getStudent());
 			} catch (Exception e ) {
 				logger.severe(e.getMessage());
 			}
 		}
+		System.out.println("Thread: " + currentThread() + " finished grading.");
 	}
 	
 	public void compileAndRunGrader(Student student) {
@@ -69,6 +78,9 @@ public class Grader extends Thread {
 		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.rws");
 		
 		String command = createJavacCommand();
+		if(command == null) { // we didn't find any java files
+			return false;
+		}
 		processBuilder = new ProcessBuilder(command.split(" ")); 
 		processBuilder.directory(src);
 		processBuilder.redirectError(Redirect.appendTo(compErrorFile));
@@ -95,9 +107,14 @@ public class Grader extends Thread {
 		StringBuilder sb = new StringBuilder("javac -d classes -cp ");
 		sb.append(classPath);
 		sb.append(' ');
+		boolean foundJavaFile = false;
 		for(File sourceFile : source.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("java"))) {
 			sb.append(sourceFile.getName());
 			sb.append(' ');
+			foundJavaFile = true;
+		}
+		if(!foundJavaFile) {
+			return null;
 		}
 		sb.append(mGraderPath);
 		return sb.toString();
@@ -121,15 +138,27 @@ public class Grader extends Thread {
 		processBuilder.redirectOutput(Redirect.to(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.rws")));
 		processBuilder.redirectError(Redirect.to(errorFile));
 		Process test = processBuilder.start();
-		int returnCode = test.waitFor();
-		if(returnCode != 0 ) {
-			throw new RuntimeException("Java didn't work: " + test.exitValue());
-		} else {
-			if(!errorFile.delete()) {
-				errorFile.deleteOnExit();
+		boolean timeout = test.waitFor(30, TimeUnit.SECONDS);
+		if(timeout) {
+			int returnCode = test.exitValue();
+			if(returnCode != 0 ) {
+				throw new RuntimeException("Java didn't work: " + test.exitValue() + ".\nJava Command: " + testCommand);
+			} else {
+				if(!errorFile.delete()) {
+					errorFile.deleteOnExit();
+				}
 			}
+		} else {
+			try(FileWriter fw = new FileWriter(errorFile, true)) {
+				logger.severe(mStudent + " timed out.");
+				fw.write(mStudent + " took too long to grade.");
+				fw.close();
+			}
+			test.destroyForcibly();
 		}
-		test.destroy();
+		if(test.isAlive()) {
+			test.destroy();
+		}
 	}
 
 	private String generateJavaGraderCommand() {
