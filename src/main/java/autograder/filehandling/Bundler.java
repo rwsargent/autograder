@@ -32,6 +32,7 @@ public class Bundler {
 			File taZipFile = new File(String.format("%s/%s/%s-grading.zip", Constants.ZIPS, ta, Configuration.getConfiguration().assignment));
 			taZipFile.getParentFile().mkdirs();
 			try(FileOutputStream fout = new FileOutputStream(taZipFile);ZipOutputStream zipWriter = new ZipOutputStream(new BufferedOutputStream(fout))) {
+				writeAssignmentFileToZip(zipWriter);
 				for(SubmissionPair pair : studentToTaMap.get(ta)) {
 					try {
 						String parentDirectory = pair.submitter.studentInfo.sortableName +"--" + pair.partner.studentInfo.sortableName + "/";
@@ -51,12 +52,17 @@ public class Bundler {
 		return taToBigZipMap;
 	}
 
+	private static void writeAssignmentFileToZip(ZipOutputStream zipWriter) throws IOException {
+		String graderFileName = FilenameUtils.getName(Configuration.getConfiguration().graderFile);
+		writeZip(zipWriter, new ZipEntry(graderFileName), new File(Configuration.getConfiguration().graderFile));
+	}
+
 	private static void writeFilesToZip(Student student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {
 		if(student.studentInfo.name.equals("placeholder") || student.studentInfo.name.startsWith("invalid")) { // skip nonexistant students
 			return; 
 		}
 		try {
-			zipWriter.putNextEntry(new ZipEntry(parentDirectory + student.studentInfo.name + "/")); // create directoryies
+			zipWriter.putNextEntry(new ZipEntry(parentDirectory + student.studentInfo.name + "/")); // create directories
 			zipWriter.closeEntry();
 			if(student.sourceDirectory.list().length != 0 ) {
 				zipWriter.putNextEntry(new ZipEntry(parentDirectory + student.studentInfo.name + "/src/"));

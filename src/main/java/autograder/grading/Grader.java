@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -88,7 +89,7 @@ public class Grader extends Thread {
 		int compCode = compilation.waitFor();
 		if(compCode == 1) { 
 			logger.info(mStudent.studentInfo.name + " failed compilation. Check comp_error.txt for full details");
-			return false;
+			return true;
 		} else if (compCode == 2) {
 			logger.info("Something is wrong with this javac command: " + command);
 			return false;
@@ -142,7 +143,7 @@ public class Grader extends Thread {
 		if(timeout) {
 			int returnCode = test.exitValue();
 			if(returnCode != 0 ) {
-				throw new RuntimeException("Java didn't work: " + test.exitValue() + ".\nJava Command: " + testCommand);
+				throw new RuntimeException("Java didn't work: " + test.exitValue() + ".\nJava Command: " + Arrays.toString(testCommand) + "\nOn student" + mStudent);
 			} else {
 				if(!errorFile.delete()) {
 					errorFile.deleteOnExit();
@@ -165,7 +166,7 @@ public class Grader extends Thread {
 		StringBuilder sb = new StringBuilder("java -cp ");
 		sb.append("./source/classes");
 		sb.append(File.pathSeparatorChar);
-		sb.append(Configuration.getConfiguration().extraClassPathFiles);
+		sb.append(findFile(Configuration.getConfiguration().extraClassPathFiles));
 		sb.append(' ');
 		sb.append(mGraderClassName);
 		return sb.toString();
