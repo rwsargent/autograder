@@ -23,10 +23,14 @@ import autograder.student.Student;
 import autograder.student.StudentErrorRegistry;
 import autograder.student.StudentMap;
 
+/**
+ * SubmissionDownloader plugs in directly to the Cavnas API. For each user passed in, It queries 
+ * @author ryansargent
+ *
+ */
 public class SubmissionDownloader {
-
-	public StudentMap downloadSubmissions(Map<Integer, User> students, boolean onlyLate) {
-		Submission[] submissions = CanvasConnection.getAllSubmissions();
+	
+	public StudentMap downloadSubmissions(Map<Integer, User> students, boolean onlyLate, Submission[] submissions) {
 		StudentMap studentMap = new StudentMap();
 		for (Submission sub : submissions) {
 			if (onlyLate && !sub.late) { // skip all non-late submissions
@@ -44,11 +48,15 @@ public class SubmissionDownloader {
 					handlePropertieFile(attachment.url, student);
 				} else if (attachment.filename.contains(".pdf")) {
 					handlePdf(attachment.url, student, attachment.filename);
+				} else if (attachment.filename.contains(".java")) {
+					handleSourceFile(attachment.url, student, attachment.filename);
 				}
 			}
 		}
 		return studentMap;
 	}
+
+	
 
 	private void handleZipFile(String url, String submissionDir, Student student) {
 		try (ZipInputStream zipStream = new ZipInputStream(
@@ -112,6 +120,14 @@ public class SubmissionDownloader {
 					CanvasConnection.downloadFile(url));
 		} catch (IOException e) {
 			System.out.println("Could not write pdf to file from " + student + ". Reason: " + e.getMessage());
+		}
+	}
+	
+	private void handleSourceFile(String url, Student student, String filename) {
+		try {
+			FileUtils.writeByteArrayToFile(new File(student.sourceDirectory.getAbsolutePath() + "/" + filename), CanvasConnection.downloadFile(url));
+		} catch (IOException e) {
+			System.out.println("Could not write " + filename + " to file from " + student + ". Reason: " + e.getMessage());
 		}
 	}
 

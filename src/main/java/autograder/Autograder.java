@@ -1,6 +1,7 @@
 package autograder;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 
 import autograder.canvas.CanvasConnection;
+import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
 import autograder.configuration.CmdLineParser;
 import autograder.configuration.Configuration;
@@ -48,7 +50,8 @@ public class Autograder {
 		Map<Integer, User> userMap = buildUserMap(CanvasConnection.getAllStudents());
 		System.out.println("Download Submissions");
 		SubmissionDownloader downloader = new SubmissionDownloader();
-		StudentMap submissions = downloader.downloadSubmissions(userMap, onlyLate);
+		Submission[] canvasSubmissions = getDesiredSubmissions(userMap);
+		StudentMap submissions = downloader.downloadSubmissions(userMap, onlyLate, canvasSubmissions);
 		SubmissionPairer pairer = new SubmissionPairer();
 		System.out.println("Pair submissions");
 		SubmissionData submissionData = pairer.pairSubmissions(submissions);
@@ -89,6 +92,20 @@ public class Autograder {
 			emailTAs(zippedFiles);
 		}
 		LOGGER.info("Completed");
+	}
+
+	private Submission[] getDesiredSubmissions(Map<Integer, User> userMap) {
+		String studentsToGradeCsv = Configuration.getConfiguration().studentsToGradeCsv;
+		if (studentsToGradeCsv == null) {
+			return CanvasConnection.getAllSubmissions();
+		}
+		
+		ArrayList<Submission> submissions = new ArrayList<>();
+		String[] students = studentsToGradeCsv.split(",");
+		for(String student : students) {
+			submissions.add(CanvasConnection.getUserSubmissions(student));
+		}
+		return (Submission[])submissions.toArray();
 	}
 
 	private Map<Integer, User> buildUserMap(User[] allStudents) {

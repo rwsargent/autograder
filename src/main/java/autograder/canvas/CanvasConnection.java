@@ -20,6 +20,11 @@ public class CanvasConnection {
 		Configuration config = Configuration.getConfiguration();
 		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions/%d", config.canvasCourseId, config.canvasAssignmentId, student.id), Submission[].class);
 	}
+	
+	public static Submission getUserSubmissions(String uid) {
+		Configuration config = Configuration.getConfiguration();
+		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions/sis_user_id:%d", config.canvasCourseId, config.canvasAssignmentId, uid), Submission.class);
+	}
 
 	public static byte[] downloadFile(String url) {
 		return Network.downloadFile(url);
