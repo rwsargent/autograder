@@ -79,11 +79,11 @@ public class Grader extends Thread {
 	private boolean compile() throws IOException, InterruptedException {
 		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.rws");
 		
-		createClassesDirectoryInSourceDir();
 		String command = createJavacCommand();
 		if(command == null) { // we didn't find any java files
 			return false;
 		}
+		createClassesDirectoryInSourceDir();
 		processBuilder = new ProcessBuilder(command.split(" ")); 
 		processBuilder.directory(mStudent.getSourceDirectory());
 		processBuilder.redirectError(Redirect.appendTo(compErrorFile));
@@ -107,7 +107,7 @@ public class Grader extends Thread {
 	private String createJavacCommand() {
 		File source = mStudent.getSourceDirectory();
 		if(source == null) {
-			throw new RuntimeException("Tried to compile source from " + mStudent + " when no source has been created.");
+			return null;
 		}
 		String classPath = System.getProperty("java.class.path");
 		StringBuilder sb = new StringBuilder("javac -d classes -cp ");
