@@ -1,15 +1,18 @@
 package autograder.configuration;
 
-import java.io.File;
-
 import org.apache.commons.csv.CSVRecord;
 
 import autograder.Constants;
 import autograder.tas.TAInfo;
 
+/**
+ * This class parses the csv file that is found at the specified location in Configuration,
+ * and keeps track of the TAs, their hours, and their email. 
+ * @author Ryan
+ *
+ */
 public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 	public static TeacherAssistantRegistry instance;
-	private File taFile;
 	
 	public synchronized static TeacherAssistantRegistry getInstance() {
 		if (instance == null) {
@@ -19,10 +22,7 @@ public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 		return instance;
 	}
 	
-	private TeacherAssistantRegistry() {
-		taFile = new File("tas");
-		taFile.mkdirs();
-	}
+	private TeacherAssistantRegistry() {};
 	
 	@Override
 	protected String getFileName() {
