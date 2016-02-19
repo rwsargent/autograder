@@ -37,7 +37,6 @@ public class Configuration extends AbstractProperties {
 	public String studentFilePath;
 	public String submission;
 	
-	@Optional
 	public String studentsToGradeCsv;
 	
 	

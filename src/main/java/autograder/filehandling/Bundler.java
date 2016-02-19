@@ -64,7 +64,7 @@ public class Bundler {
 		try {
 			zipWriter.putNextEntry(new ZipEntry(parentDirectory + student.studentInfo.name + "/")); // create directories
 			zipWriter.closeEntry();
-			if(student.sourceDirectory.list().length != 0 ) {
+			if(student.getSourceDirectory().list().length != 0 ) {
 				zipWriter.putNextEntry(new ZipEntry(parentDirectory + student.studentInfo.name + "/src/"));
 				zipWriter.closeEntry();
 			}

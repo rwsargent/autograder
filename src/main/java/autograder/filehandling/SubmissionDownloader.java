@@ -66,7 +66,7 @@ public class SubmissionDownloader {
 			while ((entry = zipStream.getNextEntry()) != null) {
 				String entryName = FilenameUtils.getName(entry.getName());
 				if (entryName.contains(".java")) {
-					File javaFile = new File(student.sourceDirectory.getAbsolutePath() + "/" + entryName);
+					File javaFile = new File(student.createSourceDirectory().getAbsolutePath() + "/" + entryName);
 					try (FileOutputStream out = new FileOutputStream(javaFile)) {
 						int bytesRead = 0;
 						while ((bytesRead = zipStream.read(byteBuff)) > 0) {
@@ -100,7 +100,7 @@ public class SubmissionDownloader {
 	}
 
 	private boolean invalidFile(String entryName) {
-		if (entryName.contains(".class") || entryName.startsWith(".")) {
+		if (entryName.contains(".class") || entryName.startsWith(".") || entryName.isEmpty()) {
 			return true;
 		}
 		return false;
@@ -125,7 +125,7 @@ public class SubmissionDownloader {
 	
 	private void handleSourceFile(String url, Student student, String filename) {
 		try {
-			FileUtils.writeByteArrayToFile(new File(student.sourceDirectory.getAbsolutePath() + "/" + filename), CanvasConnection.downloadFile(url));
+			FileUtils.writeByteArrayToFile(new File(student.createSourceDirectory().getAbsolutePath() + "/" + filename), CanvasConnection.downloadFile(url));
 		} catch (IOException e) {
 			System.out.println("Could not write " + filename + " to file from " + student + ". Reason: " + e.getMessage());
 		}

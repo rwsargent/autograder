@@ -41,7 +41,7 @@ public class SubmissionPair {
 			sorted = true;
 			this.submitter = students[0];
 			this.partner = students[1];
-		} else if (students[0].assignProps.submitted) {
+		} else if (students[1].assignProps.submitted) {
 			sorted = true;
 			this.submitter = students[1];
 			this.partner = students[0];

@@ -14,6 +14,12 @@ import org.apache.commons.io.FilenameUtils;
 import autograder.configuration.Configuration;
 import autograder.student.Student;
 
+/**
+ * {@link Grader} pulls job from a supplied workqueue of {@link WorkJob}, and compiles and grades the student
+ * that in the WorkJob against the grader file as specified by Configuration. 
+ * @author Ryans
+ *
+ */
 public class Grader extends Thread {
 	Student mStudent;
 	String mGraderClassName, mGraderPath;
@@ -21,11 +27,8 @@ public class Grader extends Thread {
 	Queue<WorkJob> workQueue;
 	Logger logger;
 	public Grader(Queue<WorkJob> queue) {
-		this();
 		workQueue = queue;
-	}
-	
-	public Grader() {
+		
 		mGraderClassName = Configuration.getConfiguration().graderClassName;
 		mGraderPath = findFile(Configuration.getConfiguration().graderFile);
 		logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
@@ -74,16 +77,15 @@ public class Grader extends Thread {
 	}
 	
 	private boolean compile() throws IOException, InterruptedException {
-		File src = new File(mStudent.getSourceDirectoryPath()); 
-		createClassesDirectoryInSourceDir();
 		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.rws");
 		
+		createClassesDirectoryInSourceDir();
 		String command = createJavacCommand();
 		if(command == null) { // we didn't find any java files
 			return false;
 		}
 		processBuilder = new ProcessBuilder(command.split(" ")); 
-		processBuilder.directory(src);
+		processBuilder.directory(mStudent.getSourceDirectory());
 		processBuilder.redirectError(Redirect.appendTo(compErrorFile));
 		Process compilation = processBuilder.start();
 		int compCode = compilation.waitFor();
@@ -103,7 +105,10 @@ public class Grader extends Thread {
 	}
 
 	private String createJavacCommand() {
-		File source = mStudent.sourceDirectory;
+		File source = mStudent.getSourceDirectory();
+		if(source == null) {
+			throw new RuntimeException("Tried to compile source from " + mStudent + " when no source has been created.");
+		}
 		String classPath = System.getProperty("java.class.path");
 		StringBuilder sb = new StringBuilder("javac -d classes -cp ");
 		sb.append(classPath);

@@ -33,7 +33,7 @@ public abstract class AbstractProperties {
 					PropertyType type = field.getAnnotation(PropertyType.class);
 					switch(type.type()) {
 					case BOOLEAN:
-						value = Boolean.getBoolean(property);
+						value = Boolean.parseBoolean(property);
 						break;
 					case STRING:
 					default:

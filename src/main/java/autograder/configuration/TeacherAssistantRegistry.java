@@ -37,8 +37,6 @@ public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 	@Override
 	protected TAInfo constructObject(CSVRecord record) {
 		TAInfo taInfo = new TAInfo(record.get(Constants.TaConfiguration.TA_NAME_HEADER), record.get(Constants.TaConfiguration.TA_EMAIL_HEADER), Double.parseDouble(record.get(Constants.TaConfiguration.TA_HOURS_HEADER)));
-		taInfo.taDirectory = new File(taFile.getAbsolutePath() + "/" + taInfo.name);
-		taInfo.taDirectory.mkdir();
 		return taInfo;
 	}
 

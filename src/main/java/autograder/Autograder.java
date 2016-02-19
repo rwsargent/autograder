@@ -105,7 +105,7 @@ public class Autograder {
 		for(String student : students) {
 			submissions.add(CanvasConnection.getUserSubmissions(student));
 		}
-		return (Submission[])submissions.toArray();
+		return submissions.toArray(new Submission[submissions.size()]);
 	}
 
 	private Map<Integer, User> buildUserMap(User[] allStudents) {

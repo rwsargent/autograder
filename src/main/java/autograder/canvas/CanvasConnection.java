@@ -23,7 +23,7 @@ public class CanvasConnection {
 	
 	public static Submission getUserSubmissions(String uid) {
 		Configuration config = Configuration.getConfiguration();
-		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions/sis_user_id:%d", config.canvasCourseId, config.canvasAssignmentId, uid), Submission.class);
+		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions/sis_user_id:%s", config.canvasCourseId, config.canvasAssignmentId, uid), Submission.class);
 	}
 
 	public static byte[] downloadFile(String url) {
