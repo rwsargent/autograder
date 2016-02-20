@@ -109,9 +109,12 @@ public class Grader extends Thread {
 		if(source == null) {
 			return null;
 		}
-		String classPath = System.getProperty("java.class.path");
 		StringBuilder sb = new StringBuilder("javac -d classes -cp ");
-		sb.append(classPath);
+		File libs = new File(Configuration.getConfiguration().extraClassPathFiles);// System.getProperty("java.class.path");
+		for(File jar : libs.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("jar"))) {
+			sb.append(jar.getAbsolutePath()).append(File.pathSeparatorChar);
+		}
+		sb.setLength(sb.length() -1); // remove the last path separator
 		sb.append(' ');
 		boolean foundJavaFile = false;
 		for(File sourceFile : source.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("java"))) {

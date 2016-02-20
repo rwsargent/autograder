@@ -24,19 +24,20 @@ import autograder.student.StudentErrorRegistry;
 import autograder.student.StudentMap;
 
 /**
- * SubmissionDownloader plugs in directly to the Cavnas API. For each user passed in, It queries 
+ * SubmissionParser will create a student for every submission it receives,
+ * and write whatever attachemnts it has to disk. 
  * @author ryansargent
  *
  */
-public class SubmissionDownloader {
+public class SubmissionParser {
 	
-	public StudentMap downloadSubmissions(Map<Integer, User> students, boolean onlyLate, Submission[] submissions) {
+	public StudentMap parseSubmissions(Map<Integer, User> users, boolean onlyLate, Submission[] submissions) {
 		StudentMap studentMap = new StudentMap();
 		for (Submission sub : submissions) {
 			if (onlyLate && !sub.late) { // skip all non-late submissions
 				continue;
 			}
-			Student student = new Student(students.get(sub.user_id));
+			Student student = new Student(users.get(sub.user_id));
 			studentMap.addStudent(student);
 			if (sub.attachments == null) {
 				continue;
@@ -100,7 +101,7 @@ public class SubmissionDownloader {
 	}
 
 	private boolean invalidFile(String entryName) {
-		if (entryName.contains(".class") || entryName.startsWith(".") || entryName.isEmpty()) {
+		if (entryName.contains(".class") || entryName.startsWith(".") || entryName.isEmpty() || entryName.startsWith("org.")) {
 			return true;
 		}
 		return false;
