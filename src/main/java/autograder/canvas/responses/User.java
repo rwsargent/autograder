@@ -2,7 +2,12 @@ package autograder.canvas.responses;
 
 import com.google.gson.annotations.SerializedName;
 
-public class User extends BaseReponse{
+/**
+ * POJO to represent the User object from the Cavnas API
+ * @author Ryan
+ *
+ */
+public class User {
 	public int id;
 	public String name;
 	@SerializedName("sortable_name")

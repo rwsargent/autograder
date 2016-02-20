@@ -2,6 +2,11 @@ package autograder.canvas.responses;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * POJO to represent the Attachment object from the Cavnas API
+ * @author Ryan
+ *
+ */
 public class Attachment {
 
 	public int id;

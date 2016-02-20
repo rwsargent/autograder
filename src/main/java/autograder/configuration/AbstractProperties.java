@@ -7,7 +7,11 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Properties;
 
-
+/**
+ * This class will read in a .properties file and map its values to the subclass' fields.
+ * @author Ryan
+ *
+ */
 public abstract class AbstractProperties {
 	
 	protected abstract String getDefaultPropertiesLocation();

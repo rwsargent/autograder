@@ -4,7 +4,12 @@ import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
 import autograder.configuration.Configuration;
 
-public class CanvasConnection {
+/** 
+ * This hits a select few endpoints of the Canvas API by Instructure. 
+ * @author Ryan
+ *
+ */
+public class CanvasConnection extends Network {
 	
 	public static User[] getAllStudents() {
 		String url = String.format("courses/%s/students", Configuration.getConfiguration().canvasCourseId);

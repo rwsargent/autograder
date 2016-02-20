@@ -24,7 +24,16 @@ import com.google.gson.Gson;
 import autograder.Constants;
 import autograder.configuration.Configuration;
 
-public class Network {
+
+/**
+ * The basis Network code. You should not use these calls directly, but wrap them in a Connection class that subclasses Network.
+ * Feel free to had any missing endpoints. Currently only GET and POST are implemented.
+ * 
+ * Given a URL and a response class, Network will try to parse the response as JSON and map it to the supplied response class. 
+ * @author Ryan
+ *
+ */
+public abstract class Network {
 	
 	private static final Logger LOGGER = Logger.getLogger(Network.class.getName()); 
 	public static final String BASE_URL = "https://utah.instructure.com/api/v1/";
@@ -41,7 +50,7 @@ public class Network {
 		}
 	}
 	
-	protected static <E extends BaseResponse> E httpPostCall(String url, String contentType, HttpEntity data, Class<E> responseClass) {
+	protected static <E> E httpPostCall(String url, String contentType, HttpEntity data, Class<E> responseClass) {
         HttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(BASE_URL + url);
         configureRequest(request);

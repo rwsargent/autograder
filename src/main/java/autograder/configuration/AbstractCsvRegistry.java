@@ -13,6 +13,14 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * The idea behind this class to handling parsing CSV in a generic fashion. It will fill map,
+ * with a key from a specified value of the CSV, with objects of the Type the subclass of {@link AbstractCsvRegistry} is
+ * parameterized with. 
+ * @author Ryan
+ *
+ * @param <RegistryObject> This is an object that represents a row in the CSV file.
+ */
 public abstract class AbstractCsvRegistry<RegistryObject> {
 	
 	protected Map<String, RegistryObject> map;
