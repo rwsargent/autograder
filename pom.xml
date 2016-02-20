@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.voidstar</groupId>
   <artifactId>autograder</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
   <name>Autograder</name>
   <description>An autograder for University of Utah's Intro to Data Structures and Algorithms</description>
   <dependencies>
