@@ -4,9 +4,16 @@ import org.apache.commons.csv.CSVRecord;
 
 import autograder.Constants;
 import autograder.Constants.ClassList;
+import autograder.canvas.CanvasConnection;
 import autograder.configuration.AbstractCsvRegistry;
 
-
+/**
+ * Ideally, you want to use the Canvas API to download all possible students. If you don't have access to the API, 
+ * then this is a singleton that will read in a csv of all the students, their Canvas id, and their UID. 
+ * @author Ryan
+ * @deprecated Use {@link CanvasConnection#getAllStudents()} instead of a flat CSV file. 
+ */
+@Deprecated
 public class ClassListRegistry extends AbstractCsvRegistry<StudentInfo> {
 
 	private static ClassListRegistry mInstance;
