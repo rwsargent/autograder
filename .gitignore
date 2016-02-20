@@ -9,11 +9,14 @@ buildNumber.properties
 outgoing
 temp*
 submissions
+extraclasspathfiles
+graders
 
 # Directories #
 /build/
 /bin/
 target/
+
  
 # OS Files #
 .DS_Store
