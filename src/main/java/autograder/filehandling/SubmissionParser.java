@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -18,6 +19,7 @@ import autograder.canvas.responses.Attachment;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
+import autograder.configuration.Configuration;
 import autograder.configuration.ConfigurationException;
 import autograder.student.Student;
 import autograder.student.StudentErrorRegistry;
@@ -31,6 +33,8 @@ import autograder.student.StudentMap;
  */
 public class SubmissionParser {
 	
+	private Pattern mExpludePattern;
+	
 	public StudentMap parseSubmissions(Map<Integer, User> users, boolean onlyLate, Submission[] submissions) {
 		StudentMap studentMap = new StudentMap();
 		for (Submission sub : submissions) {
@@ -42,7 +46,11 @@ public class SubmissionParser {
 			if (sub.attachments == null) {
 				continue;
 			}
+			mExpludePattern = createPattern();
 			for (Attachment attachment : sub.attachments) {
+				if(mExpludePattern.matcher(attachment.filename).find()) {
+					continue;
+				}
 				if (attachment.filename.endsWith(".zip")) {
 					handleZipFile(attachment.url, student.studentDirectory.getAbsolutePath(), student);
 				} else if (attachment.filename.contains(".properties")) {
@@ -57,6 +65,12 @@ public class SubmissionParser {
 		return studentMap;
 	}
 
+	private Pattern createPattern() {
+		if(Configuration.getConfiguration().ignorePattern != null) {
+			return Pattern.compile(Configuration.getConfiguration().ignorePattern);
+		}
+		return Pattern.compile("$^"); // matches empty strings.
+	}
 	
 
 	private void handleZipFile(String url, String submissionDir, Student student) {
@@ -66,6 +80,11 @@ public class SubmissionParser {
 			byte[] byteBuff = new byte[4096];
 			while ((entry = zipStream.getNextEntry()) != null) {
 				String entryName = FilenameUtils.getName(entry.getName());
+				if(mExpludePattern.matcher(entryName).find()) {
+//				if(Pattern.matches("Class\\d+\\.java", entryName)) {
+					zipStream.closeEntry();
+					continue;
+				}
 				if (entryName.contains(".java")) {
 					File javaFile = new File(student.createSourceDirectory().getAbsolutePath() + "/" + entryName);
 					try (FileOutputStream out = new FileOutputStream(javaFile)) {
