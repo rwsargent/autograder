@@ -38,11 +38,18 @@ public class Autograder {
 	private boolean onlyLate;
 
 	public static void main(String[] args) {
+		long start = System.currentTimeMillis();
 		Autograder grader = new Autograder();
 		grader.setup(args);
 		String submissionPath = Configuration.getConfiguration().submission;
 		System.out.println("Submission Path at: " + submissionPath);
 		grader.run(submissionPath);
+		long stop = System.currentTimeMillis();
+		long time = stop - start;
+		long second = (time / 1000) % 60;
+		long minute = (time / (1000 * 60)) % 60;
+
+		System.out.println(String.format("Total time: %02d:%02d", minute, second));
 	}
 	
 	public void run(String submissionPath) {
