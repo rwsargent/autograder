@@ -110,11 +110,7 @@ public class Grader extends Thread {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder("javac -d classes -cp ");
-		File libs = new File(Configuration.getConfiguration().extraClassPathFiles);// System.getProperty("java.class.path");
-		for(File jar : libs.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("jar"))) {
-			sb.append(jar.getAbsolutePath()).append(File.pathSeparatorChar);
-		}
-		sb.setLength(sb.length() -1); // remove the last path separator
+		sb.append(generateClassPathString());
 		sb.append(' ');
 		boolean foundJavaFile = false;
 		for(File sourceFile : source.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("java"))) {
@@ -126,6 +122,16 @@ public class Grader extends Thread {
 			return null;
 		}
 		sb.append(mGraderPath);
+		return sb.toString();
+	}
+
+	private String generateClassPathString() {
+		File libs = new File(Configuration.getConfiguration().extraClassPathFiles);// System.getProperty("java.class.path");
+		StringBuilder sb = new StringBuilder();
+		for(File jar : libs.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("jar"))) {
+			sb.append(jar.getAbsolutePath()).append(File.pathSeparatorChar);
+		}
+		sb.setLength(sb.length() -1); // remove the last path separator
 		return sb.toString();
 	}
 
@@ -175,6 +181,8 @@ public class Grader extends Thread {
 		sb.append("./source/classes");
 		sb.append(File.pathSeparatorChar);
 		sb.append(findFile(Configuration.getConfiguration().extraClassPathFiles));
+		sb.append(File.pathSeparatorChar);
+		sb.append(generateClassPathString());
 		sb.append(' ');
 		sb.append(mGraderClassName);
 		return sb.toString();
