@@ -33,6 +33,7 @@ public class Bundler {
 			taZipFile.getParentFile().mkdirs();
 			try(FileOutputStream fout = new FileOutputStream(taZipFile);ZipOutputStream zipWriter = new ZipOutputStream(new BufferedOutputStream(fout))) {
 				writeAssignmentFileToZip(zipWriter);
+				writeExtraFilesToZip(zipWriter);
 				for(SubmissionPair pair : studentToTaMap.get(ta)) {
 					try {
 						String parentDirectory = pair.submitter.studentInfo.sortableName +"--" + pair.partner.studentInfo.sortableName + "/";
@@ -50,6 +51,16 @@ public class Bundler {
 			taToBigZipMap.put(ta, taZipFile);
 		}
 		return taToBigZipMap;
+	}
+
+	private static void writeExtraFilesToZip(ZipOutputStream zipWriter) throws IOException {
+		if(Configuration.getConfiguration().extraBundledFilesCsv == null) {
+			return;
+		}
+		for(String dependency : Configuration.getConfiguration().extraBundledFilesCsv.split(",")) {
+			String dependencyFileName = FilenameUtils.getName(dependency);
+			writeZip(zipWriter, new ZipEntry(dependencyFileName), new File(dependency));
+		}
 	}
 
 	private static void writeAssignmentFileToZip(ZipOutputStream zipWriter) throws IOException {
