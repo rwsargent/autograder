@@ -48,3 +48,6 @@ local.properties
 
 # Emacs garbage
 *~
+
+# Ignore zip files, usually don't need them recorded.
+*.zip
