@@ -5,7 +5,7 @@ import java.util.Properties;
 import autograder.configuration.PropertyType.DataType;
 
 /**
- * The assignment.properties file that students submit help keep track of who has submitted the code, as well has who has partnered with who.
+ * The assignment.properties file that students submit help keep track of who has submitted the code, as well has who has partnered with whom.
  * @author Ryan
  *
  */
