@@ -1,32 +1,47 @@
 package autograder.tas;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import autograder.configuration.Configuration;
 import autograder.student.Student;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer.SubmissionData;
 
+/**
+ * Use {@link #partition(List, SubmissionData)} to divy up the submissions among the TAs. 
+ * @author Ryan
+ *
+ */
 public class PartitionSubmissions {
 	
+	/**
+	 * Randomly divy up the pairs and invalid submissions in {@code submissionData} among the tas. The basis of the algorithm is have a one to many 
+	 * relationship between a TA and a submission. The submissions are shuffled, then each TA gets a subsection of the list according to their workload.
+	 * Any remaining submissions are round-robin distributed to the TAs. 
+	 * @param tas - A list of {@link TAInfo} objects.
+	 * @param submissionData - Collection of partnerships and invalid submissions in an instance of {@link SubmissionData}
+	 * @return
+	 */
 	public static HashMap<String, Set<SubmissionPair>> partition(List<TAInfo> tas, SubmissionData submissionData) {
+		// Create a mapping of TAs to a submission set, create a shuffleable collection from the submissions 
 		HashMap<String, Set<SubmissionPair>> tasToSubmissions = new HashMap<>();
 		tas.forEach(ta -> tasToSubmissions.put(ta.name, new HashSet<>()));
-		
-		List<SubmissionPair> submissions = submissionData.pairs.stream().collect(Collectors.toList());
+		List<SubmissionPair> submissions = new ArrayList<>(submissionData.pairs);
+
+		// add invalid submissions to the list to be shufffled
 		for(Student student : submissionData.invalidStudents) {
 			submissions.add(SubmissionPair.createSingleStudentPair(student));
 		}
 		
-		submissions.sort( (lhs, rhs) -> lhs.submitter.studentInfo.sortableName.compareTo(rhs.submitter.studentInfo.sortableName));
-		int offset = Math.abs(Configuration.getConfiguration().assignment.hashCode()) % submissions.size();
-		submissions = shiftLeft(submissions, offset);
+		Collections.shuffle(submissions, new Random(Configuration.getConfiguration().graderClassName.toString().hashCode()));
 		
+		// Calculate a subList for each ta
 		int start = 0;
 		for(TAInfo ta : tas) {
 			int stop = start + ta.assignmentsToGrade;
@@ -40,12 +55,5 @@ public class PartitionSubmissions {
 			tasToSubmissions.get(tas.get(taIdx).name).add(submissions.get(start));
 		}
 		return tasToSubmissions;
-	}
-	
-	private static <T> List<T> shiftLeft(List<T> list, int offset) {
-		ArrayList<T> shiftedList = new ArrayList<>();
-		shiftedList.addAll(list.subList(offset, list.size()));
-		shiftedList.addAll(list.subList(0, offset));
-		return list;
 	}
 }
