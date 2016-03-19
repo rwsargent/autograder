@@ -76,11 +76,16 @@ public abstract class AbstractProperties {
 						+ " argument. (-DfieldName=value)");
 			}
 		}
-		return value;
+		return value.trim();
 	}
 
+	/**
+	 * This will find a file in either the default location, in Autograder's classpath, or as a relative path. 
+	 * @param filePath - If null, it will look at the location specified by {@link #getDefaultPropertiesLocation()}
+	 * @return
+	 */
 	public File findPropertyFile(String filePath) {
-		String configurationFileName = filePath;
+		String configurationFileName = filePath; // reassign filePath in case I change it below
 		if(configurationFileName == null) {
 			configurationFileName = getDefaultPropertiesLocation();
 		}
