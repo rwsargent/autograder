@@ -37,7 +37,10 @@ public class Configuration extends AbstractProperties {
 	public String studentFilePath;
 	public String submission;
 	
+	public String ignorePattern;
+	
 	public String studentsToGradeCsv;
+	public String extraBundledFilesCsv;
 	
 	
 	private volatile static Configuration mInstance;
