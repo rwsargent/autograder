@@ -126,9 +126,7 @@ public class Autograder {
 	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<Student> invalidStudents) {
 		for(Student student : invalidStudents) {
 			if(student.assignProps != null) {
-				if(student.assignProps.submitted) {
-					workQueue.add(new WorkJob(student));
-				}
+				workQueue.add(new WorkJob(student));
 			}
 		}
 	}
@@ -145,7 +143,7 @@ public class Autograder {
 	}
 	
 	private Queue<WorkJob> buildQueueFromPairs(Set<SubmissionPair> pairs) {
-		Queue<WorkJob> queue = new LinkedBlockingQueue<>(pairs.size()<<1);
+		Queue<WorkJob> queue = new LinkedBlockingQueue<>(150);
 		for(Iterator<SubmissionPair> it = pairs.iterator(); it.hasNext();) {
 			SubmissionPair pair = it.next();
 			queue.add(new WorkJob(pair.submitter));

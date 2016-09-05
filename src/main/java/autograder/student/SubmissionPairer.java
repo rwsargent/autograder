@@ -43,6 +43,9 @@ public class SubmissionPairer {
 	}
 
 	private Student getPartner(Student student, StudentMap studentMap) {
+		if(student.assignProps.partner_name.equals("default")){ 
+			return null;
+		}
 		Student partner = studentMap.get(student.assignProps.partner_uid.toLowerCase());
 		if(partner == null) {
 			LOGGER.warning(String.format("Could not match %s to the partner with %s (%s)", student.studentInfo.name, student.assignProps.partner_name, student.assignProps.partner_uid));

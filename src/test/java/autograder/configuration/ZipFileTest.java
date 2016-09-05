@@ -3,11 +3,11 @@ package autograder.configuration;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Test;
+
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
-
-import org.junit.Test;
 
 public class ZipFileTest {
 
@@ -22,7 +22,6 @@ public class ZipFileTest {
 				}
 			}
 		} catch (ZipException e) {
-			
 		}
 	}
 }	

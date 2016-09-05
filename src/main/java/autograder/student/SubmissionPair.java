@@ -13,10 +13,6 @@ public class SubmissionPair {
 	public Student partner;
 	public boolean sorted;
 	
-	public SubmissionPair() {
-		// do nothing.
-	}
-	
 	public SubmissionPair(Student... students) {
 		if(students.length == 0) {
 			return;
@@ -73,11 +69,11 @@ public class SubmissionPair {
 	}
 	
 	public static SubmissionPair createSingleStudentPair(Student student) {
-		User user = new User();
-		user.name = "invalid_submission" + System.currentTimeMillis();
-		user.sortableName = "invalid_submission" + System.currentTimeMillis();
-		user.id = 0;
-		Student fakeStudent = new Student(user);
+		User fakeUser = new User();
+		fakeUser.name = "invalid_submission" + System.currentTimeMillis();
+		fakeUser.sortableName = "invalid_submission" + System.currentTimeMillis();
+		fakeUser.id = 0;
+		Student fakeStudent = new Student(fakeUser);
 		SubmissionPair pair = new SubmissionPair();
 		pair.submitter = student;
 		pair.partner = fakeStudent;

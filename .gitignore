@@ -48,6 +48,11 @@ local.properties
 
 # Emacs garbage
 *~
+configuration.properties
+ta.csv
+resources/**
+analysis-document.txt
+TA-grading-instructions.txt
 
 # Ignore zip files, usually don't need them recorded.
 *.zip

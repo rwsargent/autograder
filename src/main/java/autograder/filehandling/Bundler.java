@@ -36,7 +36,7 @@ public class Bundler {
 				writeExtraFilesToZip(zipWriter);
 				for(SubmissionPair pair : studentToTaMap.get(ta)) {
 					try {
-						String parentDirectory = pair.submitter.studentInfo.sortableName +"--" + pair.partner.studentInfo.sortableName + "/";
+						String parentDirectory = getParentDirectoryName(pair);
 						zipWriter.putNextEntry(new ZipEntry(parentDirectory));
 						zipWriter.closeEntry();
 						writeFilesToZip(pair.partner, zipWriter, parentDirectory);
@@ -51,6 +51,14 @@ public class Bundler {
 			taToBigZipMap.put(ta, taZipFile);
 		}
 		return taToBigZipMap;
+	}
+
+	private static String getParentDirectoryName(SubmissionPair pair) {
+		if(pair.partner.studentInfo.sortableName.startsWith("invalid")) {
+			return pair.submitter.studentInfo.sortableName + "/";
+		} else {
+			return pair.submitter.studentInfo.sortableName +"--" + pair.partner.studentInfo.sortableName + "/";
+		}
 	}
 
 	private static void writeExtraFilesToZip(ZipOutputStream zipWriter) throws IOException {

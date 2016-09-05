@@ -41,6 +41,9 @@ public class Configuration extends AbstractProperties {
 	
 	public String studentsToGradeCsv;
 	public String extraBundledFilesCsv;
+
+
+	public String junitPlugin;
 	
 	
 	private volatile static Configuration mInstance;
