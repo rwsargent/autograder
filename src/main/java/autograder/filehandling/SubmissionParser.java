@@ -114,9 +114,9 @@ public class SubmissionParser {
 				}
 				zipStream.closeEntry();
 			}
-		} catch (IOException e) {
+		} catch (IOException | IllegalArgumentException e) {
 			StudentErrorRegistry.getInstance().addInvalidSubmission(student);
-		}
+		} 			
 	}
 
 	private boolean invalidFile(String entryName) {

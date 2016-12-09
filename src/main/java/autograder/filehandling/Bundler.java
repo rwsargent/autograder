@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import autograder.Constants;
@@ -67,7 +68,14 @@ public class Bundler {
 		}
 		for(String dependency : Configuration.getConfiguration().extraBundledFilesCsv.split(",")) {
 			String dependencyFileName = FilenameUtils.getName(dependency);
-			writeZip(zipWriter, new ZipEntry(dependencyFileName), new File(dependency));
+			File dependencyFile = new File(dependency);
+			if(dependencyFile.isDirectory()) {
+				for(File file : dependencyFile.listFiles()) {
+					writeZip(zipWriter, new ZipEntry(dependencyFileName + "/" + FilenameUtils.getName(file.getName())), file);
+				}
+			} else {
+				writeZip(zipWriter, new ZipEntry(dependencyFileName), dependencyFile);
+			}
 		}
 	}
 
