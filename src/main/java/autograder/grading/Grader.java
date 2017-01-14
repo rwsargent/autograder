@@ -26,6 +26,7 @@ public class Grader extends Thread {
 	ProcessBuilder processBuilder;
 	Queue<WorkJob> workQueue;
 	Logger logger;
+	private String mJunitPluginPath;
 	public Grader(Queue<WorkJob> queue) {
 		workQueue = queue;
 		
@@ -123,6 +124,7 @@ public class Grader extends Thread {
 			return null;
 		}
 		sb.append(mGraderPath);
+		sb.append(" ").append(findFile("graders/Assignment13GradingTests.java"));
 		/* THIS IS ADDED FOR JUNIT */
 		return sb.toString();
 	}
@@ -188,6 +190,7 @@ public class Grader extends Thread {
 		sb.append(' ');
 		sb.append("-Xms1024m -Xmx2048m").append(' ');
 		sb.append(Configuration.getConfiguration().graderClassName); // changed for JUnit
+//		sb.append("autograderutils.JUnitPlugin"); // changed for JUnit
 		sb.append(' ').append(buildArguments());
 		return sb.toString();
 	}
