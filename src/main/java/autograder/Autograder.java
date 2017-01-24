@@ -55,11 +55,13 @@ public class Autograder {
 	public void run(String submissionPath) {
 		System.out.println("Download all students");
 		Map<Integer, User> userMap = buildUserMap(CanvasConnection.getAllStudents());
+		
 		System.out.println("Download Submissions");
 		SubmissionParser submissionParser = new SubmissionParser();
 		Submission[] canvasSubmissions = getDesiredSubmissions(userMap);
 		StudentMap submissions = submissionParser.parseSubmissions(userMap, onlyLate, canvasSubmissions);
 		SubmissionPairer pairer = new SubmissionPairer();
+		
 		System.out.println("Pair submissions");
 		SubmissionData submissionData = pairer.pairSubmissions(submissions);
 		Set<SubmissionPair> pairs = submissionData.pairs;
@@ -125,9 +127,9 @@ public class Autograder {
 
 	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<Student> invalidStudents) {
 		for(Student student : invalidStudents) {
-			if(student.assignProps != null) {
+//			if(student.assignProps != null) {?
 				workQueue.add(new WorkJob(student));
-			}
+//			}
 		}
 	}
 
@@ -143,7 +145,7 @@ public class Autograder {
 	}
 	
 	private Queue<WorkJob> buildQueueFromPairs(Set<SubmissionPair> pairs) {
-		Queue<WorkJob> queue = new LinkedBlockingQueue<>(150);
+		Queue<WorkJob> queue = new LinkedBlockingQueue<>(210);
 		for(Iterator<SubmissionPair> it = pairs.iterator(); it.hasNext();) {
 			SubmissionPair pair = it.next();
 			queue.add(new WorkJob(pair.submitter));

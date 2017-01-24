@@ -10,8 +10,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import autograder.configuration.Configuration;
+import autograder.grading.jarring.Jarrer;
 import autograder.student.Student;
 
 /**
@@ -26,7 +28,8 @@ public class Grader extends Thread {
 	ProcessBuilder processBuilder;
 	Queue<WorkJob> workQueue;
 	Logger logger;
-	private String mJunitPluginPath;
+	Jarrer mJarrer;
+	
 	public Grader(Queue<WorkJob> queue) {
 		workQueue = queue;
 		
@@ -34,6 +37,7 @@ public class Grader extends Thread {
 		mGraderPath = findFile(Configuration.getConfiguration().graderFile);
 //		mJunitPluginPath = findFile(Configuration.getConfiguration().junitPlugin);
 		logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
+		mJarrer = new Jarrer(Configuration.getConfiguration());
 	}
 	
 	private String findFile(String configPath) {
@@ -68,6 +72,11 @@ public class Grader extends Thread {
 		try {
 			if(compile()) {
 				runGrader();
+				if(StringUtils.isNotBlank(Configuration.getConfiguration().mainClass)) {
+					if(mJarrer.buildJarFor(mStudent)) {
+						
+					};
+				}
 			}
 		} catch (IOException | InterruptedException e) {
 			outputExecption("execution", e);
@@ -102,6 +111,7 @@ public class Grader extends Thread {
 				compErrorFile.deleteOnExit();
 			}
 		}
+		
 		compilation.destroy();
 		return true;
 	}
@@ -124,7 +134,7 @@ public class Grader extends Thread {
 			return null;
 		}
 		sb.append(mGraderPath);
-		sb.append(" ").append(findFile("graders/Assignment13GradingTests.java"));
+		// sb.append(" ").append(findFile("graders/Assignment13GradingTests.java"));
 		/* THIS IS ADDED FOR JUNIT */
 		return sb.toString();
 	}

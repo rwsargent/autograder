@@ -14,10 +14,8 @@ public class ConfigurationTest {
 	
 	@Test
 	public void configurationTest() {
-//		System.getProperties().put("smtpHost", "smtp.gmail.com");
-//		System.getProperties().put("smtpPort", "587");
 		
-		Configuration conf = Configuration.getConfiguration("configuration.properties");
+		Configuration conf = Configuration.getConfiguration("src/test/resources/configuration_test.properties");
 		assertEquals("Tester", conf.graderClassName);
 		assertEquals("username_test", conf.smtpUsername);
 		assertEquals("password_test", conf.smtpPassword);

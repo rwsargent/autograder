@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import autograder.Constants;
 import autograder.configuration.Configuration;
@@ -24,7 +24,7 @@ import autograder.student.SubmissionPair;
 
 public class Bundler {
 	private static byte[] buffer = new byte[1024];
-	private static List<String> validFiles = Arrays.asList("pdf", "rws", "txt");
+	private static List<String> validFiles = Arrays.asList("pdf", "rws", "txt", "jar");
 	
 	public static Map<String, File> bundleStudents(HashMap<String, Set<SubmissionPair>> studentToTaMap) {
 		HashMap<String, File> taToBigZipMap = new HashMap<>();
@@ -32,7 +32,8 @@ public class Bundler {
 			System.out.println("Bundling " + ta + "'s students");
 			File taZipFile = new File(String.format("%s/%s/%s-grading.zip", Constants.ZIPS, ta, Configuration.getConfiguration().assignment));
 			taZipFile.getParentFile().mkdirs();
-			try(FileOutputStream fout = new FileOutputStream(taZipFile);ZipOutputStream zipWriter = new ZipOutputStream(new BufferedOutputStream(fout))) {
+			try(FileOutputStream fout = new FileOutputStream(taZipFile);
+					ZipOutputStream zipWriter = new ZipOutputStream(new BufferedOutputStream(fout))) {
 				writeAssignmentFileToZip(zipWriter);
 				writeExtraFilesToZip(zipWriter);
 				for(SubmissionPair pair : studentToTaMap.get(ta)) {
@@ -63,7 +64,7 @@ public class Bundler {
 	}
 
 	private static void writeExtraFilesToZip(ZipOutputStream zipWriter) throws IOException {
-		if(Configuration.getConfiguration().extraBundledFilesCsv == null) {
+		if(StringUtils.isBlank(Configuration.getConfiguration().extraBundledFilesCsv)) {
 			return;
 		}
 		for(String dependency : Configuration.getConfiguration().extraBundledFilesCsv.split(",")) {

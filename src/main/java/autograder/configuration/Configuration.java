@@ -33,16 +33,18 @@ public class Configuration extends AbstractProperties {
 	public String canvasToken;
 	
 	public String taFilePath = "ta.csv";
-	public String classList;
 	public String studentFilePath;
 	public String submission;
+	public String mainClass;
 	
 	public String ignorePattern;
 	
 	public String studentsToGradeCsv;
+	
+	@Optional(defaultValue="")
 	public String extraBundledFilesCsv;
-
-
+	
+	@Optional
 	public String junitPlugin;
 	
 	

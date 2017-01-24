@@ -11,6 +11,7 @@ temp*
 submissions
 extraclasspathfiles
 graders
+ta.csv
 
 # Directories #
 /build/

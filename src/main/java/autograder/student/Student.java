@@ -1,6 +1,7 @@
 package autograder.student;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 import autograder.canvas.responses.User;
@@ -15,21 +16,24 @@ public class Student {
 	
 	public AssignmentProperties assignProps;
 
-	public Student() {
-	}
-	
 	public Student(User student) {
 		studentInfo = student;
 		student.sortableName = student.sortableName.replaceAll(", ", "_");
 		studentDirectory = new File(String.format("submissions/%s_%d", student.sortableName, student.id));
 		studentDirectory.mkdirs();
-		
+	}
+	
+	public Student(File basedir) {
+		studentDirectory = basedir;
 	}
 	
 	public String getSourceDirectoryPath() {
 		return studentDirectory.getAbsolutePath() + "/source";
 	}
 	
+	public File getClassesDirectory() {
+		return Paths.get(studentDirectory.getAbsolutePath(), "source", "classes").toFile();
+	}
 	/**
 	 * This file will create the directory for the Java source code if it hasn't been made already.
 	 * Use this method if you intend to write to this directory. If you want to read from it, use {@link Student#getSourceDirectory()}
