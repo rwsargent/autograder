@@ -57,3 +57,5 @@ TA-grading-instructions.txt
 
 # Ignore zip files, usually don't need them recorded.
 *.zip
+
+src/main/java/frakenstein/**/*
