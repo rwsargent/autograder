@@ -35,6 +35,8 @@ public class Configuration extends AbstractProperties {
 	public String taFilePath = "ta.csv";
 	public String studentFilePath;
 	public String submission;
+	
+	@Optional(defaultValue="")
 	public String mainClass;
 	
 	public String ignorePattern;
@@ -46,6 +48,9 @@ public class Configuration extends AbstractProperties {
 	
 	@Optional
 	public String junitPlugin;
+
+	public String validFileExtensions;
+	public String validFileNames;
 	
 	
 	private volatile static Configuration mInstance;

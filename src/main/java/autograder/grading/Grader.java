@@ -134,7 +134,7 @@ public class Grader extends Thread {
 			return null;
 		}
 		sb.append(mGraderPath);
-		// sb.append(" ").append(findFile("graders/Assignment13GradingTests.java"));
+		sb.append(" ").append(findFile("graders/SortGrader.java"));
 		/* THIS IS ADDED FOR JUNIT */
 		return sb.toString();
 	}
@@ -167,7 +167,7 @@ public class Grader extends Thread {
 		processBuilder.redirectOutput(Redirect.to(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.rws")));
 		processBuilder.redirectError(Redirect.to(errorFile));
 		Process test = processBuilder.start();
-		boolean timeout = test.waitFor(240, TimeUnit.SECONDS);
+		boolean timeout = test.waitFor(60, TimeUnit.SECONDS);
 		if(timeout) {
 			int returnCode = test.exitValue();
 			if(returnCode != 0 ) {
@@ -200,12 +200,12 @@ public class Grader extends Thread {
 		sb.append(' ');
 		sb.append("-Xms1024m -Xmx2048m").append(' ');
 		sb.append(Configuration.getConfiguration().graderClassName); // changed for JUnit
-//		sb.append("autograderutils.JUnitPlugin"); // changed for JUnit
+//		sb.append("graders.ProgrammingChallengeGrader"); // changed for JUnit
 		sb.append(' ').append(buildArguments());
 		return sb.toString();
 	}
 
 	private String buildArguments() {
-		return "assignment13.Assignment13GradingTests groups.properties extra.properties";
+		return "assignment05.SortGrader";
 	}
 }

@@ -1,5 +1,6 @@
 package autograder.canvas;
 
+import autograder.canvas.responses.Assignment;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
 import autograder.configuration.Configuration;
@@ -20,6 +21,11 @@ public class CanvasConnection extends Network {
 		Configuration config = Configuration.getConfiguration();
 		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions", config.canvasCourseId, config.canvasAssignmentId), Submission[].class);
 	}
+	
+	public static Submission[] getAllSubmissions(String courseId, String assignmentId) {
+		Configuration config = Configuration.getConfiguration();
+		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions",courseId, assignmentId), Submission[].class);
+	}
 
 	public static Submission[] getUserSubmissions(User student) {
 		Configuration config = Configuration.getConfiguration();
@@ -33,5 +39,9 @@ public class CanvasConnection extends Network {
 
 	public static byte[] downloadFile(String url) {
 		return Network.downloadFile(url);
+	}
+	
+	public static Assignment[] getAllAssignments(String courseId) {
+		return Network.httpGetCall(String.format("courses/%s/assignments", courseId), Assignment[].class);
 	}
 }

@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import autograder.Constants;
 import autograder.configuration.Configuration;
@@ -64,13 +65,13 @@ public abstract class Network {
         	LOGGER.severe(e.getMessage());
         	responseAsJSONString = String.format("{\"appError\" : \"%s\"}", e.getMessage());
         }
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setDateFormat("YYYY-MM-ddTHH:mm:ss-zzz").create();
         return gson.fromJson(responseAsJSONString, responseClass);
     }
 	
 	protected static <T> T httpGetCall(String url, Class<T> responseClass) {
 		HttpClient client = HttpClients.createDefault();
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setDateFormat("YYYY-MM-dd'T'HH:mm:ss-zzz").create();
 		HttpGet request = new HttpGet(BASE_URL + url);
 		configureRequest(request);
 		StringBuilder sb = new StringBuilder();

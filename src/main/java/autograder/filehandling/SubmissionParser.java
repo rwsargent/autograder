@@ -81,7 +81,7 @@ public class SubmissionParser {
 			while ((entry = zipStream.getNextEntry()) != null) {
 				String entryName = FilenameUtils.getName(entry.getName());
 				if(mExpludePattern.matcher(entryName).find()) {
-//				if(Pattern.matches("Class\\d+\\.java", entryName)) {
+					System.out.println("Excluding " + entryName);
 					zipStream.closeEntry();
 					continue;
 				}

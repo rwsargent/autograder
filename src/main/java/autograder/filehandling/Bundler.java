@@ -23,10 +23,16 @@ import autograder.student.Student;
 import autograder.student.SubmissionPair;
 
 public class Bundler {
-	private static byte[] buffer = new byte[1024];
-	private static List<String> validFiles = Arrays.asList("pdf", "rws", "txt", "jar");
+	private  byte[] buffer = new byte[1024];
+	private List<String> validFileExtensions = Arrays.asList("pdf", "rws", "txt", "jar", "md");
+	private List<String> validFileNames = Arrays.asList("i_worked_with", "README", "readme", "partner_evaluation");
 	
-	public static Map<String, File> bundleStudents(HashMap<String, Set<SubmissionPair>> studentToTaMap) {
+	public Bundler(Configuration config) {
+		validFileExtensions = Arrays.asList(config.validFileExtensions.split(","));
+		validFileNames = Arrays.asList(config.validFileNames.split(","));
+	}
+	
+	public Map<String, File> bundleStudents(HashMap<String, Set<SubmissionPair>> studentToTaMap) {
 		HashMap<String, File> taToBigZipMap = new HashMap<>();
 		for(String ta: studentToTaMap.keySet()) {
 			System.out.println("Bundling " + ta + "'s students");
@@ -55,7 +61,7 @@ public class Bundler {
 		return taToBigZipMap;
 	}
 
-	private static String getParentDirectoryName(SubmissionPair pair) {
+	private String getParentDirectoryName(SubmissionPair pair) {
 		if(pair.partner.studentInfo.sortableName.startsWith("invalid")) {
 			return pair.submitter.studentInfo.sortableName + "/";
 		} else {
@@ -63,7 +69,7 @@ public class Bundler {
 		}
 	}
 
-	private static void writeExtraFilesToZip(ZipOutputStream zipWriter) throws IOException {
+	private void writeExtraFilesToZip(ZipOutputStream zipWriter) throws IOException {
 		if(StringUtils.isBlank(Configuration.getConfiguration().extraBundledFilesCsv)) {
 			return;
 		}
@@ -72,20 +78,20 @@ public class Bundler {
 			File dependencyFile = new File(dependency);
 			if(dependencyFile.isDirectory()) {
 				for(File file : dependencyFile.listFiles()) {
-					writeZip(zipWriter, new ZipEntry(dependencyFileName + "/" + FilenameUtils.getName(file.getName())), file);
+					writeZipEntry(zipWriter, new ZipEntry(dependencyFileName + "/" + FilenameUtils.getName(file.getName())), file);
 				}
 			} else {
-				writeZip(zipWriter, new ZipEntry(dependencyFileName), dependencyFile);
+				writeZipEntry(zipWriter, new ZipEntry(dependencyFileName), dependencyFile);
 			}
 		}
 	}
 
-	private static void writeAssignmentFileToZip(ZipOutputStream zipWriter) throws IOException {
+	private void writeAssignmentFileToZip(ZipOutputStream zipWriter) throws IOException {
 		String graderFileName = FilenameUtils.getName(Configuration.getConfiguration().graderFile);
-		writeZip(zipWriter, new ZipEntry(graderFileName), new File(Configuration.getConfiguration().graderFile));
+		writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(Configuration.getConfiguration().graderFile));
 	}
 
-	private static void writeFilesToZip(Student student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {
+	private void writeFilesToZip(Student student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {
 		if(student.studentInfo.name.equals("placeholder") || student.studentInfo.name.startsWith("invalid")) { // skip nonexistant students
 			return; 
 		}
@@ -107,21 +113,22 @@ public class Bundler {
 		recursiveWriteToZip(zipWriter, student.studentDirectory, parentDirectory +student.studentInfo.name);
 	}
 
-	private static void recursiveWriteToZip(ZipOutputStream zipWriter, File studentRoot, String name) throws IOException {
+	private void recursiveWriteToZip(ZipOutputStream zipWriter, File studentRoot, String name) throws IOException {
 		for(File file : studentRoot.listFiles()) {
 			if(file.isDirectory()) {
 				recursiveWriteToZip(zipWriter, file, name);
 				continue;
 			}
 			if(file.getName().endsWith(".java")) {
-				writeZip(zipWriter, new ZipEntry(name + "/src/" + file.getName()), file);
-			} else if(validFiles.contains(FilenameUtils.getExtension(file.getName()))) {
-				writeZip(zipWriter, new ZipEntry(name + "/" + file.getName()), file);
+				writeZipEntry(zipWriter, new ZipEntry(name + "/src/" + file.getName()), file);
+			} else if(validFileExtensions.contains(FilenameUtils.getExtension(file.getName())) ||
+					validFileNames.contains(FilenameUtils.getBaseName(file.getName()))) {
+				writeZipEntry(zipWriter, new ZipEntry(name + "/" + file.getName()), file);
 			}
 		}
 	}
 	
-	private static void writeZip(ZipOutputStream zipWriter, ZipEntry entry, File file) throws IOException {
+	private void writeZipEntry(ZipOutputStream zipWriter, ZipEntry entry, File file) throws IOException {
 		try(FileInputStream in = new FileInputStream(file.getAbsolutePath())) {
 			zipWriter.putNextEntry(entry);
 			int len;

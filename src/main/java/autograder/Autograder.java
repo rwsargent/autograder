@@ -36,10 +36,12 @@ public class Autograder {
 	public static Logger LOGGER = Logger.getLogger(Autograder.class.getName());
 	private boolean shouldMail = false;
 	private boolean onlyLate;
+	
+	private Bundler mBundler;
 
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
-		Autograder grader = new Autograder();
+		Autograder grader = new Autograder(new Bundler(Configuration.getConfiguration()));
 		grader.setup(args);
 		String submissionPath = Configuration.getConfiguration().submission;
 		System.out.println("Submission Path at: " + submissionPath);
@@ -50,6 +52,10 @@ public class Autograder {
 		long minute = (time / (1000 * 60)) % 60;
 
 		System.out.println(String.format("Total time: %02d:%02d", minute, second));
+	}
+	
+	public Autograder(Bundler bundler) {
+		mBundler = bundler;
 	}
 	
 	public void run(String submissionPath) {
@@ -93,7 +99,7 @@ public class Autograder {
 //		}
 		System.out.println("Finished grading");
 		//bundle files per ta
-		Map<String, File> zippedFiles = Bundler.bundleStudents(studentsForTas);
+		Map<String, File> zippedFiles = mBundler.bundleStudents(studentsForTas);
 		System.out.println("Bundled");
 		// email out the zipped files of the students.
 		if(shouldMail) {
