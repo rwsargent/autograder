@@ -19,27 +19,32 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.google.inject.Inject;
+
 import autograder.configuration.Configuration;
 
 public class Mailer {
-
+	
 	private Properties mMailProps;
-	public Mailer() {
+	
+	private Configuration mConfig;
+	
+	@Inject
+	public Mailer(Configuration configuration) {
 		configureProperties();
 	}
 	
 	public void sendMailWithAttachment(String recipient, String subject, String body, File attachmentFile) {
-		Configuration config = Configuration.getConfiguration();
 		Session session = Session.getInstance(mMailProps, new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(config.smtpUsername, config.smtpPassword);
+				return new PasswordAuthentication(mConfig.smtpUsername, mConfig.smtpPassword);
 			}
 		});
 		
 		MimeMessage message = new MimeMessage(session);
 		try {
-			message.setFrom(new InternetAddress(config.senderEmail));
+			message.setFrom(new InternetAddress(mConfig.senderEmail));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
 			message.setSubject(subject);
 			
@@ -63,13 +68,12 @@ public class Mailer {
 	}
 	
 	private void configureProperties() {
-		Configuration config = Configuration.getConfiguration();
 		mMailProps = new Properties();
 		mMailProps.put("mail.smtp.auth", "true");
 		mMailProps.put("mail.smtp.starttls.enable", "true");
-		mMailProps.put("mail.smtp.host", config.smtpHost);
-		mMailProps.put("mail.smtp.port", config.smtpPort);
-		mMailProps.put("mail.smtp.password", config.smtpPassword);
-		mMailProps.put("mail.smtp.username", config.smtpUsername);
+		mMailProps.put("mail.smtp.host", mConfig.smtpHost);
+		mMailProps.put("mail.smtp.port", mConfig.smtpPort);
+		mMailProps.put("mail.smtp.password", mConfig.smtpPassword);
+		mMailProps.put("mail.smtp.username", mConfig.smtpUsername);
 	}
 }

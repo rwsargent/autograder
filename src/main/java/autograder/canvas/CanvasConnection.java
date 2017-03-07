@@ -3,7 +3,6 @@ package autograder.canvas;
 import autograder.canvas.responses.Assignment;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
-import autograder.configuration.Configuration;
 
 /** 
  * This hits a select few endpoints of the Canvas API by Instructure. 
@@ -12,36 +11,28 @@ import autograder.configuration.Configuration;
  */
 public class CanvasConnection extends Network {
 	
-	public static User[] getAllStudents() {
-		String url = String.format("courses/%s/students", Configuration.getConfiguration().canvasCourseId);
-		return Network.httpGetCall(url, User[].class);
+	public  User[] getAllStudents() {
+		String url = String.format("courses/%s/students", configuration.canvasCourseId);
+		return httpGetCall(url, User[].class);
 	}
 	
-	public static Submission[] getAllSubmissions() {
-		Configuration config = Configuration.getConfiguration();
-		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions", config.canvasCourseId, config.canvasAssignmentId), Submission[].class);
+	public Submission[] getAllSubmissions() {
+		return httpGetCall(String.format("courses/%s/assignments/%s/submissions", configuration.canvasCourseId, configuration.canvasAssignmentId), Submission[].class);
 	}
 	
-	public static Submission[] getAllSubmissions(String courseId, String assignmentId) {
-		Configuration config = Configuration.getConfiguration();
-		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions",courseId, assignmentId), Submission[].class);
+	public Submission[] getAllSubmissions(String courseId, String assignmentId) {
+		return httpGetCall(String.format("courses/%s/assignments/%s/submissions",courseId, assignmentId), Submission[].class);
 	}
 
-	public static Submission[] getUserSubmissions(User student) {
-		Configuration config = Configuration.getConfiguration();
-		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions/%d", config.canvasCourseId, config.canvasAssignmentId, student.id), Submission[].class);
+	public Submission[] getUserSubmissions(User student) {
+		return httpGetCall(String.format("courses/%s/assignments/%s/submissions/%d", configuration.canvasCourseId, configuration.canvasAssignmentId, student.id), Submission[].class);
 	}
 	
-	public static Submission getUserSubmissions(String uid) {
-		Configuration config = Configuration.getConfiguration();
-		return Network.httpGetCall(String.format("courses/%s/assignments/%s/submissions/sis_user_id:%s", config.canvasCourseId, config.canvasAssignmentId, uid), Submission.class);
+	public Submission getUserSubmissions(String uid) {
+		return httpGetCall(String.format("courses/%s/assignments/%s/submissions/sis_user_id:%s", configuration.canvasCourseId, configuration.canvasAssignmentId, uid), Submission.class);
 	}
 
-	public static byte[] downloadFile(String url) {
-		return Network.downloadFile(url);
-	}
-	
-	public static Assignment[] getAllAssignments(String courseId) {
-		return Network.httpGetCall(String.format("courses/%s/assignments", courseId), Assignment[].class);
+	public Assignment[] getAllAssignments(String courseId) {
+		return httpGetCall(String.format("courses/%s/assignments", courseId), Assignment[].class);
 	}
 }

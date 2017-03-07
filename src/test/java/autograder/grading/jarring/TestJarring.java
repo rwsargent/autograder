@@ -19,7 +19,7 @@ public class TestJarring {
 		mStudent = new Student(new File("src/test/resources/jar_student"));
 		mStudent.createSourceDirectory();
 		
-		config = Configuration.getConfiguration("src/test/resources/configuration_test.properties");
+		config = new Configuration("src/test/resources/configuration_test.properties");
 	}
 
 	@After

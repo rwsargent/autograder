@@ -1,5 +1,7 @@
 package autograder.configuration;
 
+import javax.inject.Inject;
+
 import org.apache.commons.csv.CSVRecord;
 
 import autograder.Constants;
@@ -14,19 +16,14 @@ import autograder.tas.TAInfo;
 public class TeacherAssistantRegistry extends AbstractCsvRegistry<TAInfo> {
 	public static TeacherAssistantRegistry instance;
 	
-	public synchronized static TeacherAssistantRegistry getInstance() {
-		if (instance == null) {
-			instance = new TeacherAssistantRegistry();
-			instance.configure();
-		}
-		return instance;
-	}
-	
-	private TeacherAssistantRegistry() {};
+	@Inject
+	public TeacherAssistantRegistry(Configuration configuration) {
+		super(configuration);
+	};
 	
 	@Override
 	protected String getFileName() {
-		return Configuration.getConfiguration().taFilePath;
+		return mConfig.taFilePath;
 	}
 
 	@Override

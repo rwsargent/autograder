@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import autograder.Constants;
 
 public class Configuration extends AbstractProperties {
 	
 	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
-
 
 	public String assignment; 
 	
@@ -52,24 +54,11 @@ public class Configuration extends AbstractProperties {
 	public String validFileExtensions;
 	public String validFileNames;
 	
-	
 	private volatile static Configuration mInstance;
 	
-	public static synchronized Configuration getConfiguration() {
-		return getConfiguration(null);
-	}
-	
-	public static synchronized Configuration getConfiguration(String configPath) {
-		if(mInstance == null) {
-			mInstance = new Configuration();
-			File configFile = mInstance.findPropertyFile(configPath);
-			mInstance.loadConfiguration(configFile);
-		}
-		return mInstance;
-	}
-	
-	private Configuration() {
-		// make the default constructor private so it cannot be instantiated outside of this class
+	@Inject
+	public Configuration(@Named("configpath") String configPath) {
+		loadConfiguration(findPropertyFile(configPath));
 	}
 	
 	private void loadConfiguration(File configFile) {
@@ -80,7 +69,7 @@ public class Configuration extends AbstractProperties {
 			throw new ConfigurationException(e);
 		}
 		fillProperties(properties, mInstance);
-		LOGGER.info("Configuration successfully loaded");
+		LOGGER.info("Configuration successfully loaded.");
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.inject.Inject;
 
 import autograder.Constants;
 import autograder.configuration.Configuration;
@@ -35,12 +36,14 @@ import autograder.configuration.Configuration;
  *
  */
 public abstract class Network {
+
+	@Inject protected Configuration configuration;
 	
 	private static final Logger LOGGER = Logger.getLogger(Network.class.getName()); 
 	public static final String BASE_URL = "https://utah.instructure.com/api/v1/";
-	protected static final String token = Configuration.getConfiguration().canvasToken;
+	protected String token = configuration.canvasToken;
 	
-	protected static byte[] downloadFile(String url) {
+	public byte[] downloadFile(String url) {
 		HttpClient client = HttpClients.createDefault();
 		HttpGet request = new HttpGet(url);
 		try {
@@ -51,7 +54,7 @@ public abstract class Network {
 		}
 	}
 	
-	protected static <E> E httpPostCall(String url, String contentType, HttpEntity data, Class<E> responseClass) {
+	protected <E> E httpPostCall(String url, String contentType, HttpEntity data, Class<E> responseClass) {
         HttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(BASE_URL + url);
         configureRequest(request);
@@ -69,7 +72,7 @@ public abstract class Network {
         return gson.fromJson(responseAsJSONString, responseClass);
     }
 	
-	protected static <T> T httpGetCall(String url, Class<T> responseClass) {
+	protected <T> T httpGetCall(String url, Class<T> responseClass) {
 		HttpClient client = HttpClients.createDefault();
 		Gson gson = new GsonBuilder().setDateFormat("YYYY-MM-dd'T'HH:mm:ss-zzz").create();
 		HttpGet request = new HttpGet(BASE_URL + url);
@@ -83,7 +86,7 @@ public abstract class Network {
 		return gson.fromJson(jsonString, responseClass);
 	}
 	
-	private static void httpGetRecur(HttpClient client, HttpGet request, StringBuilder responseStringBuilder) {
+	private void httpGetRecur(HttpClient client, HttpGet request, StringBuilder responseStringBuilder) {
 		HttpResponse httpResponse;
 		try {
 			httpResponse = client.execute(request);
@@ -108,11 +111,11 @@ public abstract class Network {
 		}
 	}
 	
-	private static String buildErrorMessage(HttpResponse httpResponse) {
+	private String buildErrorMessage(HttpResponse httpResponse) {
 		return String.format("{\"appError\" : \"Error code is: %d\" }", httpResponse.getStatusLine().getStatusCode());
 	}
 
-	protected static <Response> Response executeRequest(HttpRequestBase request, Class<Response> responseClazz) {
+	protected <Response> Response executeRequest(HttpRequestBase request, Class<Response> responseClazz) {
 		HttpClient httpClient = HttpClients.createDefault();
 		try {
 			HttpResponse httpResponse = httpClient.execute(request);
@@ -127,11 +130,11 @@ public abstract class Network {
 		return null;
 	}
 
-	private static void configureRequest(HttpRequest request) { 
+	private void configureRequest(HttpRequest request) { 
 		request.addHeader("Authorization", "Bearer " + token);
 	}
 	
-	private static boolean validResponse(HttpResponse response) throws ParseException, IOException {
+	private boolean validResponse(HttpResponse response) throws ParseException, IOException {
 		return response.getStatusLine().getStatusCode() == 200;
 	}
 }

@@ -14,6 +14,8 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import com.google.inject.Inject;
+
 import autograder.canvas.CanvasConnection;
 import autograder.canvas.responses.Attachment;
 import autograder.canvas.responses.Submission;
@@ -34,6 +36,14 @@ import autograder.student.StudentMap;
 public class SubmissionParser {
 	
 	private Pattern mExpludePattern;
+	protected Configuration mConfig;
+	protected CanvasConnection connection;
+	
+	@Inject
+	public SubmissionParser(Configuration configuration, CanvasConnection connection) {
+		mConfig = configuration;
+		this.connection = connection;
+	}
 	
 	public StudentMap parseSubmissions(Map<Integer, User> users, boolean onlyLate, Submission[] submissions) {
 		StudentMap studentMap = new StudentMap();
@@ -66,8 +76,8 @@ public class SubmissionParser {
 	}
 
 	private Pattern createPattern() {
-		if(Configuration.getConfiguration().ignorePattern != null) {
-			return Pattern.compile(Configuration.getConfiguration().ignorePattern);
+		if(mConfig.ignorePattern != null) {
+			return Pattern.compile(mConfig.ignorePattern);
 		}
 		return Pattern.compile("$^"); // matches empty strings.
 	}
@@ -75,7 +85,7 @@ public class SubmissionParser {
 
 	private void handleZipFile(String url, String submissionDir, Student student) {
 		try (ZipInputStream zipStream = new ZipInputStream(
-				new ByteArrayInputStream(CanvasConnection.downloadFile(url)))) {
+				new ByteArrayInputStream(connection.downloadFile(url)))) {
 			ZipEntry entry = null;
 			byte[] byteBuff = new byte[4096];
 			while ((entry = zipStream.getNextEntry()) != null) {
@@ -127,7 +137,7 @@ public class SubmissionParser {
 	}
 
 	private void handlePropertieFile(String url, Student student) {
-		try (ByteArrayInputStream bis = new ByteArrayInputStream(CanvasConnection.downloadFile(url))) {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(connection.downloadFile(url))) {
 			createSubmissionRecord(bis, student);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -137,7 +147,7 @@ public class SubmissionParser {
 	private void handlePdf(String url, Student student, String filename) {
 		try {
 			FileUtils.writeByteArrayToFile(new File(student.studentDirectory.getAbsolutePath() + "/" + filename),
-					CanvasConnection.downloadFile(url));
+					connection.downloadFile(url));
 		} catch (IOException e) {
 			System.out.println("Could not write pdf to file from " + student + ". Reason: " + e.getMessage());
 		}
@@ -145,7 +155,7 @@ public class SubmissionParser {
 	
 	private void handleSourceFile(String url, Student student, String filename) {
 		try {
-			FileUtils.writeByteArrayToFile(new File(student.createSourceDirectory().getAbsolutePath() + "/" + filename), CanvasConnection.downloadFile(url));
+			FileUtils.writeByteArrayToFile(new File(student.createSourceDirectory().getAbsolutePath() + "/" + filename), connection.downloadFile(url));
 		} catch (IOException e) {
 			System.out.println("Could not write " + filename + " to file from " + student + ". Reason: " + e.getMessage());
 		}

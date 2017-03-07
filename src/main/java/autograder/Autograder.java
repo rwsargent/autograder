@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 
+import com.google.inject.Inject;
+
 import autograder.canvas.CanvasConnection;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
@@ -22,6 +24,7 @@ import autograder.filehandling.Bundler;
 import autograder.filehandling.SubmissionParser;
 import autograder.grading.Grader;
 import autograder.grading.WorkJob;
+import autograder.grading.jarring.Jarrer;
 import autograder.mailer.Mailer;
 import autograder.student.Student;
 import autograder.student.StudentMap;
@@ -38,34 +41,32 @@ public class Autograder {
 	private boolean onlyLate;
 	
 	private Bundler mBundler;
-
-	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
-		Autograder grader = new Autograder(new Bundler(Configuration.getConfiguration()));
-		grader.setup(args);
-		String submissionPath = Configuration.getConfiguration().submission;
-		System.out.println("Submission Path at: " + submissionPath);
-		grader.run(submissionPath);
-		long stop = System.currentTimeMillis();
-		long time = stop - start;
-		long second = (time / 1000) % 60;
-		long minute = (time / (1000 * 60)) % 60;
-
-		System.out.println(String.format("Total time: %02d:%02d", minute, second));
-	}
+	private Configuration mConfig;
+	private CanvasConnection mConnection;
+	private SubmissionParser mSubParser;
+	private Mailer mMailer;
+	private PartitionSubmissions partSubmissions;
+	private TeacherAssistantRegistry mTARegistry;
 	
-	public Autograder(Bundler bundler) {
+	@Inject
+	public Autograder(Configuration configuration, Bundler bundler, CanvasConnection connection, SubmissionParser subParser, Mailer mailer, PartitionSubmissions subPartitioner,
+			TeacherAssistantRegistry taRegistry) {
 		mBundler = bundler;
+		mConfig = configuration;
+		mConnection = connection;
+		mSubParser = subParser;
+		mMailer = mailer;
+		partSubmissions = subPartitioner;
+		mTARegistry = taRegistry;
 	}
 	
-	public void run(String submissionPath) {
+	public void run() {
 		System.out.println("Download all students");
-		Map<Integer, User> userMap = buildUserMap(CanvasConnection.getAllStudents());
+		Map<Integer, User> userMap = buildUserMap(mConnection.getAllStudents());
 		
 		System.out.println("Download Submissions");
-		SubmissionParser submissionParser = new SubmissionParser();
 		Submission[] canvasSubmissions = getDesiredSubmissions(userMap);
-		StudentMap submissions = submissionParser.parseSubmissions(userMap, onlyLate, canvasSubmissions);
+		StudentMap submissions = mSubParser.parseSubmissions(userMap, onlyLate, canvasSubmissions);
 		SubmissionPairer pairer = new SubmissionPairer();
 		
 		System.out.println("Pair submissions");
@@ -82,7 +83,7 @@ public class Autograder {
 		// seperate submissions
 		calculateTaGrading(submissionData.pairs.size());
 		
-		HashMap<String, Set<SubmissionPair>> studentsForTas = PartitionSubmissions.partition(TeacherAssistantRegistry.getInstance().toList(), submissionData);
+		HashMap<String, Set<SubmissionPair>> studentsForTas = partSubmissions.partition(mTARegistry.toList(), submissionData);
 		System.out.println("Partitioned students");
 		//wait for grading to finish
 		for(Grader graderThread : threads) {
@@ -110,15 +111,15 @@ public class Autograder {
 	}
 
 	private Submission[] getDesiredSubmissions(Map<Integer, User> userMap) {
-		String studentsToGradeCsv = Configuration.getConfiguration().studentsToGradeCsv;
+		String studentsToGradeCsv = mConfig.studentsToGradeCsv;
 		if (studentsToGradeCsv == null) {
-			return CanvasConnection.getAllSubmissions();
+			return mConnection.getAllSubmissions();
 		}
 		
 		ArrayList<Submission> submissions = new ArrayList<>();
 		String[] students = studentsToGradeCsv.split(",");
 		for(String student : students) {
-			submissions.add(CanvasConnection.getUserSubmissions(student));
+			submissions.add(mConnection.getUserSubmissions(student));
 		}
 		return submissions.toArray(new Submission[submissions.size()]);
 	}
@@ -140,13 +141,11 @@ public class Autograder {
 	}
 
 	private void emailTAs(Map<String, File> zippedFiles) {
-		Mailer mailer = new Mailer();
-		TeacherAssistantRegistry tas = TeacherAssistantRegistry.getInstance();
-		String subject = "[CS2420] Submissions for " + Configuration.getConfiguration().assignment;
+		String subject = "[CS2420] Submissions for " + mConfig.assignment;
 		String body = "Happy grading!\n\n Tas Rule!";
 		for(String ta : zippedFiles.keySet()) {
-			TAInfo taInfo = tas.get(ta);
-			mailer.sendMailWithAttachment(taInfo.email, subject, body, zippedFiles.get(ta));
+			TAInfo taInfo = mTARegistry.get(ta);
+			mMailer.sendMailWithAttachment(taInfo.email, subject, body, zippedFiles.get(ta));
 		}
 	}
 	
@@ -163,13 +162,12 @@ public class Autograder {
 	}
 
 	private void calculateTaGrading(int totalSubmissions) {
-		Map<String, TAInfo> tas = TeacherAssistantRegistry.getInstance().getMap();
+		Map<String, TAInfo> tas = mTARegistry.getMap();
 		double totalHours = tas.entrySet().stream().mapToDouble(ta -> ta.getValue().hours).sum();
 		tas.forEach((name, ta) -> ta.assignmentsToGrade = (int) Math.round((ta.hours / totalHours) * totalSubmissions));	
 	}
 
-	private void setup(String[] args) {
-//		System.setProperty("sun.zip.disableMemoryMapping", "true");
+	public void setup(String[] args) {
 		CmdLineParser parser = new CmdLineParser();
 		CommandLine commandLine = parser.parse(args);
 		if(commandLine.hasOption("h")) {
@@ -182,9 +180,6 @@ public class Autograder {
 			onlyLate = true;
 		}
 		
-		String configPath = commandLine.getOptionValue("c", Constants.DEFAULT_CONFIGURATION);
-		Configuration.getConfiguration(configPath);
-		
 		new File(Constants.SUBMISSIONS).mkdir();
 		new File(Constants.ZIPS).mkdir();
 		System.out.println("Created submission folder");
@@ -194,11 +189,25 @@ public class Autograder {
 		int processorCount = Runtime.getRuntime().availableProcessors() - 1;
 		Grader[] threads = new Grader[processorCount];
 		for(int threadIdx = 0; threadIdx < threads.length; threadIdx++) {
-			Grader thread = new Grader(queue);
+			Grader thread = new Grader(mConfig, new Jarrer(mConfig));
 			threads[threadIdx] = thread;
 			thread.start();
 		}
 		
 		return threads;
 	}
+	
+//	public static void main(String[] args) {
+//	long start = System.currentTimeMillis();
+//	Autograder grader = new Autograder(new Bundler(Configuration.getConfiguration()));
+//	grader.setup(args);
+//	grader.run();
+//	
+//	long stop = System.currentTimeMillis();
+//	long time = stop - start;
+//	long second = (time / 1000) % 60;
+//	long minute = (time / (1000 * 60)) % 60;
+//
+//	System.out.println(String.format("Total time: %02d:%02d", minute, second));
+//}
 }

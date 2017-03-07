@@ -2,10 +2,13 @@ package autograder.student;
 
 import org.apache.commons.csv.CSVRecord;
 
+import com.google.inject.Inject;
+
 import autograder.Constants;
 import autograder.Constants.ClassList;
 import autograder.canvas.CanvasConnection;
 import autograder.configuration.AbstractCsvRegistry;
+import autograder.configuration.Configuration;
 
 /**
  * Ideally, you want to use the Canvas API to download all possible students. If you don't have access to the API, 
@@ -16,17 +19,11 @@ import autograder.configuration.AbstractCsvRegistry;
 @Deprecated
 public class ClassListRegistry extends AbstractCsvRegistry<StudentInfo> {
 
-	private static ClassListRegistry mInstance;
-	
-	public static ClassListRegistry getInstance() {
-		if(mInstance == null) {
-			mInstance = new ClassListRegistry();
-			mInstance.configure();
-			mInstance.map.put("-1", new StudentInfo("placeholder", "-1", "-1"));
-		}
-		return mInstance;
+	@Inject
+	public ClassListRegistry(Configuration configuration) {
+		super(configuration);
 	}
-	
+
 	@Override
 	protected String getFileName() {
 		return Constants.DEFAULT_CLASS_LIST;

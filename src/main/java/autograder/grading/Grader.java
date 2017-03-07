@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+
 import autograder.configuration.Configuration;
 import autograder.grading.jarring.Jarrer;
 import autograder.student.Student;
@@ -30,14 +32,20 @@ public class Grader extends Thread {
 	Logger logger;
 	Jarrer mJarrer;
 	
-	public Grader(Queue<WorkJob> queue) {
-		workQueue = queue;
-		
-		mGraderClassName = Configuration.getConfiguration().graderClassName;
-		mGraderPath = findFile(Configuration.getConfiguration().graderFile);
-//		mJunitPluginPath = findFile(Configuration.getConfiguration().junitPlugin);
+	protected Configuration mConfig;
+	
+	@Inject
+	public Grader(Configuration configuration, Jarrer jarrer) {
+		 mConfig = configuration;
+		 mJarrer = jarrer;
+		 mGraderClassName = mConfig.graderClassName;
+		mGraderPath = findFile(mConfig.graderFile);
+//			mJunitPluginPath = findFile(Configuration.getConfiguration().junitPlugin);
 		logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
-		mJarrer = new Jarrer(Configuration.getConfiguration());
+	}
+	
+	public void setWorkQueue(Queue<WorkJob> queue) {
+		workQueue = queue;
 	}
 	
 	private String findFile(String configPath) {
@@ -72,7 +80,7 @@ public class Grader extends Thread {
 		try {
 			if(compile()) {
 				runGrader();
-				if(StringUtils.isNotBlank(Configuration.getConfiguration().mainClass)) {
+				if(StringUtils.isNotBlank(mConfig.mainClass)) {
 					if(mJarrer.buildJarFor(mStudent)) {
 						
 					};
@@ -140,7 +148,7 @@ public class Grader extends Thread {
 	}
 
 	private String generateClassPathString() {
-		File libs = new File(Configuration.getConfiguration().extraClassPathFiles);// System.getProperty("java.class.path");
+		File libs = new File(mConfig.extraClassPathFiles);// System.getProperty("java.class.path");
 		StringBuilder sb = new StringBuilder();
 		for(File jar : libs.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("jar"))) {
 			sb.append(jar.getAbsolutePath()).append(File.pathSeparatorChar);
@@ -194,12 +202,12 @@ public class Grader extends Thread {
 		StringBuilder sb = new StringBuilder("java -cp ");
 		sb.append("./source/classes");
 		sb.append(File.pathSeparatorChar);
-		sb.append(findFile(Configuration.getConfiguration().extraClassPathFiles));
+		sb.append(findFile(mConfig.extraClassPathFiles));
 		sb.append(File.pathSeparatorChar);
 		sb.append(generateClassPathString());
 		sb.append(' ');
 		sb.append("-Xms1024m -Xmx2048m").append(' ');
-		sb.append(Configuration.getConfiguration().graderClassName); // changed for JUnit
+		sb.append(mConfig.graderClassName); // changed for JUnit
 //		sb.append("graders.ProgrammingChallengeGrader"); // changed for JUnit
 		sb.append(' ').append(buildArguments());
 		return sb.toString();
