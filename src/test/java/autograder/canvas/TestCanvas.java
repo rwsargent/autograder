@@ -20,7 +20,7 @@ public class TestCanvas {
 	
 	@Test
 	public void testLink() {
-		User[] students = connection.getAllStudents();
+		User[] students = connection.getAllStudents("");
 		assertNotNull(students);
 	}
 	

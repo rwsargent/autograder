@@ -1,23 +1,46 @@
 package autograder.canvas;
 
+import com.google.inject.Inject;
+
 import autograder.canvas.responses.Assignment;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
+import autograder.configuration.Configuration;
+import autograder.portal.PortalConnection;
 
 /** 
  * This hits a select few endpoints of the Canvas API by Instructure. 
  * @author Ryan
  *
  */
-public class CanvasConnection extends Network {
+public class CanvasConnection extends Network implements PortalConnection{
+	private Configuration mConfig;
+
+	@Inject
+	public CanvasConnection(Configuration config) {
+		mConfig = config;
+	}
 	
-	public  User[] getAllStudents() {
+	public CanvasConnection() {
+	}
+	
+	@Override
+	public User[] getStudents() {
+		return getAllStudents(mConfig.canvasCourseId);
+	}
+	
+	public  User[] getAllStudents(String courseId) {
 		String url = String.format("courses/%s/students", configuration.canvasCourseId);
 		return httpGetCall(url, User[].class);
 	}
 	
 	public Submission[] getAllSubmissions() {
 		return httpGetCall(String.format("courses/%s/assignments/%s/submissions", configuration.canvasCourseId, configuration.canvasAssignmentId), Submission[].class);
+	}
+	
+	@Override
+	public Submission[] getSubmissions() {
+		return getAllSubmissions(mConfig.canvasCourseId, mConfig.canvasAssignmentId);
 	}
 	
 	public Submission[] getAllSubmissions(String courseId, String assignmentId) {
@@ -35,4 +58,6 @@ public class CanvasConnection extends Network {
 	public Assignment[] getAllAssignments(String courseId) {
 		return httpGetCall(String.format("courses/%s/assignments", courseId), Assignment[].class);
 	}
+
+	
 }

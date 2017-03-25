@@ -45,12 +45,12 @@ public class SubmissionParser {
 		this.connection = connection;
 	}
 	
-	public StudentMap parseSubmissions(Map<Integer, User> users, boolean onlyLate, Submission[] submissions) {
+	public StudentMap parseSubmissions(Map<Integer, User> users, Submission[] submissions) {
 		StudentMap studentMap = new StudentMap();
 		for (Submission sub : submissions) {
-			if (onlyLate && !sub.late) { // skip all non-late submissions
-				continue;
-			}
+//			if (onlyLate && !sub.late) { // skip all non-late submissions
+//				continue;
+//			}
 			Student student = new Student(users.get(sub.user_id));
 			studentMap.addStudent(student);
 			if (sub.attachments == null) {

@@ -19,7 +19,6 @@ import autograder.configuration.ConfigurationException;
 import autograder.student.Student;
 import autograder.student.StudentSubmissionRegistry;
 
-@Deprecated
 public class SubmissionReader {
 	private static Logger LOGGER = Logger.getLogger(SubmissionReader.class.getName());
 	private byte[] buffer = new byte[1024]; // no need to allocate this more than once an object;

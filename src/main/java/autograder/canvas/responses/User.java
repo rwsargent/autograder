@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 public class User {
 	public int id;
 	public String name;
+	
 	@SerializedName("sortable_name")
 	public String sortableName;
 	public String sis_user_id;

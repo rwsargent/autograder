@@ -26,6 +26,7 @@ import autograder.grading.Grader;
 import autograder.grading.WorkJob;
 import autograder.grading.jarring.Jarrer;
 import autograder.mailer.Mailer;
+import autograder.phases.PhaseOne;
 import autograder.student.Student;
 import autograder.student.StudentMap;
 import autograder.student.SubmissionPair;
@@ -47,6 +48,12 @@ public class Autograder {
 	private Mailer mMailer;
 	private PartitionSubmissions partSubmissions;
 	private TeacherAssistantRegistry mTARegistry;
+	private PhaseOne mPhaseOne;
+	
+	@Inject
+	public Autograder(PhaseOne phaseOne) {
+		mPhaseOne = phaseOne;
+	}
 	
 	@Inject
 	public Autograder(Configuration configuration, Bundler bundler, CanvasConnection connection, SubmissionParser subParser, Mailer mailer, PartitionSubmissions subPartitioner,
@@ -60,13 +67,18 @@ public class Autograder {
 		mTARegistry = taRegistry;
 	}
 	
+	public void execut() {
+		
+		
+	}
+	
 	public void run() {
 		System.out.println("Download all students");
-		Map<Integer, User> userMap = buildUserMap(mConnection.getAllStudents());
+		Map<Integer, User> userMap = buildUserMap(mConnection.getAllStudents(""));
 		
 		System.out.println("Download Submissions");
 		Submission[] canvasSubmissions = getDesiredSubmissions(userMap);
-		StudentMap submissions = mSubParser.parseSubmissions(userMap, onlyLate, canvasSubmissions);
+		StudentMap submissions = mSubParser.parseSubmissions(userMap, canvasSubmissions);
 		SubmissionPairer pairer = new SubmissionPairer();
 		
 		System.out.println("Pair submissions");
