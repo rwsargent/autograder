@@ -23,8 +23,9 @@ public class Student {
 		studentDirectory.mkdirs();
 	}
 	
-	public Student(File basedir) {
+	public Student(File basedir, User user) {
 		studentDirectory = basedir;
+		studentInfo = user;
 	}
 	
 	public String getSourceDirectoryPath() {

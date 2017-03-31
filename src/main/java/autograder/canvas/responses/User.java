@@ -1,5 +1,7 @@
 package autograder.canvas.responses;
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -7,7 +9,9 @@ import com.google.gson.annotations.SerializedName;
  * @author Ryan
  *
  */
-public class User {
+public class User implements Serializable{
+	private static final long serialVersionUID = -8318536792879193036L;
+	
 	public int id;
 	public String name;
 	

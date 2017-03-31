@@ -16,7 +16,7 @@ public class TestJarring {
 	private Configuration config;
 	@Before
 	public void setUp() throws Exception {
-		mStudent = new Student(new File("src/test/resources/jar_student"));
+		mStudent = new Student(new File("src/test/resources/jar_student"), null);
 		mStudent.createSourceDirectory();
 		
 		config = new Configuration("src/test/resources/configuration_test.properties");

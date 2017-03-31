@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -38,19 +39,18 @@ public class SubmissionParser {
 	private Pattern mExpludePattern;
 	protected Configuration mConfig;
 	protected CanvasConnection connection;
+	protected StudentErrorRegistry errorRegistry;
 	
 	@Inject
-	public SubmissionParser(Configuration configuration, CanvasConnection connection) {
+	public SubmissionParser(Configuration configuration, CanvasConnection connection, StudentErrorRegistry errorRegistry) {
 		mConfig = configuration;
 		this.connection = connection;
+		this.errorRegistry = errorRegistry;
 	}
 	
 	public StudentMap parseSubmissions(Map<Integer, User> users, Submission[] submissions) {
 		StudentMap studentMap = new StudentMap();
 		for (Submission sub : submissions) {
-//			if (onlyLate && !sub.late) { // skip all non-late submissions
-//				continue;
-//			}
 			Student student = new Student(users.get(sub.user_id));
 			studentMap.addStudent(student);
 			if (sub.attachments == null) {
@@ -165,9 +165,12 @@ public class SubmissionParser {
 		try {
 			Properties props = new Properties();
 			props.load(bis);
+			try(OutputStream out = new FileOutputStream(student.studentDirectory.getAbsolutePath() + "/assignment.properites")) {
+				props.store(out, "Saving assignment.properites file");
+			}
 			student.assignProps = new AssignmentProperties(props);
 		} catch (IOException | ConfigurationException | IllegalArgumentException e) {
-			StudentErrorRegistry.getInstance().addInvalidAssignmentProperties(student);
+			errorRegistry.addInvalidAssignmentProperties(student);
 			System.out.println(student + " messed up on assignment property file. Reason: " + e.getMessage());
 		}
 	}

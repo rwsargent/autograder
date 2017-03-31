@@ -28,7 +28,7 @@ public class SubmissionsFromWeb implements SubmissionDownloader {
 	public StudentMap parseSubmission(Map<Integer, User> users) {
 		return parser.parseSubmissions(users, getDesiredSubmissions(users));
 	}
-	
+
 	private Submission[] getDesiredSubmissions(Map<Integer, User> userMap) {
 		String studentsToGradeCsv = mConfig.studentsToGradeCsv;
 		if (studentsToGradeCsv == null) {
@@ -42,5 +42,4 @@ public class SubmissionsFromWeb implements SubmissionDownloader {
 		}
 		return submissions.toArray(new Submission[submissions.size()]);
 	}
-
 }

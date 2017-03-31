@@ -26,8 +26,8 @@ public class BundlerTest {
 		
 		Set<SubmissionPair> submissionPairs = new HashSet<>();
 		SubmissionPair submissions = new SubmissionPair();
-		submissions.submitter= new Student(new File("src/test/resources/students/studentSubmitterA"));
-		submissions.partner = new Student(new File("src/test/resources/students/studentPartnerA"));
+		submissions.submitter= new Student(new File("src/test/resources/students/studentSubmitterA"), null);
+		submissions.partner = new Student(new File("src/test/resources/students/studentPartnerA"), null);
 		submissionPairs.add(submissions);
 		
 		studentToTaMap.put("TA", submissionPairs);
