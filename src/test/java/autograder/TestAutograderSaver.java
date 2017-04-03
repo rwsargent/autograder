@@ -1,7 +1,7 @@
 package autograder;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -21,17 +21,29 @@ public class TestAutograderSaver {
 		saver = new AutograderSaver(config);
 	}
 	
-	@Test
+	@Test(expected=IllegalStateException.class)
 	public void testNewAutograderRun() {
-		assertNull(saver.getAssignment());
+		saver.getAssignment();
 	}
 	
 	@Test
 	public void testSavingAutograderInformation() {
 		config.assignment = "newassignment";
 		assertFalse(saver.isCurrentAssignemnt());
-		File outfile = new File("tempOutFile.autograder");
+		saver.readFile(new File("src/test/resources/save_test.txt"));
+		assertTrue(saver.isCurrentAssignemnt());
+	}
+	
+	@Test
+	public void testWritingFile() {
+		config.assignment = "writetest";
+		File outfile = new File("outfile.test");
 		saver.writeSavedFile(outfile);
-		assertTrue(outfile.exists());
+		
+		saver.readFile(outfile);
+		assertTrue(saver.isCurrentAssignemnt());
+		assertEquals(saver.getAssignment(), "writetest");
+		
+		outfile.delete();
 	}
 }

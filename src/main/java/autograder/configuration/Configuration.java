@@ -54,8 +54,6 @@ public class Configuration extends AbstractProperties {
 	public String validFileExtensions;
 	public String validFileNames;
 	
-	private volatile static Configuration mInstance;
-	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {
 		loadConfiguration(findPropertyFile(configPath));
@@ -68,7 +66,7 @@ public class Configuration extends AbstractProperties {
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
 		}
-		fillProperties(properties, mInstance);
+		fillProperties(properties, this);
 		LOGGER.info("Configuration successfully loaded.");
 	}
 

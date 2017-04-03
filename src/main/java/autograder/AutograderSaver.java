@@ -37,7 +37,7 @@ public class AutograderSaver {
 	}
 
 	public boolean isCurrentAssignemnt() {
-		return mConfig.assignment == assignment;
+		return mConfig.assignment.equals(assignment);
 	}
 
 	public void writeSavedFile(File outfile) {
