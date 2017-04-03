@@ -30,6 +30,9 @@ public class AutograderSaver {
 	}
 
 	public String getAssignment() {
+		if (assignment == null) {
+			throw new IllegalStateException("You need to read in a save file first!");
+		}
 		return assignment;
 	}
 

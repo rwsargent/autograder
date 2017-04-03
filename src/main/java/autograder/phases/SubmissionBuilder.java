@@ -15,10 +15,13 @@ import autograder.student.StudentMap;
 public class SubmissionBuilder {
 	public StudentMap build(HashMap<Integer,User> users, File submissions) {
 		StudentMap studentMap = new StudentMap();
+		if(!submissions.exists()) {
+			throw new IllegalStateException("Can't find submission file");
+		}
 		
-		for(File studentDir : submissions.listFiles(File::isDirectory)) {
+		for(File studentDir : submissions.listFiles(f -> f.isDirectory())) {
 			String dirName = studentDir.getName();
-			Integer canvasId = Integer.parseInt(dirName.substring(dirName.lastIndexOf('_')));
+			Integer canvasId = Integer.parseInt(dirName.substring(dirName.lastIndexOf('_')+1));
 			User studentUser = users.get(canvasId);
 			Student student = new Student(studentDir, studentUser);
 			student.createAssignmentProperties();
