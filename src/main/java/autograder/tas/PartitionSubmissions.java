@@ -11,6 +11,7 @@ import java.util.Set;
 import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
+import autograder.configuration.TeacherAssistantRegistry;
 import autograder.student.Student;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer.SubmissionData;
@@ -23,10 +24,12 @@ import autograder.student.SubmissionPairer.SubmissionData;
 public class PartitionSubmissions {
 	
 	private Configuration configuration;
+	private TeacherAssistantRegistry mTARegistry;
 	
 	@Inject	
-	public PartitionSubmissions(Configuration config) {
+	public PartitionSubmissions(Configuration config, TeacherAssistantRegistry TARegistry) {
 		configuration = config;
+		mTARegistry = TARegistry;
 	}
 	
 	/**
@@ -37,8 +40,9 @@ public class PartitionSubmissions {
 	 * @param submissionData - Collection of partnerships and invalid submissions in an instance of {@link SubmissionData}
 	 * @return
 	 */
-	public HashMap<String, Set<SubmissionPair>> partition(List<TAInfo> tas, SubmissionData submissionData) {
-		// Create a mapping of TAs to a submission set, create a shuffleable collection from the submissions 
+	public HashMap<String, Set<SubmissionPair>> partition(SubmissionData submissionData) {
+		// Create a mapping of TAs to a submission set, create a shuffleable collection from the submissions
+		List<TAInfo> tas = mTARegistry.toList();
 		HashMap<String, Set<SubmissionPair>> tasToSubmissions = new HashMap<>();
 		tas.forEach(ta -> tasToSubmissions.put(ta.name, new HashSet<>()));
 		List<SubmissionPair> submissions = new ArrayList<>(submissionData.pairs);

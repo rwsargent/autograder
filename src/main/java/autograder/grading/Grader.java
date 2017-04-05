@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
-import autograder.grading.jarring.Jarrer;
+import autograder.phases.two.Worker;
 import autograder.student.Student;
 
 /**
@@ -24,20 +24,19 @@ import autograder.student.Student;
  * @author Ryans
  *
  */
-public class Grader extends Thread {
+public class Grader implements Worker {
 	Student mStudent;
 	String mGraderClassName, mGraderPath;
 	ProcessBuilder processBuilder;
 	Queue<WorkJob> workQueue;
 	Logger logger;
-	Jarrer mJarrer;
 	
 	protected Configuration mConfig;
 	
 	@Inject
-	public Grader(Configuration configuration, Jarrer jarrer) {
+	public Grader(Configuration configuration) {
 		 mConfig = configuration;
-		 mJarrer = jarrer;
+//		 mJarrer = jarrer;
 		 mGraderClassName = mConfig.graderClassName;
 		mGraderPath = findFile(mConfig.graderFile);
 //			mJunitPluginPath = findFile(Configuration.getConfiguration().junitPlugin);
@@ -81,9 +80,6 @@ public class Grader extends Thread {
 			if(compile()) {
 				runGrader();
 				if(StringUtils.isNotBlank(mConfig.mainClass)) {
-					if(mJarrer.buildJarFor(mStudent)) {
-						
-					};
 				}
 			}
 		} catch (IOException | InterruptedException e) {
@@ -215,5 +211,11 @@ public class Grader extends Thread {
 
 	private String buildArguments() {
 		return "assignment05.SortGrader";
+	}
+
+	@Override
+	public void doWork(Student student) {
+		// TODO Auto-generated method stub
+		
 	}
 }

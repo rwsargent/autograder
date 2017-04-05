@@ -49,10 +49,12 @@ public class Autograder {
 	private PartitionSubmissions partSubmissions;
 	private TeacherAssistantRegistry mTARegistry;
 	private PhaseOne mPhaseOne;
+	private SubmissionPairer mPairer;
 	
 	@Inject
-	public Autograder(PhaseOne phaseOne) {
+	public Autograder(PhaseOne phaseOne, SubmissionPairer pairer) {
 		mPhaseOne = phaseOne;
+		mPairer = pairer;
 	}
 	
 	@Inject
@@ -67,9 +69,8 @@ public class Autograder {
 		mTARegistry = taRegistry;
 	}
 	
-	public void execut() {
-		
-		
+	public void execute() {
+		StudentMap studentMap = mPhaseOne.setupSubmissions();
 	}
 	
 	public void run() {
@@ -95,7 +96,7 @@ public class Autograder {
 		// seperate submissions
 		calculateTaGrading(submissionData.pairs.size());
 		
-		HashMap<String, Set<SubmissionPair>> studentsForTas = partSubmissions.partition(mTARegistry.toList(), submissionData);
+		HashMap<String, Set<SubmissionPair>> studentsForTas = partSubmissions.partition(submissionData);
 		System.out.println("Partitioned students");
 		//wait for grading to finish
 		for(Grader graderThread : threads) {
