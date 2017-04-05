@@ -28,7 +28,6 @@ public class Grader implements Worker {
 	Student mStudent;
 	String mGraderClassName, mGraderPath;
 	ProcessBuilder processBuilder;
-	Queue<WorkJob> workQueue;
 	Logger logger;
 	
 	protected Configuration mConfig;
@@ -36,16 +35,11 @@ public class Grader implements Worker {
 	@Inject
 	public Grader(Configuration configuration) {
 		 mConfig = configuration;
-//		 mJarrer = jarrer;
 		 mGraderClassName = mConfig.graderClassName;
-		mGraderPath = findFile(mConfig.graderFile);
-//			mJunitPluginPath = findFile(Configuration.getConfiguration().junitPlugin);
-		logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
+		 mGraderPath = findFile(mConfig.graderFile);
+		 logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
 	}
 	
-	public void setWorkQueue(Queue<WorkJob> queue) {
-		workQueue = queue;
-	}
 	
 	private String findFile(String configPath) {
 		File grader = new File(configPath);
