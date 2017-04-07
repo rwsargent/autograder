@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -35,12 +34,10 @@ public class PhaseTwo {
 	public HashMap<String, Set<SubmissionPair>> phaseTwo(StudentMap studentMap) throws InterruptedException {
 		SubmissionData submissionData = mPairer.pairSubmissions(studentMap);
 		Queue<Student> queue = buildWorkQueue(submissionData);
-
 		ExecutorService threadPool = startWork(queue);
 		threadPool.shutdown();
 		HashMap<String, Set<SubmissionPair>> taParition = mSubPartitioner.partition(submissionData);
-		
-		threadPool.awaitTermination(4, TimeUnit.HOURS);
+		threadPool.awaitTermination(8, TimeUnit.HOURS);
 		return taParition;
 	}
 	
@@ -56,7 +53,6 @@ public class PhaseTwo {
 			});
 		}
 		return threadPool;
-
 	}
 
 	private Queue<Student> buildWorkQueue(SubmissionData submissionData) {

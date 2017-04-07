@@ -99,13 +99,13 @@ public class Autograder {
 		HashMap<String, Set<SubmissionPair>> studentsForTas = partSubmissions.partition(submissionData);
 		System.out.println("Partitioned students");
 		//wait for grading to finish
-		for(Grader graderThread : threads) {
-			try {
-				graderThread.join();
-			} catch (InterruptedException e) {
-				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
-			}
-		}
+//		for(Grader graderThread : threads) {
+//			try {
+//				graderThread.join();
+//			} catch (InterruptedException e) {
+//				LOGGER.severe("You gotta be KIDDING me! Grader thread " + graderThread.getId() + " was interrupted somehow.");
+//			}
+//		}
 //		try {
 //			grader.join(300 * 1000);
 //		} catch (InterruptedException e) {
@@ -201,11 +201,11 @@ public class Autograder {
 	private Grader[] startGraderThreads(Queue<WorkJob> queue) {
 		int processorCount = Runtime.getRuntime().availableProcessors() - 1;
 		Grader[] threads = new Grader[processorCount];
-		for(int threadIdx = 0; threadIdx < threads.length; threadIdx++) {
-			Grader thread = new Grader(mConfig, new Jarrer(mConfig));
-			threads[threadIdx] = thread;
-			thread.start();
-		}
+//		for(int threadIdx = 0; threadIdx < threads.length; threadIdx++) {
+//			Grader thread = new Grader(mConfig, new Jarrer(mConfig));
+//			threads[threadIdx] = thread;
+//			thread.start();
+//		}
 		
 		return threads;
 	}

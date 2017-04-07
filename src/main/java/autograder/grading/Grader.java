@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -49,24 +48,23 @@ public class Grader implements Worker {
 		return getClass().getResource(configPath).toString();
 	}
 
-	@Override
-	public void run() {
-		WorkJob job = null;
-		System.out.println("Thread: " + currentThread() + " is starting to grade");
-		while(!workQueue.isEmpty()) {
-			job = workQueue.poll();
-			if(job == null) {
-				continue;
-			}
-			try {
-				System.out.println("Grading: " + job.getStudent());
-				compileAndRunGrader(job.getStudent());
-			} catch (Exception e ) {
-				logger.severe(e.getMessage());
-			}
-		}
-		System.out.println("Thread: " + currentThread() + " finished grading.");
-	}
+	
+//	public void run() {
+//		WorkJob job = null;
+//		while(!workQueue.isEmpty()) {
+//			job = workQueue.poll();
+//			if(job == null) {
+//				continue;
+//			}
+//			try {
+//				System.out.println("Grading: " + job.getStudent());
+//				compileAndRunGrader(job.getStudent());
+//			} catch (Exception e ) {
+//				logger.severe(e.getMessage());
+//			}
+//		}
+//		System.out.println("Thread: " + currentThread() + " finished grading.");
+//	}
 	
 	public void compileAndRunGrader(Student student) {
 		mStudent = student;
@@ -209,7 +207,11 @@ public class Grader implements Worker {
 
 	@Override
 	public void doWork(Student student) {
-		// TODO Auto-generated method stub
-		
+		mStudent = student;
+		try {
+			runGrader();
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

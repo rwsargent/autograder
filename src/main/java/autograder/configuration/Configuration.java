@@ -15,6 +15,8 @@ public class Configuration extends AbstractProperties {
 	
 	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
+
+	
 	public String assignment; 
 	
 	public String graderClassName;
@@ -53,6 +55,12 @@ public class Configuration extends AbstractProperties {
 
 	public String validFileExtensions;
 	public String validFileNames;
+
+	@Optional(defaultValue="")
+	public String graderJVMOptions;
+	
+	@Optional(defaultValue = "60")
+	public String timeout;
 	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {
