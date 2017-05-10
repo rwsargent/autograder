@@ -55,7 +55,7 @@ public class Bundler {
 				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
-			}
+			} 
 			taToBigZipMap.put(ta, taZipFile);
 		}
 		return taToBigZipMap;
@@ -136,6 +136,12 @@ public class Bundler {
 				zipWriter.write(buffer, 0, len);
 			}
 			zipWriter.closeEntry();
+		} catch (ZipException e) {
+			if(e.getMessage().contains("uplicate")) {
+				System.out.println("Duplicate entry on " + file.getName());
+			} else {
+				System.out.println(e.getMessage());
+			}
 		}
 	}
 }
