@@ -1,0 +1,471 @@
+[{
+	"_id": {
+		"$oid": "58f84589aa9416d76c5f41f7"
+	},
+	"uid": "u1031378",
+	"type": "challenge",
+	"submission": "123 53 101 189 98",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58f84fe2aa9416d76c5f41f8"
+	},
+	"uid": "u0407846",
+	"type": "challenge",
+	"submission": "14 42 226 155 83",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58f8d6054ef279cf6ccefab0"
+	},
+	"uid": "u0980890",
+	"type": "challenge",
+	"submission": "189 64 118 135 226",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58f92e254ef279cf6ccefab1"
+	},
+	"uid": "u1072484",
+	"type": "challenge",
+	"submission": "158 182 132 80 176",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58f953c94ef279cf6ccefab2"
+	},
+	"uid": "u0888804",
+	"type": "challenge",
+	"submission": "102 223 120 100 34",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58f965d24ef279cf6ccefab3"
+	},
+	"name": "Chris",
+	"uid": "u0777607",
+	"type": "challenge",
+	"submission": "131 37 80 37 31",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58fa3dfe4ef279cf6ccefab4"
+	},
+	"uid": "u0813193",
+	"type": "challenge",
+	"submission": "148 09 192 76 154",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58fba2d0aa9416d76c5f41f9"
+	},
+	"name": "Seven-Niner",
+	"uid": "u0966298",
+	"type": "challenge",
+	"submission": "210 53 85 234 184",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58fd87774ef279cf6ccefab5"
+	},
+	"name": "ichbinkenny",
+	"uid": "u0900735",
+	"type": "challenge",
+	"submission": "20 249 204 103 175",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58ff977fac813115778ca4e9"
+	},
+	"name": "DezIsKewl",
+	"uid": "u1013930",
+	"type": "challenge",
+	"submission": "08 247 143 67 85",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "58ffb21e52cc0a2277750c07"
+	},
+	"name": "Aros",
+	"uid": "u0893567",
+	"type": "challenge",
+	"submission": "214 38 105 251 128",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59027a3352cc0a2277750c08"
+	},
+	"uid": "u0844492",
+	"type": "challenge",
+	"submission": "114 145 236 242 131",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5903f3ee52cc0a2277750c09"
+	},
+	"name": "Britton",
+	"uid": "u0915408",
+	"type": "challenge",
+	"submission": "40 76 63 47 84",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590448d952cc0a2277750c0a"
+	},
+	"name": "b0st0n",
+	"uid": "u0818161",
+	"type": "challenge",
+	"submission": "70 204 217 142 32",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59053aa8ac813115778ca4ea"
+	},
+	"name": "secret",
+	"uid": "u0871595",
+	"type": "challenge",
+	"submission": "54 96 83 217 194",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5905911dac813115778ca4eb"
+	},
+	"name": "ky",
+	"uid": "u0844864",
+	"type": "challenge",
+	"submission": "244 10 11 64 219",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590657f652cc0a2277750c0b"
+	},
+	"name": "zhi",
+	"uid": "u0976248",
+	"type": "challenge",
+	"submission": "153 239 239 239 239 239 239 239 239 239 239 223 255 194",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59068f9dac813115778ca4ec"
+	},
+	"uid": "u0944898",
+	"type": "challenge",
+	"submission": "209 217 214 65 232",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5907ac3fac813115778ca4ed"
+	},
+	"uid": "u0651238",
+	"type": "challenge",
+	"submission": "43 18 106 151 30",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590896886d6fc7ae09258832"
+	},
+	"name": "river",
+	"uid": "u0934299",
+	"type": "challenge",
+	"submission": "174 11 231 220 137",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5908d7596d6fc7ae09258833"
+	},
+	"name": "Haisley Brooking",
+	"uid": "u1050052",
+	"type": "challenge",
+	"submission": "62 218 55 170 245",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590941d521994bd10b535a7f"
+	},
+	"name": "skydancer",
+	"uid": "u1012681",
+	"type": "challenge",
+	"submission": "25 67 192 209 06",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5909564221994bd10b535a80"
+	},
+	"uid": "u1056740",
+	"type": "challenge",
+	"submission": "175 174 134 83 59",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a1b9921994bd10b535a81"
+	},
+	"name": "asd",
+	"uid": "u1015111",
+	"type": "challenge",
+	"submission": "118 150 186 132 225",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a1c5721994bd10b535a82"
+	},
+	"name": "tye",
+	"uid": "u0984431",
+	"type": "challenge",
+	"submission": "78 16 44 30 153",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a23326d6fc7ae09258834"
+	},
+	"uid": "u0893041",
+	"type": "challenge",
+	"submission": "254 96 190 223 120",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a41896d6fc7ae09258835"
+	},
+	"name": "Crazy Diamond",
+	"uid": "u1066699",
+	"type": "challenge",
+	"submission": "79 50 22 120 115",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a43686d6fc7ae09258836"
+	},
+	"name": "Orefield",
+	"uid": "u1011688",
+	"type": "challenge",
+	"submission": "204 116 178 66 01",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a467a21994bd10b535a83"
+	},
+	"name": "Silver",
+	"uid": "u0751960",
+	"type": "challenge",
+	"submission": "184 73 22 165 252",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a649721994bd10b535a84"
+	},
+	"name": "ryan",
+	"uid": "u1057475",
+	"type": "challenge",
+	"submission": "09 170 165 125 107",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590a76ed6d6fc7ae09258837"
+	},
+	"name": "FeelsBatMan",
+	"uid": "u0764787",
+	"type": "challenge",
+	"submission": "06 218 82 142 24",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590aa8196d6fc7ae09258838"
+	},
+	"uid": "u1115021",
+	"type": "challenge",
+	"submission": "158 193 249 222 19",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590aa8576d6fc7ae09258839"
+	},
+	"name": "t_sun",
+	"uid": "u0930101",
+	"type": "challenge",
+	"submission": "65 80 96 181 139",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590ac10e6d6fc7ae0925883a"
+	},
+	"name": "code",
+	"uid": "u0373603",
+	"type": "challenge",
+	"submission": "114 37 143 29 223",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590ac32c21994bd10b535a85"
+	},
+	"uid": "u0627241",
+	"type": "challenge",
+	"submission": "127 109 66 64 136",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590accad21994bd10b535a86"
+	},
+	"name": "Bull",
+	"uid": "u1045379",
+	"type": "challenge",
+	"submission": "195 102 199 67 63",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590b52686d6fc7ae0925883b"
+	},
+	"name": "hunter_jenkins",
+	"uid": "u0905670",
+	"type": "challenge",
+	"submission": "211 204 93 135 83",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590b5b4e6d6fc7ae0925883c"
+	},
+	"name": "Gonzo",
+	"uid": "u0775533",
+	"type": "challenge",
+	"submission": "146 39 67 189 198",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590b700f21994bd10b535a87"
+	},
+	"name": "Mia Ngo",
+	"uid": "u1061321",
+	"type": "challenge",
+	"submission": "133 213 132 04 183",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590b85ca21994bd10b535a88"
+	},
+	"uid": "u0934661",
+	"type": "challenge",
+	"submission": "163 71 253 27 15",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590bac2221994bd10b535a89"
+	},
+	"uid": "u1008832",
+	"type": "challenge",
+	"submission": "02 232 123 25 184",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590bd6e26d6fc7ae0925883d"
+	},
+	"uid": "u1108694",
+	"type": "challenge",
+	"submission": "19 165 202 230 42",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590bdb0b6d6fc7ae0925883e"
+	},
+	"uid": "u0782592",
+	"type": "challenge",
+	"submission": "20 90 127 189 08",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590be87a6d6fc7ae0925883f"
+	},
+	"uid": "u0813804",
+	"type": "challenge",
+	"submission": "241 200 131 175 138",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590bec2921994bd10b535a8a"
+	},
+	"name": "shahid",
+	"uid": "u0996062",
+	"type": "challenge",
+	"submission": "143 118 96 05 117",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590bfdc26d6fc7ae09258840"
+	},
+	"name": "Melvin Bosnjak",
+	"uid": "u0989241",
+	"type": "challenge",
+	"submission": "109 248 143 205 65",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590c097e21994bd10b535a8b"
+	},
+	"uid": "u1031341",
+	"type": "challenge",
+	"submission": "142 165 91 54 223",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590c127921994bd10b535a8c"
+	},
+	"name": "Angel Dhungana",
+	"uid": "u1021745",
+	"type": "challenge",
+	"submission": "159 143 206 16 204",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "590c199221994bd10b535a8d"
+	},
+	"uid": "u0985898",
+	"type": "challenge",
+	"submission": "170 203 248 05 47",
+	"__v": 0
+}]
+
