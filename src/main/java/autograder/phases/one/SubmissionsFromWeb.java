@@ -40,6 +40,6 @@ public class SubmissionsFromWeb implements SubmissionDownloader {
 		for(String student : students) {
 			submissions.add(mPortal.getUserSubmissions(student));
 		}
-		return submissions.toArray(new Submission[submissions.size()]);
+		return new Submission[submissions.size()];
 	}
 }

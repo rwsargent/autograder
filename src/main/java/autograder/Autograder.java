@@ -24,9 +24,9 @@ import autograder.filehandling.Bundler;
 import autograder.filehandling.SubmissionParser;
 import autograder.grading.Grader;
 import autograder.grading.WorkJob;
-import autograder.grading.jarring.Jarrer;
 import autograder.mailer.Mailer;
 import autograder.phases.PhaseOne;
+import autograder.phases.two.PhaseTwo;
 import autograder.student.Student;
 import autograder.student.StudentMap;
 import autograder.student.SubmissionPair;
@@ -50,11 +50,13 @@ public class Autograder {
 	private TeacherAssistantRegistry mTARegistry;
 	private PhaseOne mPhaseOne;
 	private SubmissionPairer mPairer;
+	private PhaseTwo mPhaseTwo;
 	
 	@Inject
-	public Autograder(PhaseOne phaseOne, SubmissionPairer pairer) {
+	public Autograder(PhaseOne phaseOne, SubmissionPairer pairer, PhaseTwo phaseTwo) {
 		mPhaseOne = phaseOne;
 		mPairer = pairer;
+		mPhaseTwo = phaseTwo;
 	}
 	
 	@Inject
@@ -71,6 +73,13 @@ public class Autograder {
 	
 	public void execute() {
 		StudentMap studentMap = mPhaseOne.setupSubmissions();
+		
+		HashMap<String, Set<SubmissionPair>> partition;
+		try {
+			partition = mPhaseTwo.phaseTwo(studentMap);
+		} catch (InterruptedException e) {
+			LOGGER.warning("Something stopped the grader threads!" + e.getMessage());
+		}
 	}
 	
 	public void run() {

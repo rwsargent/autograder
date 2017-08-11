@@ -40,17 +40,22 @@ public class SubmissionParser {
 	protected Configuration mConfig;
 	protected CanvasConnection connection;
 	protected StudentErrorRegistry errorRegistry;
+	private SeenSubmissions seenSubmissions;
 	
 	@Inject
-	public SubmissionParser(Configuration configuration, CanvasConnection connection, StudentErrorRegistry errorRegistry) {
+	public SubmissionParser(Configuration configuration, CanvasConnection connection, StudentErrorRegistry errorRegistry, SeenSubmissions seenSubmissions) {
 		mConfig = configuration;
 		this.connection = connection;
 		this.errorRegistry = errorRegistry;
+		this.seenSubmissions = seenSubmissions;
 	}
 	
 	public StudentMap parseSubmissions(Map<Integer, User> users, Submission[] submissions) {
 		StudentMap studentMap = new StudentMap();
 		for (Submission sub : submissions) {
+			if(seenSubmissions.hasSeenSubmission(Integer.toString(sub.assignment_id))) {
+				continue;
+			}
 			Student student = new Student(users.get(sub.user_id));
 			studentMap.addStudent(student);
 			if (sub.attachments == null) {
