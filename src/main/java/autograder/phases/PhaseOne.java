@@ -1,6 +1,5 @@
 package autograder.phases;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import autograder.filehandling.SeenSubmissions;
 import autograder.filehandling.SubmissionParser;
 import autograder.phases.one.StudentDownloader;
 import autograder.phases.one.SubmissionDownloader;
-import autograder.student.AutograderSubmission;
 import autograder.student.AutograderSubmissionMap;
 
 /**
@@ -55,6 +53,7 @@ public class PhaseOne {
 			fullSubmissions.stream()
 					.map(parser::parseAndCreateSubmission)
 					.peek(studentDownloader::fillUser)
+					.peek(submission -> submission.writeMetaData())
 					.forEach(submissionMap::addSubmission);
 		}
 		return submissionMap;

@@ -1,10 +1,15 @@
 package autograder.student;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+
+import com.google.gson.Gson;
 
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
@@ -111,5 +116,18 @@ public class AutograderSubmission {
 
 	public void addUser(User user) {
 		this.studentInfo = user;
+	}
+
+	public AutograderSubmission writeMetaData() {
+		Gson gson = new Gson();
+		File metaDir = new File(directory, "meta");
+		metaDir.mkdir();
+		try {
+			FileUtils.writeStringToFile(new File(metaDir, "studentInfo.json"), gson.toJson(this.studentInfo));
+			FileUtils.writeStringToFile(new File(metaDir, "submission.json"), gson.toJson(this.submissionInfo));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return this;
 	}
 }
