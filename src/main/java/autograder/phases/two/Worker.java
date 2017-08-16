@@ -1,7 +1,7 @@
 package autograder.phases.two;
 
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 public interface Worker {
-	public void doWork(Student student);
+	public void doWork(AutograderSubmission student);
 }

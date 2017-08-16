@@ -1,11 +1,9 @@
 package autograder.phases.one;
 
-import java.util.Map;
+import java.util.List;
 
-import autograder.canvas.responses.User;
-import autograder.student.StudentMap;
+import autograder.canvas.responses.Submission;
 
 public interface SubmissionDownloader {
-
-	public StudentMap parseSubmission(Map<Integer, User> users);
+	public List<Submission> downloadSubmissions();
 }

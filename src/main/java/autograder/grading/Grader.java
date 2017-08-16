@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
 import autograder.phases.two.Worker;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 /**
  * {@link Grader} pulls job from a supplied workqueue of {@link WorkJob}, and compiles and grades the student
@@ -24,7 +24,7 @@ import autograder.student.Student;
  *
  */
 public class Grader implements Worker {
-	Student mStudent;
+	AutograderSubmission mStudent;
 	String mGraderClassName, mGraderPath;
 	ProcessBuilder processBuilder;
 	Logger logger;
@@ -66,7 +66,7 @@ public class Grader implements Worker {
 //		System.out.println("Thread: " + currentThread() + " finished grading.");
 //	}
 	
-	public void compileAndRunGrader(Student student) {
+	public void compileAndRunGrader(AutograderSubmission student) {
 		mStudent = student;
 		try {
 			if(compile()) {
@@ -84,7 +84,7 @@ public class Grader implements Worker {
 	}
 	
 	private boolean compile() throws IOException, InterruptedException {
-		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.rws");
+		File compErrorFile = new File(mStudent.directory.getAbsolutePath() + "/comp_error.rws");
 		
 		String command = createJavacCommand();
 		if(command == null) { // we didn't find any java files
@@ -156,11 +156,11 @@ public class Grader implements Worker {
 	
 	private void runGrader() throws IOException, InterruptedException {
 		String[] testCommand = generateJavaGraderCommand().split(" ");
-		File errorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output_error.rws");
+		File errorFile = new File(mStudent.directory.getAbsolutePath() + "/grader_output_error.rws");
 		
 		processBuilder.command(testCommand);
-		processBuilder.directory(mStudent.studentDirectory);
-		processBuilder.redirectOutput(Redirect.to(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.rws")));
+		processBuilder.directory(mStudent.directory);
+		processBuilder.redirectOutput(Redirect.to(new File(mStudent.directory.getAbsolutePath() + "/grader_output.rws")));
 		processBuilder.redirectError(Redirect.to(errorFile));
 		Process test = processBuilder.start();
 		boolean timeout = test.waitFor(60, TimeUnit.SECONDS);
@@ -206,7 +206,7 @@ public class Grader implements Worker {
 	}
 
 	@Override
-	public void doWork(Student student) {
+	public void doWork(AutograderSubmission student) {
 		mStudent = student;
 		try {
 			runGrader();

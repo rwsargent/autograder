@@ -1,15 +1,15 @@
 package autograder.grading;
 
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 public class WorkJob {
-	private Student mStudent;
+	private AutograderSubmission mStudent;
 
-	public WorkJob(Student student) {
+	public WorkJob(AutograderSubmission student) {
 		mStudent = student;
 	}
 	
-	public Student getStudent() {
+	public AutograderSubmission getStudent() {
 		return mStudent;
 	}
 	

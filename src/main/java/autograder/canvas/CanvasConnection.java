@@ -59,5 +59,9 @@ public class CanvasConnection extends Network implements PortalConnection{
 		return httpGetCall(String.format("courses/%s/assignments", courseId), Assignment[].class);
 	}
 
+	@Override
+	public User getStudentById(String id) {
+		return httpGetCall(String.format("users/%s/profile", id), User.class);
+	}
 	
 }

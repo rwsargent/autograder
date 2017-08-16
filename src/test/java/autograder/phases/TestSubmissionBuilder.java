@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
-import autograder.student.StudentMap;
+import autograder.student.AutograderSubmissionMap;
 
 public class TestSubmissionBuilder {
 
@@ -19,7 +19,7 @@ public class TestSubmissionBuilder {
 	@Test
 	public void setReInit() {
 		HashMap<Integer, User> mockUserMap = mockUsers();
-		StudentMap studentMap = mSubmissionBuilder.build(mockUserMap, new File("src/test/resources/students"));
+		AutograderSubmissionMap studentMap = mSubmissionBuilder.build(mockUserMap, new File("src/test/resources/students"));
 		
 		assertNotNull(studentMap);
 		assertEquals(2, studentMap.listStudents().size());

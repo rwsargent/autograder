@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import autograder.Constants;
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 import autograder.student.SubmissionPair;
 
 public class Bundler {
@@ -95,7 +95,7 @@ public class Bundler {
 		writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(mConfig.graderFile));
 	}
 
-	private void writeFilesToZip(Student student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {
+	private void writeFilesToZip(AutograderSubmission student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {
 		if(student.studentInfo.name.equals("placeholder") || student.studentInfo.name.startsWith("invalid")) { // skip nonexistant students
 			return; 
 		}
@@ -114,7 +114,7 @@ public class Bundler {
 				System.out.println(e.getMessage());
 			}
 		}
-		recursiveWriteToZip(zipWriter, student.studentDirectory, parentDirectory +student.studentInfo.name);
+		recursiveWriteToZip(zipWriter, student.directory, parentDirectory +student.studentInfo.name);
 	}
 
 	private void recursiveWriteToZip(ZipOutputStream zipWriter, File studentRoot, String name) throws IOException {

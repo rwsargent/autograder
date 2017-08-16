@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import autograder.canvas.responses.Submission;
+
 /**
  * This class handles the logic of whether or not a submission has been 
  * seen for the current assignment.
@@ -22,8 +24,6 @@ import javax.inject.Named;
  * @author ryans
  */
 public class SeenSubmissions {
-	
-	private static final String SEEN_SUBMISSIONS_FILE_NAME = "seensubmissions.txt";
 	
 	private Set<String> submissionIds = new HashSet<>();
 	private String assignmentName;
@@ -44,16 +44,21 @@ public class SeenSubmissions {
 		}
 	}
 
+	// at cwd level
 	private Path generatePath() {
-		return Paths.get(assignmentName, SEEN_SUBMISSIONS_FILE_NAME);
+		return Paths.get(assignmentName + ".saved");
 	}
 	
-	public boolean hasSeenSubmission(String submissionId) {
-		return submissionIds.contains(submissionId);
+	public boolean alreadySeenSubmission(Submission submission) {
+		return submissionIds.contains(buildIdentifier(submission));
 	}
 	
-	public boolean addSubmission(String submissionId) {
-		return submissionIds.add(submissionId);
+	public boolean addSubmission(Submission submission) {
+		return submissionIds.add(buildIdentifier(submission));
+	}
+	
+	protected String buildIdentifier(Submission submission) {
+		return submission.assignment_id + "_" + submission.user_id + "_" + submission.attempt;
 	}
 	
 	/**

@@ -7,18 +7,18 @@ import java.util.Map;
 
 import autograder.canvas.responses.User;
 
-public class StudentMap {
-	private Map<String, Student> mUIdMap;
-	private Map<Integer, Student> mCanvasMap;
-	private List<Student> mStudents;
+public class AutograderSubmissionMap {
+	private Map<String, AutograderSubmission> mUIdMap;
+	private Map<Integer, AutograderSubmission> mCanvasMap;
+	private List<AutograderSubmission> submissions;
 	
-	public StudentMap() {
+	public AutograderSubmissionMap() {
 		mUIdMap = new HashMap<>();
 		mCanvasMap = new HashMap<>();
-		mStudents = new ArrayList<>();
+		submissions = new ArrayList<>();
 	}
 	
-	public StudentMap(User[] students) {
+	public AutograderSubmissionMap(User[] students) {
 		this();
 		fillMaps(students);
 	}
@@ -29,32 +29,33 @@ public class StudentMap {
 		}
 	}
 
+	@Deprecated
 	public void addStudent(User user) {
-		Student student = new Student(user);
+		AutograderSubmission student = new AutograderSubmission(user);
 		mUIdMap.put(user.sis_user_id, student);
 		mCanvasMap.put(user.id, student);
-		mStudents.add(student);
+		submissions.add(student);
 	}
 	
-	public void addStudent(Student student) {
-		mUIdMap.put(student.studentInfo.sis_user_id, student);
-		mCanvasMap.put(student.studentInfo.id, student);
-		mStudents.add(student);
+	public void addSubmission(AutograderSubmission submission) {
+		mUIdMap.put(submission.studentInfo.sis_user_id, submission);
+		mCanvasMap.put(submission.studentInfo.id, submission);
+		submissions.add(submission);
 	}
 
-	public Student get(int canvasId) {
+	public AutograderSubmission get(int canvasId) {
 		return mCanvasMap.get(canvasId);
 	}
 	
-	public Student get(String uId) {
+	public AutograderSubmission get(String uId) {
 		return mUIdMap.get(uId);
 	}
 	
-	public List<Student> listStudents() {
-		return mStudents;
+	public List<AutograderSubmission> listStudents() {
+		return submissions;
 	}
 	
 	public int size() {
-		return mStudents.size();
+		return submissions.size();
 	}
 }

@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 public class Grader extends ExternalProcessWorker {
 
@@ -22,10 +22,10 @@ public class Grader extends ExternalProcessWorker {
 	}
 
 	@Override
-	public void doWork(Student student) {
+	public void doWork(AutograderSubmission student) {
 		setStudent(student);
-		setRedirects(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.rws"), 
-				new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output_error.rws"));
+		setRedirects(new File(mStudent.directory.getAbsolutePath() + "/grader_output.rws"), 
+				new File(mStudent.directory.getAbsolutePath() + "/grader_output_error.rws"));
 		waitOnProccess(buildAndStartProcess());
 	}
 	

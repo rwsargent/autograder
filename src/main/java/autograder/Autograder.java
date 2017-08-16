@@ -27,8 +27,8 @@ import autograder.grading.WorkJob;
 import autograder.mailer.Mailer;
 import autograder.phases.PhaseOne;
 import autograder.phases.two.PhaseTwo;
-import autograder.student.Student;
-import autograder.student.StudentMap;
+import autograder.student.AutograderSubmission;
+import autograder.student.AutograderSubmissionMap;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer;
 import autograder.student.SubmissionPairer.SubmissionData;
@@ -72,7 +72,7 @@ public class Autograder {
 	}
 	
 	public void execute() {
-		StudentMap studentMap = mPhaseOne.setupSubmissions();
+		AutograderSubmissionMap studentMap = mPhaseOne.setupSubmissions(false, "assignment1");
 		
 		HashMap<String, Set<SubmissionPair>> partition;
 		try {
@@ -88,7 +88,7 @@ public class Autograder {
 		
 		System.out.println("Download Submissions");
 		Submission[] canvasSubmissions = getDesiredSubmissions(userMap);
-		StudentMap submissions = mSubParser.parseSubmissions(userMap, canvasSubmissions);
+		AutograderSubmissionMap submissions = mSubParser.parseSubmissions(userMap, canvasSubmissions);
 		SubmissionPairer pairer = new SubmissionPairer();
 		
 		System.out.println("Pair submissions");
@@ -154,8 +154,8 @@ public class Autograder {
 		return map;
 	}
 
-	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<Student> invalidStudents) {
-		for(Student student : invalidStudents) {
+	private void maybeAddInvalidStudentToWorkQueue(Queue<WorkJob> workQueue, Set<AutograderSubmission> invalidStudents) {
+		for(AutograderSubmission student : invalidStudents) {
 //			if(student.assignProps != null) {?
 				workQueue.add(new WorkJob(student));
 //			}

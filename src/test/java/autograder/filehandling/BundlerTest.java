@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 import autograder.student.SubmissionPair;
 
 public class BundlerTest {
@@ -26,8 +26,8 @@ public class BundlerTest {
 		
 		Set<SubmissionPair> submissionPairs = new HashSet<>();
 		SubmissionPair submissions = new SubmissionPair();
-		submissions.submitter= new Student(new File("src/test/resources/students/studentSubmitterA"), null);
-		submissions.partner = new Student(new File("src/test/resources/students/studentPartnerA"), null);
+		submissions.submitter= new AutograderSubmission(new File("src/test/resources/students/studentSubmitterA"), null);
+		submissions.partner = new AutograderSubmission(new File("src/test/resources/students/studentPartnerA"), null);
 		submissionPairs.add(submissions);
 		
 		studentToTaMap.put("TA", submissionPairs);

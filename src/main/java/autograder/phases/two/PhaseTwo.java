@@ -12,8 +12,8 @@ import javax.inject.Provider;
 
 import com.google.inject.Inject;
 
-import autograder.student.Student;
-import autograder.student.StudentMap;
+import autograder.student.AutograderSubmission;
+import autograder.student.AutograderSubmissionMap;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer;
 import autograder.student.SubmissionPairer.SubmissionData;
@@ -45,9 +45,9 @@ public class PhaseTwo {
 	 * @return - Students randomly partitioned amongst the students in 
 	 * @throws InterruptedException
 	 */
-	public HashMap<String, Set<SubmissionPair>> phaseTwo(StudentMap studentMap) throws InterruptedException {
+	public HashMap<String, Set<SubmissionPair>> phaseTwo(AutograderSubmissionMap studentMap) throws InterruptedException {
 		SubmissionData submissionData = mPairer.pairSubmissions(studentMap);
-		List<Student> students = getStudentsToGrade(submissionData);
+		List<AutograderSubmission> students = getStudentsToGrade(submissionData);
 		ExecutorService threadPool = startWork(students);
 		threadPool.shutdown();
 		HashMap<String, Set<SubmissionPair>> taParition = mSubPartitioner.partition(submissionData);
@@ -56,9 +56,9 @@ public class PhaseTwo {
 	}
 	
 	// Trying out the ExecutorService. Each job is a run through all the workers for each student.
-	private ExecutorService startWork(List<Student> queue) {
+	private ExecutorService startWork(List<AutograderSubmission> queue) {
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
-		for(Student student : queue) {
+		for(AutograderSubmission student : queue) {
 			threadPool.submit(() -> {
 				System.out.println("Starting work on " + student.studentInfo.name);
 				try{ 
@@ -81,9 +81,9 @@ public class PhaseTwo {
 	 * @param submissionData
 	 * @return
 	 */
-	private List<Student> getStudentsToGrade(SubmissionData submissionData) {
+	private List<AutograderSubmission> getStudentsToGrade(SubmissionData submissionData) {
 		Set<SubmissionPair> pairs = submissionData.pairs;
-		List<Student> queue = new LinkedList<>();
+		List<AutograderSubmission> queue = new LinkedList<>();
 		
 		for(SubmissionPair pair : pairs) {
 			queue.add(pair.submitter);
@@ -92,7 +92,7 @@ public class PhaseTwo {
 			}
 		}
 		
-		for(Student student : submissionData.invalidStudents) {
+		for(AutograderSubmission student : submissionData.invalidStudents) {
 			queue.add(student);
 		}
 		

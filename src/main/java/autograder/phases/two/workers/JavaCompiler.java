@@ -7,7 +7,7 @@ import org.apache.commons.io.FilenameUtils;
 import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 /**
  * This worker will take all Java files from the students source directory and 
@@ -31,9 +31,9 @@ public class JavaCompiler extends ExternalProcessWorker {
 	}
 
 	@Override
-	public void doWork(Student student) {
+	public void doWork(AutograderSubmission student) {
 		setStudent(student);
-		setRedirects(null, new File(mStudent.studentDirectory.getAbsolutePath() + "/compile_error.txt"));
+		setRedirects(null, new File(mStudent.directory.getAbsolutePath() + "/compile_error.txt"));
 		createClassesDirectoryInSourceDir();
 		int retvalue = waitOnProccess(buildAndStartProcess());
 		if(retvalue != 0) {

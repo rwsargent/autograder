@@ -5,9 +5,8 @@ import java.io.Serializable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO to represent the User object from the Cavnas API
+ * POJO to represent the User / Profile object from the Cavnas API
  * @author Ryan
- *
  */
 public class User implements Serializable{
 	private static final long serialVersionUID = -8318536792879193036L;

@@ -1,15 +1,18 @@
 package autograder.phases;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.inject.Inject;
 
-import autograder.AutograderSaver;
-import autograder.canvas.responses.User;
+import autograder.canvas.responses.Submission;
+import autograder.filehandling.SeenSubmissions;
+import autograder.filehandling.SubmissionParser;
 import autograder.phases.one.StudentDownloader;
 import autograder.phases.one.SubmissionDownloader;
-import autograder.student.StudentMap;
+import autograder.student.AutograderSubmission;
+import autograder.student.AutograderSubmissionMap;
 
 /**
  * The Setup
@@ -17,40 +20,43 @@ import autograder.student.StudentMap;
  *
  */
 public class PhaseOne {
-	protected StudentDownloader mStudentDownloader;
-	protected SubmissionDownloader mSubmissionDownloader;
-	protected SubmissionBuilder mSubmissionBuilder;
-	private AutograderSaver mSaver;
+	protected SubmissionDownloader submissionDownloader;
+	protected SubmissionBuilder submissionBuilder;
+	protected SeenSubmissions seenSubmissions;
+	private StudentDownloader studentDownloader;
+	private SubmissionParser parser;
 	
 	@Inject
-	public PhaseOne(StudentDownloader studentDownloader, SubmissionDownloader submissionDownloader, SubmissionBuilder subBuilder, AutograderSaver saver) {
-		mStudentDownloader = studentDownloader;
-		mSubmissionDownloader = submissionDownloader;
-		mSubmissionBuilder = subBuilder;
-		mSaver = saver;
+	public PhaseOne(SubmissionDownloader submissionDownloader, SubmissionBuilder subBuilder, SeenSubmissions seenSubmissions, StudentDownloader studentDownloader, SubmissionParser parser) {
+		this.submissionDownloader = submissionDownloader;
+		this.submissionBuilder = subBuilder;
+		this.seenSubmissions = seenSubmissions;
+		this.studentDownloader = studentDownloader;
+		this.parser = parser;
 	}
 	
-	public StudentMap setupSubmissions() {
-		User[] users = mStudentDownloader.getStudents();
-		HashMap<Integer, User> map = new HashMap<>();
-		for(User user : users) {
-			map.put(user.id, user);
-		}
-		
-		File saved = new File(AutograderSaver.AUTOGRADER_SAVE_FILENAME);
-		if(saved.exists()) {
-			mSaver.readFile(saved);
-			if(mSaver.isCurrentAssignemnt()) {
-				return mSubmissionBuilder.build(map, new File("submissions"));
-			} else {
-				if(!saved.delete()) {
-					System.out.println("Saved file didn't delete");
+	public AutograderSubmissionMap setupSubmissions(boolean rerun, String assignment) {
+		AutograderSubmissionMap submissionMap = new AutograderSubmissionMap();
+		if(rerun) {
+			// read submissions and meta data from disk.
+		} else {
+			// Get get all possible submissions
+			List<Submission> fullSubmissions = submissionDownloader.downloadSubmissions();
+			List<Submission> subsToRemove = new ArrayList<>();
+			
+			for(Submission submission : fullSubmissions) {
+				if(seenSubmissions.alreadySeenSubmission(submission)) {
+					subsToRemove.add(submission);
 				}
 			}
+			fullSubmissions.remove(subsToRemove);
+			
+			// create AutograderSubmission
+			fullSubmissions.stream()
+					.map(parser::parseAndCreateSubmission)
+					.peek(studentDownloader::fillUser)
+					.forEach(submissionMap::addSubmission);
 		}
-		
-		StudentMap parseSubmission = mSubmissionDownloader.parseSubmission(map);
-		mSaver.writeSavedFile(saved);
-		return parseSubmission;
+		return submissionMap;
 	}
 }

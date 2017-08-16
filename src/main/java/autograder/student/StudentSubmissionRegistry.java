@@ -13,8 +13,8 @@ import autograder.grading.WorkJob;
 @Deprecated
 public class StudentSubmissionRegistry {
 	private static StudentSubmissionRegistry mInstance;
-	private Map<Integer, Student> mIdMap;
-	private Map<String, Student> mNameMap;
+	private Map<Integer, AutograderSubmission> mIdMap;
+	private Map<String, AutograderSubmission> mNameMap;
 	public static synchronized StudentSubmissionRegistry getInstance() {
 //		if(mInstance == null ) {
 //			mInstance = new StudentSubmissionRegistry();
@@ -38,7 +38,7 @@ public class StudentSubmissionRegistry {
 //		addStudent(new Student(name, canvasId));
 	}
 	
-	public synchronized Student createStudentSubmission(String name, String canvasId) {
+	public synchronized AutograderSubmission createStudentSubmission(String name, String canvasId) {
 //		int id = Integer.parseInt(canvasId);
 //		Student student = new Student(name, id); 
 //		addStudent(student);
@@ -46,24 +46,24 @@ public class StudentSubmissionRegistry {
 		return null;
 	}
 	
-	public synchronized Student getStudentById(int id) {
+	public synchronized AutograderSubmission getStudentById(int id) {
 		return mIdMap.get(id);
 	}
 	
-	public synchronized Student getStudentById(String id) {
+	public synchronized AutograderSubmission getStudentById(String id) {
 		int intId = Integer.parseInt(id);
 		return mIdMap.get(intId);
 	}
 	
-	public synchronized Student getStudentByName(String name) {
+	public synchronized AutograderSubmission getStudentByName(String name) {
 		return mNameMap.get(name);
 	}
 	
-	public List<Student> toList() {
-		return new ArrayList<Student>(mIdMap.values());
+	public List<AutograderSubmission> toList() {
+		return new ArrayList<AutograderSubmission>(mIdMap.values());
 	}
 	
-	public void forEach(BiConsumer<String, Student> func) {
+	public void forEach(BiConsumer<String, AutograderSubmission> func) {
 		mNameMap.forEach(func);
 	}
 }

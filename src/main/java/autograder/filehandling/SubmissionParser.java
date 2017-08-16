@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.inject.Named;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -24,9 +26,9 @@ import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
 import autograder.configuration.Configuration;
 import autograder.configuration.ConfigurationException;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
+import autograder.student.AutograderSubmissionMap;
 import autograder.student.StudentErrorRegistry;
-import autograder.student.StudentMap;
 
 /**
  * SubmissionParser will create a student for every submission it receives,
@@ -42,42 +44,54 @@ public class SubmissionParser {
 	protected StudentErrorRegistry errorRegistry;
 	private SeenSubmissions seenSubmissions;
 	
+	private String assignment;
 	@Inject
-	public SubmissionParser(Configuration configuration, CanvasConnection connection, StudentErrorRegistry errorRegistry, SeenSubmissions seenSubmissions) {
+	public SubmissionParser(Configuration configuration, CanvasConnection connection, StudentErrorRegistry errorRegistry, SeenSubmissions seenSubmissions, @Named String assignment) {
 		mConfig = configuration;
 		this.connection = connection;
 		this.errorRegistry = errorRegistry;
 		this.seenSubmissions = seenSubmissions;
+		this.assignment = assignment;
 	}
 	
-	public StudentMap parseSubmissions(Map<Integer, User> users, Submission[] submissions) {
-		StudentMap studentMap = new StudentMap();
+	public AutograderSubmission parseAndCreateSubmission(Submission submission) {
+		AutograderSubmission autoSubmission = new AutograderSubmission(submission, new File(assignment));
+		mExpludePattern = createPattern();
+		for(Attachment attachment : submission.attachments) {
+			writeAttatchmentToDisk(autoSubmission, attachment);
+		}
+		return autoSubmission;
+	}
+	
+	@Deprecated
+	public AutograderSubmissionMap parseSubmissions(Map<Integer, User> users, Submission[] submissions) {
+		AutograderSubmissionMap studentMap = new AutograderSubmissionMap();
 		for (Submission sub : submissions) {
-			if(seenSubmissions.hasSeenSubmission(Integer.toString(sub.assignment_id))) {
+			if(seenSubmissions.alreadySeenSubmission(sub)) {
 				continue;
 			}
-			Student student = new Student(users.get(sub.user_id));
-			studentMap.addStudent(student);
+			AutograderSubmission student = new AutograderSubmission(users.get(sub.user_id));
+			studentMap.addSubmission(student);
 			if (sub.attachments == null) {
 				continue;
 			}
-			mExpludePattern = createPattern();
-			for (Attachment attachment : sub.attachments) {
-				if(mExpludePattern.matcher(attachment.filename).find()) {
-					continue;
-				}
-				if (attachment.filename.endsWith(".zip")) {
-					handleZipFile(attachment.url, student.studentDirectory.getAbsolutePath(), student);
-				} else if (attachment.filename.contains(".properties")) {
-					handlePropertieFile(attachment.url, student);
-				} else if (attachment.filename.contains(".pdf")) {
-					handlePdf(attachment.url, student, attachment.filename);
-				} else if (attachment.filename.contains(".java")) {
-					handleSourceFile(attachment.url, student, attachment.filename);
-				}
-			}
 		}
 		return studentMap;
+	}
+
+	private void writeAttatchmentToDisk(AutograderSubmission submission, Attachment attachment) {
+		if(mExpludePattern.matcher(attachment.filename).find()) {
+			return;
+		}
+		if (attachment.filename.endsWith(".zip")) {
+			handleZipFile(attachment.url, submission.directory.getAbsolutePath(), submission);
+		} else if (attachment.filename.contains(".properties")) {
+			handlePropertieFile(attachment.url, submission);
+		} else if (attachment.filename.contains(".pdf")) {
+			handlePdf(attachment.url, submission, attachment.filename);
+		} else if (attachment.filename.contains(".java")) {
+			handleSourceFile(attachment.url, submission, attachment.filename);
+		}
 	}
 
 	private Pattern createPattern() {
@@ -88,7 +102,7 @@ public class SubmissionParser {
 	}
 	
 
-	private void handleZipFile(String url, String submissionDir, Student student) {
+	private void handleZipFile(String url, String submissionDir, AutograderSubmission student) {
 		try (ZipInputStream zipStream = new ZipInputStream(
 				new ByteArrayInputStream(connection.downloadFile(url)))) {
 			ZipEntry entry = null;
@@ -120,7 +134,7 @@ public class SubmissionParser {
 					}
 				} else if (!invalidFile(entryName)) {
 					try (FileOutputStream out = new FileOutputStream(
-							new File(student.studentDirectory.getAbsolutePath() + "/" + entryName))) {
+							new File(student.directory.getAbsolutePath() + "/" + entryName))) {
 						int bytesRead = 0;
 						while ((bytesRead = zipStream.read(byteBuff)) > 0) {
 							out.write(byteBuff, 0, bytesRead);
@@ -141,7 +155,7 @@ public class SubmissionParser {
 		return false;
 	}
 
-	private void handlePropertieFile(String url, Student student) {
+	private void handlePropertieFile(String url, AutograderSubmission student) {
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(connection.downloadFile(url))) {
 			createSubmissionRecord(bis, student);
 		} catch (IOException e) {
@@ -149,16 +163,16 @@ public class SubmissionParser {
 		}
 	}
 
-	private void handlePdf(String url, Student student, String filename) {
+	private void handlePdf(String url, AutograderSubmission student, String filename) {
 		try {
-			FileUtils.writeByteArrayToFile(new File(student.studentDirectory.getAbsolutePath() + "/" + filename),
+			FileUtils.writeByteArrayToFile(new File(student.directory.getAbsolutePath() + "/" + filename),
 					connection.downloadFile(url));
 		} catch (IOException e) {
 			System.out.println("Could not write pdf to file from " + student + ". Reason: " + e.getMessage());
 		}
 	}
 	
-	private void handleSourceFile(String url, Student student, String filename) {
+	private void handleSourceFile(String url, AutograderSubmission student, String filename) {
 		try {
 			FileUtils.writeByteArrayToFile(new File(student.createSourceDirectory().getAbsolutePath() + "/" + filename), connection.downloadFile(url));
 		} catch (IOException e) {
@@ -166,11 +180,11 @@ public class SubmissionParser {
 		}
 	}
 
-	private void createSubmissionRecord(ByteArrayInputStream bis, Student student) {
+	private void createSubmissionRecord(ByteArrayInputStream bis, AutograderSubmission student) {
 		try {
 			Properties props = new Properties();
 			props.load(bis);
-			try(OutputStream out = new FileOutputStream(student.studentDirectory.getAbsolutePath() + "/assignment.properites")) {
+			try(OutputStream out = new FileOutputStream(student.directory.getAbsolutePath() + "/assignment.properites")) {
 				props.store(out, "Saving assignment.properites file");
 			}
 			student.assignProps = new AssignmentProperties(props);

@@ -7,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 public class TestJarring {
 
-	Student mStudent;
+	AutograderSubmission mStudent;
 	private Configuration config;
 	@Before
 	public void setUp() throws Exception {
-		mStudent = new Student(new File("src/test/resources/jar_student"), null);
+		mStudent = new AutograderSubmission(new File("src/test/resources/jar_student"), null);
 		mStudent.createSourceDirectory();
 		
 		config = new Configuration("src/test/resources/configuration_test.properties");

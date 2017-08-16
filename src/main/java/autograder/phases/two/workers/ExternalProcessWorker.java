@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 import autograder.configuration.Configuration;
 import autograder.grading.Grader;
 import autograder.phases.two.Worker;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 public abstract class ExternalProcessWorker implements Worker {
 	
@@ -22,7 +22,7 @@ public abstract class ExternalProcessWorker implements Worker {
 	public ExternalProcessWorker(Configuration configuration) {
 		mConfig = configuration;
 	}
-	protected Student mStudent;
+	protected AutograderSubmission mStudent;
 	protected File output, error;
 	protected Logger logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
 	
@@ -78,11 +78,11 @@ public abstract class ExternalProcessWorker implements Worker {
 	}
 
 
-	public Student getStudent() {
+	public AutograderSubmission getStudent() {
 		return mStudent;
 	}
 
-	public void setStudent(Student student) {
+	public void setStudent(AutograderSubmission student) {
 		this.mStudent = student;
 	}
 	

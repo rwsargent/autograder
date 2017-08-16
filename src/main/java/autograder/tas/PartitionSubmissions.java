@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
 import autograder.configuration.TeacherAssistantRegistry;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer.SubmissionData;
 
@@ -48,7 +48,7 @@ public class PartitionSubmissions {
 		List<SubmissionPair> submissions = new ArrayList<>(submissionData.pairs);
 
 		// add invalid submissions to the list to be shufffled
-		for(Student student : submissionData.invalidStudents) {
+		for(AutograderSubmission student : submissionData.invalidStudents) {
 			submissions.add(SubmissionPair.createSingleStudentPair(student));
 		}
 		

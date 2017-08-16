@@ -8,16 +8,16 @@ public class SubmissionPairer {
 	
 	private static final Logger LOGGER = Logger.getLogger(SubmissionPairer.class.getName());
 
-	public SubmissionData pairSubmissions(StudentMap studentMap){
+	public SubmissionData pairSubmissions(AutograderSubmissionMap studentMap){
 		SubmissionData submissionData = new SubmissionData();
-		for(Student student : studentMap.listStudents()) {
+		for(AutograderSubmission student : studentMap.listStudents()) {
 			try {
 				if(student.assignProps == null) {
 					submissionData.invalidStudents.add(student);
 					continue;
 				}
 				
-				Student partner = getPartner(student, studentMap);
+				AutograderSubmission partner = getPartner(student, studentMap);
 				if(partner != null) {
 					createPair(partner, student, submissionData);
 				} else {
@@ -38,15 +38,15 @@ public class SubmissionPairer {
 		}
 	}
 
-	private void createPair(Student partner, Student student, SubmissionData submissionData) {
+	private void createPair(AutograderSubmission partner, AutograderSubmission student, SubmissionData submissionData) {
 		submissionData.pairs.add(new SubmissionPair(partner, student));
 	}
 
-	private Student getPartner(Student student, StudentMap studentMap) {
+	private AutograderSubmission getPartner(AutograderSubmission student, AutograderSubmissionMap studentMap) {
 		if(student.assignProps.partner_name.equals("default")){ 
 			return null;
 		}
-		Student partner = studentMap.get(student.assignProps.partner_uid.toLowerCase());
+		AutograderSubmission partner = studentMap.get(student.assignProps.partner_uid.toLowerCase());
 		if(partner == null) {
 			LOGGER.warning(String.format("Could not match %s to the partner with %s (%s)", student.studentInfo.name, student.assignProps.partner_name, student.assignProps.partner_uid));
 			return null;
@@ -56,6 +56,6 @@ public class SubmissionPairer {
 
 	public class SubmissionData{
 		public Set<SubmissionPair> pairs = new HashSet<>();
-		public Set<Student> invalidStudents = new HashSet<>();
+		public Set<AutograderSubmission> invalidStudents = new HashSet<>();
 	}
 }

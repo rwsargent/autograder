@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
 import autograder.phases.two.workers.ExternalProcessWorker;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 
 /**
  * This will build a jar for a student and his or her compiled source code.
@@ -30,14 +30,14 @@ public class Jarrer extends ExternalProcessWorker {
 	}
 	
 	@Override
-	public void doWork(Student student) {
+	public void doWork(AutograderSubmission student) {
 		setStudent(student);
-		setRedirects(null, new File(student.studentDirectory, "jar_error.txt"));
+		setRedirects(null, new File(student.directory, "jar_error.txt"));
 		waitOnProccess(buildAndStartProcess());
 	}
 	
-	private String outputFile(Student student) {
-		return student.studentDirectory.getAbsolutePath() + File.separatorChar + mConfig.assignment + ".jar";
+	private String outputFile(AutograderSubmission student) {
+		return student.directory.getAbsolutePath() + File.separatorChar + mConfig.assignment + ".jar";
 	}
 	
 	/**
