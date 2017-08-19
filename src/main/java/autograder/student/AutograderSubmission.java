@@ -24,6 +24,7 @@ public class AutograderSubmission {
 	public Submission submissionInfo;
 	public Properties properties = new Properties();
 	public AssignmentProperties assignProps;
+	private File classesDirectory;
 
 	public AutograderSubmission(Submission submission, File parentDir) {
 		submissionInfo = submission;
@@ -56,26 +57,22 @@ public class AutograderSubmission {
 	}
 	
 	public File getClassesDirectory() {
-		return Paths.get(directory.getAbsolutePath(), "source", "classes").toFile();
+		if(classesDirectory == null) {
+			classesDirectory = Paths.get(directory.getAbsolutePath(), "source", "classes").toFile();
+			classesDirectory.mkdirs();
+		}
+		return classesDirectory;
 	}
 	/**
 	 * This file will create the directory for the Java source code if it hasn't been made already.
 	 * Use this method if you intend to write to this directory. If you want to read from it, use {@link AutograderSubmission#getSourceDirectory()}
 	 * @return The File of the source directory that was created. 
 	 */
-	public File createSourceDirectory() {
+	public File getSourceDirectory() {
 		if(sourceDirectory == null) {
 			sourceDirectory = new File(directory.getAbsolutePath() + "/source");
 			sourceDirectory.mkdir();
 		}
-		return sourceDirectory;
-	}
-	
-	/**
-	 * Use this method if you want to read from the source directory. If you are looking to write to it, use {@link AutograderSubmission#createSourceDirectory()}
-	 * @return The directory that holds the Java source.
-	 */
-	public File getSourceDirectory() {
 		return sourceDirectory;
 	}
 	
@@ -129,5 +126,9 @@ public class AutograderSubmission {
 			e.printStackTrace();
 		}
 		return this;
+	}
+
+	public File getDirectory() {
+		return directory;
 	}
 }

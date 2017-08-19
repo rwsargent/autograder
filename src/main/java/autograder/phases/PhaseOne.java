@@ -51,10 +51,10 @@ public class PhaseOne {
 			
 			// create AutograderSubmission
 			fullSubmissions.stream()
-					.map(parser::parseAndCreateSubmission)
-					.peek(studentDownloader::fillUser)
-					.peek(submission -> submission.writeMetaData())
-					.forEach(submissionMap::addSubmission);
+				.map(parser::parseAndCreateSubmission)
+				.peek(studentDownloader::fillUser)
+				.peek(submission -> submission.writeMetaData())
+				.forEach(submissionMap::addSubmission);
 		}
 		return submissionMap;
 	}

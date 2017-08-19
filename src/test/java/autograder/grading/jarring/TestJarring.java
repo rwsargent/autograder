@@ -16,7 +16,7 @@ public class TestJarring {
 	@Before
 	public void setUp() throws Exception {
 		mStudent = new AutograderSubmission(new File("src/test/resources/jar_student"), null);
-		mStudent.createSourceDirectory();
+		mStudent.getSourceDirectory();
 		
 		config = new Configuration("src/test/resources/configuration_test.properties");
 	}

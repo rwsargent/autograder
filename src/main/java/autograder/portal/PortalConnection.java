@@ -9,4 +9,5 @@ public interface PortalConnection {
 	public Submission[] getSubmissions();
 	public Submission[] getAllSubmissions();
 	public Submission getUserSubmissions(String student);
+	public byte[] downloadFile(String url);
 }
