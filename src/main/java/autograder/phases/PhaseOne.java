@@ -20,6 +20,7 @@ import autograder.canvas.responses.User;
 import autograder.filehandling.SeenSubmissions;
 import autograder.filehandling.SubmissionParser;
 import autograder.phases.one.StudentDownloader;
+import autograder.phases.one.SubmissionBuilder;
 import autograder.phases.one.SubmissionDownloader;
 import autograder.student.AutograderSubmission;
 import autograder.student.AutograderSubmissionMap;

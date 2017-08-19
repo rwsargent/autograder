@@ -1,4 +1,4 @@
-package autograder.phases;
+package autograder.phases.one;
 
 import java.io.File;
 import java.util.HashMap;

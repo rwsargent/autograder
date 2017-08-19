@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
+import autograder.phases.one.SubmissionBuilder;
 import autograder.student.AutograderSubmissionMap;
 
 public class TestSubmissionBuilder {

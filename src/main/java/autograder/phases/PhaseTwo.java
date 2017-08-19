@@ -1,4 +1,4 @@
-package autograder.phases.two;
+package autograder.phases;
 
 import java.util.List;
 import java.util.Set;
@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import autograder.phases.two.Worker;
 import autograder.student.AutograderSubmission;
 import autograder.student.AutograderSubmissionMap;
 

@@ -23,7 +23,7 @@ import autograder.grading.Grader;
 import autograder.grading.WorkJob;
 import autograder.mailer.Mailer;
 import autograder.phases.PhaseOne;
-import autograder.phases.two.PhaseTwo;
+import autograder.phases.PhaseTwo;
 import autograder.student.AutograderSubmission;
 import autograder.student.AutograderSubmissionMap;
 import autograder.student.SubmissionPair;
