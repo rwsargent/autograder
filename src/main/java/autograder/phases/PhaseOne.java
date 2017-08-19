@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 
+import autograder.Constants;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
 import autograder.filehandling.SeenSubmissions;
@@ -59,11 +60,11 @@ public class PhaseOne {
 				// read meta files
 				try {
 					File meta = new File(assignmentDir, "meta");
-					Submission submission = gson.fromJson(FileUtils.readFileToString(new File(meta, AutograderSubmission.SUBMISSION), Charset.defaultCharset()), Submission.class);
-					User user = gson.fromJson(FileUtils.readFileToString(new File(meta, AutograderSubmission.STUDENT_INFO), Charset.defaultCharset()), User.class);
+					Submission submission = gson.fromJson(FileUtils.readFileToString(new File(meta, Constants.MetaData.SUBMISSION), Charset.defaultCharset()), Submission.class);
+					User user = gson.fromJson(FileUtils.readFileToString(new File(meta, Constants.MetaData.STUDENT_INFO), Charset.defaultCharset()), User.class);
 					
 					AutograderSubmission autograderSubmission = new AutograderSubmission(submission, assignmentDir.getParentFile());
-					autograderSubmission.addUser(user);
+					autograderSubmission.setUser(user);
 					
 					submissionMap.addSubmission(autograderSubmission);
 				} catch(IOException e) {

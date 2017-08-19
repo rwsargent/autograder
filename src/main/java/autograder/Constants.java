@@ -19,6 +19,11 @@ public interface Constants {
 		public static final String[] TA_CSV_HEADERS = new String[] {TA_NAME_HEADER,TA_EMAIL_HEADER, TA_HOURS_HEADER};
 	}
 	
+	public interface MetaData {
+		public static final String SUBMISSION = "submission.json";
+		public static final String STUDENT_INFO = "studentInfo.json";
+	}
+	
 	public static final String FILE_REGEX = "([a-zA-Z\\-]+)(-late)?_(\\d*)_(\\d*)_(.*)";
 	public static final String LINK_REGEX = "[<](https://utah.instructure.com/api/v1/[a-zA-Z0-9/?&=_]+)[>]; rel=\"next\"";
 	public static final int NAME_GROUP = 1;

@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -49,13 +51,14 @@ public class InternalJavaCompiler implements Worker {
 		if(sourceFiles.length == 0) {
 			LOGGER.debug("Skipping student " + submission + " for not having any source files to compile!");
 			submission.setProperty("compiled", "false");
+			return;
 		}
 		Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjects(sourceFiles);
 		
 		List<String> compilerOptions = Arrays.asList("-cp", generateClassPathString(), "-d", submission.getClassesDirectory().getAbsolutePath());
-		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, compilerOptions, null,
-				compilationUnits); 
-		
+		Writer writer = new OutputStreamWriter(System.out);
+		JavaCompiler.CompilationTask task = compiler.getTask(writer, fileManager, diagnostics, compilerOptions, null,
+				compilationUnits);
 		boolean compiled = task.call();
 		submission.setProperty("compiled", Boolean.toString(compiled));
 		
@@ -63,7 +66,8 @@ public class InternalJavaCompiler implements Worker {
 			try(FileWriter fw = new FileWriter(new File(submission.getDirectory(), "compile_error.txt"));
 					BufferedWriter bw = new BufferedWriter(fw)) {
 				for(Diagnostic<? extends JavaFileObject> error : diagnostics.getDiagnostics()) {
-					bw.write(error.getMessage(Locale.getDefault()));
+					bw.write(error.toString());
+					System.out.println(error.getMessage(Locale.getDefault()));
 				}
 			} catch (IOException e) {
 				LOGGER.error("Writing compiliation error for submission " + submission, e);

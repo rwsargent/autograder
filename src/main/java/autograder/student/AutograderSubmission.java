@@ -18,11 +18,11 @@ import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
 import autograder.configuration.ConfigurationException;
+import autograderutils.AutograderResult;
 
+import static autograder.Constants.MetaData.*;
 public class AutograderSubmission {
 	
-	public static final String SUBMISSION = "submission.json";
-	public static final String STUDENT_INFO = "studentInfo.json";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutograderSubmission.class);
 	
@@ -33,6 +33,7 @@ public class AutograderSubmission {
 	public Properties properties = new Properties();
 	public AssignmentProperties assignProps;
 	private File classesDirectory;
+	private AutograderResult result;
 
 	public AutograderSubmission(Submission submission, File parentDir) {
 		Assert.assertNotNull(submission);
@@ -123,7 +124,7 @@ public class AutograderSubmission {
 		return this.submissionInfo.assignment_id * this.submissionInfo.user_id * 7;
 	}
 
-	public void addUser(User user) {
+	public void setUser(User user) {
 		this.studentInfo = user;
 	}
 
@@ -142,5 +143,13 @@ public class AutograderSubmission {
 
 	public File getDirectory() {
 		return directory;
+	}
+
+	public void setResult(AutograderResult result) {
+		this.result = result;
+	}
+	
+	public AutograderResult getResult() {
+		return this.result;
 	}
 }

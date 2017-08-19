@@ -25,6 +25,6 @@ public class StudentDownloaderImpl implements StudentDownloader {
 
 	@Override
 	public void fillUser(AutograderSubmission submission) {
-		submission.addUser(mPortal.getStudentById(Integer.toString(submission.submissionInfo.user_id)));
+		submission.setUser(mPortal.getStudentById(Integer.toString(submission.submissionInfo.user_id)));
 	}
 }
