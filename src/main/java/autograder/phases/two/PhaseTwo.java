@@ -1,7 +1,5 @@
 package autograder.phases.two;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -10,14 +8,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import autograder.student.AutograderSubmission;
 import autograder.student.AutograderSubmissionMap;
-import autograder.student.SubmissionPair;
-import autograder.student.SubmissionPairer;
-import autograder.student.SubmissionPairer.SubmissionData;
-import autograder.tas.PartitionSubmissions;
 
 /**
  * This is the main workhorse class. It injects a set of Workers, which will be applied in order to
@@ -28,15 +25,12 @@ import autograder.tas.PartitionSubmissions;
  *
  */
 public class PhaseTwo {
-	private SubmissionPairer mPairer;
 	private Provider<Set<Worker>> mWorkers;
-	private PartitionSubmissions mSubPartitioner;
 	
+	private static Logger LOGGER = LoggerFactory.getLogger(PhaseTwo.class);
 	@Inject
-	public PhaseTwo(SubmissionPairer pairer, Provider<Set<Worker>> workers, PartitionSubmissions submissionPartitioner) {
-		mPairer = pairer;
+	public PhaseTwo(Provider<Set<Worker>> workers) {
 		mWorkers = workers;
-		mSubPartitioner = submissionPartitioner;
 	}
 	
 	/**
@@ -45,14 +39,11 @@ public class PhaseTwo {
 	 * @return - Students randomly partitioned amongst the students in 
 	 * @throws InterruptedException
 	 */
-	public HashMap<String, Set<SubmissionPair>> phaseTwo(AutograderSubmissionMap studentMap) throws InterruptedException {
-		SubmissionData submissionData = mPairer.pairSubmissions(studentMap);
-		List<AutograderSubmission> students = getStudentsToGrade(submissionData);
-		ExecutorService threadPool = startWork(students);
+	public AutograderSubmissionMap phaseTwo(AutograderSubmissionMap studentMap) throws InterruptedException {
+		ExecutorService threadPool = startWork(studentMap.listStudents());
 		threadPool.shutdown();
-		HashMap<String, Set<SubmissionPair>> taParition = mSubPartitioner.partition(submissionData);
 		threadPool.awaitTermination(8, TimeUnit.HOURS);
-		return taParition;
+		return studentMap;
 	}
 	
 	// Trying out the ExecutorService. Each job is a run through all the workers for each student.
@@ -60,42 +51,16 @@ public class PhaseTwo {
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
 		for(AutograderSubmission student : queue) {
 			threadPool.submit(() -> {
-				System.out.println("Starting work on " + student.studentInfo.name);
+				LOGGER.info("Starting work on " + student.studentInfo.name);
 				try{ 
 					for(Worker worker : mWorkers.get()) {
 						worker.doWork(student);
 					}
 				} catch (Throwable t) {
-					System.err.println("Could not finish work on " + student + " - " + t.getMessage());
+					LOGGER.error("Could not finish work on " + student, t);
 				}
 			});
 		}
 		return threadPool;
-	}
-
-	/**
-	 * If a student is paired, I'll only grade one of their assignments. If they're not paired, or if
-	 * I can't figure out who submitted the code, I try to grade both of them. 
-	 * 
-	 * Single students are added at the end. 
-	 * @param submissionData
-	 * @return
-	 */
-	private List<AutograderSubmission> getStudentsToGrade(SubmissionData submissionData) {
-		Set<SubmissionPair> pairs = submissionData.pairs;
-		List<AutograderSubmission> queue = new LinkedList<>();
-		
-		for(SubmissionPair pair : pairs) {
-			queue.add(pair.submitter);
-			if(!pair.sorted) {
-				queue.add(pair.partner);
-			}
-		}
-		
-		for(AutograderSubmission student : submissionData.invalidStudents) {
-			queue.add(student);
-		}
-		
-		return queue;
 	}
 }

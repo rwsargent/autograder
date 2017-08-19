@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import autograder.student.AutograderSubmission;
 
@@ -17,14 +17,14 @@ import autograder.student.AutograderSubmission;
  * @author ryans
  */
 public class DefaultFileDirector implements FileDirector {
-	private Logger LOGGER = Logger.getLogger(getClass().getName());
+	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 	
 	@Override
 	public File directFile(InputStream fileData, AutograderSubmission submission, String filepath) throws FileNotFoundException, IOException {
-		String baseName = FilenameUtils.getBaseName(filepath);
+		String baseName = FilenameUtils.getName(filepath);
 		File destination = new File(submission.getDirectory(), baseName);
 		if(destination.exists()) {
-			LOGGER.log(Level.WARNING, "The file" + filepath + " is going to be replace the old file at " + baseName);
+			LOGGER.warn("The file" + filepath + " is going to be replace the old file at " + baseName);
 		}
 		writeToDisk(fileData, destination);
 		return destination;

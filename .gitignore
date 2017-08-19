@@ -12,6 +12,7 @@ submissions
 extraclasspathfiles
 graders
 ta.csv
+all.log
 
 # Directories #
 /build/

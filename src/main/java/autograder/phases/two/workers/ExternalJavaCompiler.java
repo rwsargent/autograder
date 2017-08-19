@@ -23,10 +23,10 @@ import autograder.student.AutograderSubmission;
  * @author ryansargent
  *
  */
-public class JavaCompiler extends ExternalProcessWorker {
+public class ExternalJavaCompiler extends ExternalProcessWorker {
 
 	@Inject
-	public JavaCompiler(Configuration configuration) {
+	public ExternalJavaCompiler(Configuration configuration) {
 		super(configuration);
 	}
 

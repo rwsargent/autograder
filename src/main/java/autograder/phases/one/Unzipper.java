@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -14,6 +12,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import autograder.configuration.Configuration;
 import autograder.student.AutograderSubmission;
@@ -28,7 +28,7 @@ public class Unzipper {
 	private Pattern excludePattern;
 	private Map<String, FileDirector> fileDirectors;
 	
-	private Logger LOGGER = Logger.getLogger(Unzipper.class.getName());
+	private Logger LOGGER = LoggerFactory.getLogger(Unzipper.class);
 	private StudentErrorRegistry errorRegistry;
 
 	@Inject
@@ -53,14 +53,14 @@ public class Unzipper {
 					continue; //we'll be careful for structure needed for each file in the FileDirector
 				}
 				if(excludePattern.matcher(entry.getName()).find() || invalidFile(entry.getName())) {
-					LOGGER.log(Level.FINE, "Excluding " + entry.getName());
+					LOGGER.debug("Excluding " + entry.getName());
 					zipStream.closeEntry();
 					continue;
 				}
 				String extension = FilenameUtils.getExtension(entry.getName());
 				FileDirector fileDirector = fileDirectors.get(extension);
 				if(fileDirector == null) { // I want to be exclusive. If I don't know how to download it, I'm not gonna
-					LOGGER.log(Level.FINE, "Skipping " + entry.getName() + " because I don't know how to handle it!");
+					LOGGER.debug("Skipping " + entry.getName() + " because I don't know how to handle it!");
 					continue;
 				}
 				File outfile = fileDirector.directFile(zipStream, submission, entry.getName());
@@ -74,7 +74,7 @@ public class Unzipper {
 				zipStream.closeEntry();
 			}
 		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "Failed to unzip " + submission, e);
+			LOGGER.warn("Failed to unzip " + submission, e);
 			errorRegistry.addInvalidSubmission(submission);
 		}
 	}

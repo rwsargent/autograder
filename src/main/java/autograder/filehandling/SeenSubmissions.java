@@ -12,6 +12,9 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import autograder.canvas.responses.Submission;
 
 /**
@@ -28,6 +31,8 @@ public class SeenSubmissions {
 	private Set<String> submissionIds = new HashSet<>();
 	private String assignmentName;
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(SeenSubmissions.class);
+	
 	@Inject
 	public SeenSubmissions(@Named("assignment") String assignment) {
 		assignmentName = assignment;
@@ -37,10 +42,12 @@ public class SeenSubmissions {
 	public void loadSubmissions() {
 		submissionIds.clear();
 		Path path = generatePath();
-		try(Stream<String> idStream = Files.lines(path)) {
-			idStream.forEach(submissionIds::add);
-		} catch (IOException e) {
-			System.out.println("No submissions were loaded for " + assignmentName);
+		if(path.toFile().exists()) {
+			try(Stream<String> idStream = Files.lines(path)) {
+				idStream.forEach(submissionIds::add);
+			} catch (IOException e) {
+				LOGGER.debug("No submissions were loaded for " + assignmentName, e);
+			}
 		}
 	}
 

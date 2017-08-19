@@ -16,7 +16,7 @@ public class SourceFileDirector implements FileDirector {
 
 	@Override
 	public File directFile(InputStream stream, AutograderSubmission submission, String filepath) throws IOException {
-		File destination = new File(submission.getSourceDirectory(), FilenameUtils.getBaseName(filepath));
+		File destination = new File(submission.getSourceDirectory(), FilenameUtils.getName(filepath));
 		writeToDisk(stream, destination);
 		return destination;
 	}

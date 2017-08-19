@@ -3,14 +3,23 @@ package autograder.canvas;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import autograder.AutograderTestModule;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
+import autograder.configuration.Configuration;
 
 public class TestCanvas {
 	
-	protected CanvasConnection connection = new CanvasConnection();
+	protected CanvasConnection connection;
+	
+	@Before
+	public void setup() {
+		Configuration config = new Configuration(AutograderTestModule.TEST_CONFIG_PATH);
+		connection = new CanvasConnection(config);
+	}
 
 	@Test
 	public void testAssignmentFileDownload() {

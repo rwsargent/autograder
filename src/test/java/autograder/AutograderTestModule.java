@@ -11,6 +11,8 @@ import autograder.phases.one.SourceFileDirector;
 
 public class AutograderTestModule extends AbstractModule {
 
+	public static final String TEST_CONFIG_PATH = "src/test/resources/configuration_test.properties";
+
 	@Override
 	protected void configure() {
 		MapBinder<String, FileDirector> directorBindings = MapBinder.newMapBinder(binder(), String.class, FileDirector.class);
@@ -20,7 +22,7 @@ public class AutograderTestModule extends AbstractModule {
 		directorBindings.addBinding("zip").to(DefaultFileDirector.class);
 		directorBindings.addBinding("txt").to(DefaultFileDirector.class);
 		
-		bind(String.class).annotatedWith(Names.named("configpath")).toInstance("src/test/resources/configuration_test.properties");
+		bind(String.class).annotatedWith(Names.named("configpath")).toInstance(TEST_CONFIG_PATH);
 		bind(String.class).annotatedWith(Names.named("assignment")).toInstance("assignment01");
 		
 	}

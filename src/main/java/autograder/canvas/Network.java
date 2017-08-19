@@ -37,11 +37,17 @@ import autograder.configuration.Configuration;
  */
 public abstract class Network {
 
-	@Inject protected Configuration configuration;
+	protected Configuration configuration;
+	protected String token;
 	
 	private static final Logger LOGGER = Logger.getLogger(Network.class.getName()); 
 	public static final String BASE_URL = "https://utah.instructure.com/api/v1/";
-	protected String token = configuration.canvasToken;
+	
+	@Inject
+	public Network(Configuration configuration) {
+		this.configuration = configuration;
+		token = configuration.canvasToken;
+	}
 	
 	public byte[] downloadFile(String url) {
 		HttpClient client = HttpClients.createDefault();

@@ -1,6 +1,6 @@
 package autograder.canvas;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 import autograder.canvas.responses.Assignment;
 import autograder.canvas.responses.Submission;
@@ -14,19 +14,16 @@ import autograder.portal.PortalConnection;
  *
  */
 public class CanvasConnection extends Network implements PortalConnection{
-	private Configuration mConfig;
-
+	
 	@Inject
-	public CanvasConnection(Configuration config) {
-		mConfig = config;
+	public CanvasConnection(Configuration configuration) {
+		super(configuration);
+		// TODO Auto-generated constructor stub
 	}
-	
-	public CanvasConnection() {
-	}
-	
+
 	@Override
 	public User[] getStudents() {
-		return getAllStudents(mConfig.canvasCourseId);
+		return getAllStudents(configuration.canvasCourseId);
 	}
 	
 	public  User[] getAllStudents(String courseId) {
@@ -40,7 +37,7 @@ public class CanvasConnection extends Network implements PortalConnection{
 	
 	@Override
 	public Submission[] getSubmissions() {
-		return getAllSubmissions(mConfig.canvasCourseId, mConfig.canvasAssignmentId);
+		return getAllSubmissions(configuration.canvasCourseId, configuration.canvasAssignmentId);
 	}
 	
 	public Submission[] getAllSubmissions(String courseId, String assignmentId) {

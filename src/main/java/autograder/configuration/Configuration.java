@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -13,10 +15,8 @@ import autograder.Constants;
 
 public class Configuration extends AbstractProperties {
 	
-	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
+	public Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
-
-	
 	public String assignment; 
 	
 	public String graderClassName;
@@ -40,22 +40,22 @@ public class Configuration extends AbstractProperties {
 	public String studentFilePath;
 	public String submission;
 	
-	@Optional(defaultValue="")
-	public String mainClass;
-	
 	public String ignorePattern;
 	
 	public String studentsToGradeCsv;
 	
-	@Optional(defaultValue="")
-	public String extraBundledFilesCsv;
-	
-	@Optional
-	public String junitPlugin;
-
 	public String validFileExtensions;
 	public String validFileNames;
+	
+	@Optional(defaultValue="")
+	public String mainClass;
+	
+	@Optional(defaultValue="")
+	public String extraBundledFilesCsv;
 
+	@Optional
+	public String junitPlugin;
+	
 	@Optional(defaultValue="")
 	public String graderJVMOptions;
 	

@@ -10,14 +10,11 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import org.apache.commons.cli.CommandLine;
-
 import com.google.inject.Inject;
 
 import autograder.canvas.CanvasConnection;
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
-import autograder.configuration.CmdLineParser;
 import autograder.configuration.Configuration;
 import autograder.configuration.TeacherAssistantRegistry;
 import autograder.filehandling.Bundler;
@@ -39,46 +36,30 @@ public class Autograder {
 	
 	public static Logger LOGGER = Logger.getLogger(Autograder.class.getName());
 	private boolean shouldMail = false;
-	private boolean onlyLate;
 	
 	private Bundler mBundler;
-	private Configuration mConfig;
+	private Configuration config;
 	private CanvasConnection mConnection;
 	private SubmissionParser mSubParser;
 	private Mailer mMailer;
 	private PartitionSubmissions partSubmissions;
 	private TeacherAssistantRegistry mTARegistry;
 	private PhaseOne mPhaseOne;
-	private SubmissionPairer mPairer;
-	private PhaseTwo mPhaseTwo;
+	private PhaseTwo phaseTwo;
 	
 	@Inject
-	public Autograder(PhaseOne phaseOne, SubmissionPairer pairer, PhaseTwo phaseTwo) {
+	public Autograder(Configuration configuration, PhaseOne phaseOne, PhaseTwo phaseTwo) {
 		mPhaseOne = phaseOne;
-		mPairer = pairer;
-		mPhaseTwo = phaseTwo;
-	}
-	
-	@Inject
-	public Autograder(Configuration configuration, Bundler bundler, CanvasConnection connection, SubmissionParser subParser, Mailer mailer, PartitionSubmissions subPartitioner,
-			TeacherAssistantRegistry taRegistry) {
-		mBundler = bundler;
-		mConfig = configuration;
-		mConnection = connection;
-		mSubParser = subParser;
-		mMailer = mailer;
-		partSubmissions = subPartitioner;
-		mTARegistry = taRegistry;
+		config = configuration;
+		this.phaseTwo = phaseTwo;
 	}
 	
 	public void execute() {
-		AutograderSubmissionMap studentMap = mPhaseOne.setupSubmissions(false, "assignment1");
-		
-		HashMap<String, Set<SubmissionPair>> partition;
+		AutograderSubmissionMap studentMap = mPhaseOne.setupSubmissions(config.assignment, true);
 		try {
-			partition = mPhaseTwo.phaseTwo(studentMap);
+			this.phaseTwo.phaseTwo(studentMap);
 		} catch (InterruptedException e) {
-			LOGGER.warning("Something stopped the grader threads!" + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -88,7 +69,7 @@ public class Autograder {
 		
 		System.out.println("Download Submissions");
 		Submission[] canvasSubmissions = getDesiredSubmissions(userMap);
-		AutograderSubmissionMap submissions = mSubParser.parseSubmissions(userMap, canvasSubmissions);
+		AutograderSubmissionMap submissions = null; // mSubParser.parseSubmissions(userMap, canvasSubmissions);
 		SubmissionPairer pairer = new SubmissionPairer();
 		
 		System.out.println("Pair submissions");
@@ -133,7 +114,7 @@ public class Autograder {
 	}
 
 	private Submission[] getDesiredSubmissions(Map<Integer, User> userMap) {
-		String studentsToGradeCsv = mConfig.studentsToGradeCsv;
+		String studentsToGradeCsv = config.studentsToGradeCsv;
 		if (studentsToGradeCsv == null) {
 			return mConnection.getAllSubmissions();
 		}
@@ -163,7 +144,7 @@ public class Autograder {
 	}
 
 	private void emailTAs(Map<String, File> zippedFiles) {
-		String subject = "[CS2420] Submissions for " + mConfig.assignment;
+		String subject = "[CS2420] Submissions for " + config.assignment;
 		String body = "Happy grading!\n\n Tas Rule!";
 		for(String ta : zippedFiles.keySet()) {
 			TAInfo taInfo = mTARegistry.get(ta);
@@ -189,24 +170,6 @@ public class Autograder {
 		tas.forEach((name, ta) -> ta.assignmentsToGrade = (int) Math.round((ta.hours / totalHours) * totalSubmissions));	
 	}
 
-	public void setup(String[] args) {
-		CmdLineParser parser = new CmdLineParser();
-		CommandLine commandLine = parser.parse(args);
-		if(commandLine.hasOption("h")) {
-			parser.printHelp();
-			System.exit(0);
-			return; // unreachable code, being explicit about control flow
-		} else if (commandLine.hasOption('m') || commandLine.hasOption("mail")) {
-			shouldMail = true;
-		} else if (commandLine.hasOption('l') || commandLine.hasOption("late")) {
-			onlyLate = true;
-		}
-		
-		new File(Constants.SUBMISSIONS).mkdir();
-		new File(Constants.ZIPS).mkdir();
-		System.out.println("Created submission folder");
-	}
-	
 	private Grader[] startGraderThreads(Queue<WorkJob> queue) {
 		int processorCount = Runtime.getRuntime().availableProcessors() - 1;
 		Grader[] threads = new Grader[processorCount];

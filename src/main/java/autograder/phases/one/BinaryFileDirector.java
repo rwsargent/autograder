@@ -20,7 +20,7 @@ public class BinaryFileDirector implements FileDirector {
 		File parentDirs = new File(submission.getClassesDirectory(), FilenameUtils.getPath(filepath));
 		parentDirs.mkdirs();
 		
-		File destination = new File(parentDirs, FilenameUtils.getBaseName(filepath));
+		File destination = new File(parentDirs, FilenameUtils.getName(filepath));
 		writeToDisk(stream, destination);
 		return destination;
 	}

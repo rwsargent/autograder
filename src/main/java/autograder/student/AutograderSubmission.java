@@ -2,14 +2,17 @@ package autograder.student;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
@@ -17,7 +20,12 @@ import autograder.configuration.AssignmentProperties;
 import autograder.configuration.ConfigurationException;
 
 public class AutograderSubmission {
-	private static Logger LOGGER = Logger.getLogger(AutograderSubmission.class.getName());
+	
+	public static final String SUBMISSION = "submission.json";
+	public static final String STUDENT_INFO = "studentInfo.json";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AutograderSubmission.class);
+	
 	public File directory;
 	private File sourceDirectory;
 	public User studentInfo;
@@ -27,12 +35,16 @@ public class AutograderSubmission {
 	private File classesDirectory;
 
 	public AutograderSubmission(Submission submission, File parentDir) {
+		Assert.assertNotNull(submission);
 		submissionInfo = submission;
 		directory = new File(parentDir, generateDirectoryName());
-		if(directory.mkdir()) {
-			LOGGER.log(Level.INFO, "Created AutograderSubmission: " + directory.getName());
-		} else {
-			LOGGER.log(Level.WARNING, "Failed to create AutograderSubmission: " + directory.getName());
+		
+		if(!directory.exists()) {
+			if(directory.mkdir()) {
+				LOGGER.info("Created AutograderSubmission: " + directory.getName());
+			} else {
+				LOGGER.warn("Failed to create AutograderSubmission: " + directory.getName());
+			}
 		}
 	}
 	
@@ -84,7 +96,7 @@ public class AutograderSubmission {
 		try {
 			assignProps = new AssignmentProperties(directory.getAbsolutePath() + "/assignment.properties");
 		} catch (ConfigurationException e) {
-			LOGGER.warning(studentInfo.name + " does not have a valid assignment.properties file. " + e.getMessage());
+			LOGGER.warn(studentInfo.name + " does not have a valid assignment.properties file. " + e.getMessage());
 		}
 	}
 	
@@ -116,12 +128,12 @@ public class AutograderSubmission {
 	}
 
 	public AutograderSubmission writeMetaData() {
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		File metaDir = new File(directory, "meta");
 		metaDir.mkdir();
 		try {
-			FileUtils.writeStringToFile(new File(metaDir, "studentInfo.json"), gson.toJson(this.studentInfo));
-			FileUtils.writeStringToFile(new File(metaDir, "submission.json"), gson.toJson(this.submissionInfo));
+			FileUtils.writeStringToFile(new File(metaDir, STUDENT_INFO), gson.toJson(this.studentInfo), Charset.defaultCharset());
+			FileUtils.writeStringToFile(new File(metaDir, SUBMISSION), gson.toJson(this.submissionInfo), Charset.defaultCharset());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
