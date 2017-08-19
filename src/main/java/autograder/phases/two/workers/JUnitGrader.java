@@ -62,11 +62,6 @@ public class JUnitGrader implements Worker {
 			
 			try {
 				Class<?> loadClass = classLoader.loadClass(configuration.graderClassName);
-				try {
-					Object obj = loadClass.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
 				AutograderResult result = grader.grade(loadClass);
 				if(result == null) {
 					LOGGER.warn("Result is null for " + submission);
@@ -80,7 +75,6 @@ public class JUnitGrader implements Worker {
 		} catch (IOException e1) {
 			LOGGER.error("Trouble closing the IOStream for " + submission, e1);
 		};
-		
 	}
 
 	private List<URL> getUrlsFromExtraClassPath() throws MalformedURLException {
