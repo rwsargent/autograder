@@ -61,6 +61,9 @@ public class Configuration extends AbstractProperties {
 	
 	@Optional(defaultValue = "60")
 	public String timeout;
+
+	@Optional
+	public String outputDestination;
 	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {

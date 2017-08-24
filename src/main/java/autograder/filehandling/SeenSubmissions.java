@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import autograder.canvas.responses.Submission;
+import autograder.student.AutograderSubmission;
 
 /**
  * This class handles the logic of whether or not a submission has been 
@@ -60,8 +61,8 @@ public class SeenSubmissions {
 		return submissionIds.contains(buildIdentifier(submission));
 	}
 	
-	public boolean addSubmission(Submission submission) {
-		return submissionIds.add(buildIdentifier(submission));
+	public boolean addSubmission(AutograderSubmission submission) {
+		return submissionIds.add(buildIdentifier(submission.submissionInfo));
 	}
 	
 	protected String buildIdentifier(Submission submission) {
