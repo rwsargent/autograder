@@ -3,6 +3,9 @@ package autograder.canvas;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,5 +40,16 @@ public class TestCanvas {
 	public void testSubmission() {
 		Submission[] submissions = connection.getAllSubmissions();
 		assertNotNull(submissions);
+	}
+	
+	@Test
+	public void testPut() {
+		Configuration config = new Configuration(AutograderTestModule.TEST_CONFIG_PATH);
+		config.canvasToken = "";// REDACTED - fill with token to retest;
+		config.canvasCourseId = "460997";
+		connection = new CanvasConnection(config);
+		Map<String, String> data = new HashMap<>();
+		data.put("comment[text_comment]", "Test for Java, baby!");
+		connection.gradeStudentSubmission("1795440", "4329488", data);
 	}
 }

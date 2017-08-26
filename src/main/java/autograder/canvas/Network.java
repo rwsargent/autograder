@@ -1,8 +1,12 @@
 package autograder.canvas;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,12 +15,16 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
@@ -60,6 +68,39 @@ public abstract class Network {
 		}
 	}
 	
+	protected void httpPutCall(String url, Map<String, String> params)  {
+		HttpClient client = HttpClients.createDefault();
+		HttpPut request = new HttpPut(BASE_URL + url);
+		configureRequest(request);
+		request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+		try {
+			request.setEntity(new UrlEncodedFormEntity(createNamePairsFrom(params)));
+		} catch (UnsupportedEncodingException e) {
+			// should never happen
+		}
+		String responseAsJSONString = "";
+		try {
+			HttpResponse response = client.execute(request);
+			if(validResponse(response)) {
+				responseAsJSONString = EntityUtils.toString(response.getEntity());
+			} else {
+				LOGGER.severe("Responded with: " + response.getStatusLine().getStatusCode());
+				throw new RuntimeException();
+			}
+		} catch (IOException e) {
+			LOGGER.severe(e.getMessage());
+			responseAsJSONString = String.format("{\"appError\" : \"%s\"}", e.getMessage());
+			throw new RuntimeException();
+		}
+		return;
+	}
+	
+	private List<NameValuePair> createNamePairsFrom(Map<String, String> params) {
+		List<NameValuePair> list = new ArrayList<>();
+		params.entrySet().forEach(entry -> list.add(new BasicNameValuePair(entry.getKey(), entry.getValue())));
+		return list;
+	}
+
 	protected <E> E httpPostCall(String url, String contentType, HttpEntity data, Class<E> responseClass) {
         HttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(BASE_URL + url);

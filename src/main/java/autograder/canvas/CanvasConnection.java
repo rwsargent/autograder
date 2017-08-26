@@ -1,5 +1,7 @@
 package autograder.canvas;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import autograder.canvas.responses.Assignment;
@@ -18,7 +20,6 @@ public class CanvasConnection extends Network implements PortalConnection{
 	@Inject
 	public CanvasConnection(Configuration configuration) {
 		super(configuration);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -59,6 +60,11 @@ public class CanvasConnection extends Network implements PortalConnection{
 	@Override
 	public User getStudentById(String id) {
 		return httpGetCall(String.format("users/%s/profile", id), User.class);
+	}
+
+	@Override
+	public void gradeStudentSubmission(String student, String assignment, Map<String, String> data) {
+		httpPutCall(String.format("courses/%s/assignments/%s/submissions/%s", configuration.canvasCourseId, assignment, student), data);
 	}
 	
 }
