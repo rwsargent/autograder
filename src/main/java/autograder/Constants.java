@@ -24,6 +24,10 @@ public interface Constants {
 		public static final String STUDENT_INFO = "studentInfo.json";
 	}
 	
+	public interface Canvas {
+		public static final String SUBISSION_COMMENT = "comment[comment_text]";
+	}
+	
 	public static final String FILE_REGEX = "([a-zA-Z\\-]+)(-late)?_(\\d*)_(\\d*)_(.*)";
 	public static final String LINK_REGEX = "[<](https://utah.instructure.com/api/v1/[a-zA-Z0-9/?&=_]+)[>]; rel=\"next\"";
 	public static final int NAME_GROUP = 1;

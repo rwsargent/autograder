@@ -39,7 +39,11 @@ public class PhaseThree {
 		
 		for(AutograderSubmission submission : map.listStudents()) {
 			for(SubmissionUploader uploader : uploaders) {
-				uploader.upload(submission);
+				try {
+					uploader.upload(submission);
+				} catch (Exception e ) {
+					LOGGER.error("Failed upload on " + submission, e);
+				}
 			}
 			seenSubmission.addSubmission(submission);
 			seenSubmission.save();
