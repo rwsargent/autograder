@@ -37,10 +37,11 @@ public class JUnitGrader implements Worker {
 
 	@Override
 	public void doWork(AutograderSubmission submission) {
-		List<URL> javaBinaryUrls = null;
+		LOGGER.info("Grading " + submission.studentInfo.name);
+		List<URL> javaBinaryUrls = new ArrayList<>();
 		try {
-			javaBinaryUrls = getUrlsFromExtraClassPath();
 			javaBinaryUrls.add(submission.getClassesDirectory().toURI().toURL());
+			javaBinaryUrls.addAll(getUrlsFromExtraClassPath());
 		} catch (MalformedURLException e) {
 			LOGGER.error("Weird malformed URL while trying to grade " + submission, e);
 			return;
@@ -57,7 +58,7 @@ public class JUnitGrader implements Worker {
 				LOGGER.error("This should never happen.", e);
 				return;
 			} catch (InstantiationException e) {
-				LOGGER.error("Can't insantiate grader", e);
+				LOGGER.error("Can't instantiate grader", e);
 			}
 			
 			try {

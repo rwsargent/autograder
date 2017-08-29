@@ -14,9 +14,10 @@ import autograder.student.AutograderSubmissionMap;
 public class Autograder {
 	
 	public static Logger LOGGER = LoggerFactory.getLogger(Autograder.class);
+	private Configuration config;
+	
 	private PhaseOne phaseOne;
 	private PhaseTwo phaseTwo;
-	private Configuration config;
 	private PhaseThree phaseThree;
 	
 	@Inject
@@ -29,7 +30,7 @@ public class Autograder {
 	
 	public void execute() {
 		LOGGER.info("Starting autograder run");
-		AutograderSubmissionMap studentMap = phaseOne.setupSubmissions(config.assignment, true);
+		AutograderSubmissionMap studentMap = phaseOne.setupSubmissions(config.assignment, config.rerun);
 		try {
 			this.phaseTwo.phaseTwo(studentMap);
 		} catch (InterruptedException e) {
@@ -40,5 +41,4 @@ public class Autograder {
 		this.phaseThree.wrapItUp(studentMap);
 		LOGGER.info("Finished!");
 	}
-	
 }

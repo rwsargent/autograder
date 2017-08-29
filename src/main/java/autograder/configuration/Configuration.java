@@ -64,6 +64,10 @@ public class Configuration extends AbstractProperties {
 
 	@Optional
 	public String outputDestination;
+
+	public int defaultDuration;
+
+	public boolean rerun;
 	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {

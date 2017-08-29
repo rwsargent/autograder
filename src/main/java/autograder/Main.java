@@ -1,9 +1,15 @@
 package autograder;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -13,16 +19,49 @@ import autograder.configuration.Configuration;
 import autograder.modules.DefaultModule;
 
 public class Main {
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 	public static void main(String... args ) {
-		Configuration configuration = new Configuration(Constants.DEFAULT_CONFIGURATION);
-		setup(args, configuration);
-		AbstractModule module = getModule(configuration);
-		
-		Injector injector = Guice.createInjector(module);
-		Autograder autograder = injector.getInstance(Autograder.class);
-		
-		autograder.execute();
+		while(true) {
+			long starttime = System.currentTimeMillis();
+			String configpath = args.length > 0 ? args[0] : Constants.DEFAULT_CONFIGURATION;
+			Gson gson = new Gson();
+			Configuration configuration = null;
+			try(FileReader reader = new FileReader(new File(configpath))) {
+				configuration = gson.fromJson(reader, Configuration.class);
+			} catch (FileNotFoundException e) {
+				LOGGER.error("Could not find configuration file at " + configpath + ".", e);
+				return;
+			} catch (IOException e) {
+				LOGGER.error("Exception thrown when trying to read configuration, ending program.", e);
+				return;
+			}
+			
+			setup(args, configuration);
+			AbstractModule module = getModule(configuration);
+			
+			Injector injector = Guice.createInjector(module);
+			Autograder autograder = injector.getInstance(Autograder.class);
+			
+			autograder.execute();
+			
+			try {
+				long timeout = getTimeoutDuration(starttime, configuration);
+				if(timeout > 0) {
+					Thread.sleep(timeout);
+				}
+			} catch (InterruptedException e) {
+				LOGGER.error(e.getMessage(), e);
+				return;
+			}
+		}
+	}
+
+	private static long getTimeoutDuration(long starttime, Configuration configuration) {
+		final int defaultTimeout = 15 * 60 * 1000; // Fifteen minutes
+		long minDuration = configuration.defaultDuration == 0 ? defaultTimeout : configuration.defaultDuration;
+		long now = System.currentTimeMillis();
+		long programDuration = now - starttime;
+		return minDuration - programDuration;
 	}
 
 	private static DefaultModule getModule(Configuration configuration) {

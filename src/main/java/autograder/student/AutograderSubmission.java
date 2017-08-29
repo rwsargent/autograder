@@ -44,13 +44,13 @@ public class AutograderSubmission {
 			if(directory.mkdir()) {
 				LOGGER.info("Created AutograderSubmission: " + directory.getName());
 			} else {
-				LOGGER.warn("Failed to create AutograderSubmission: " + directory.getName());
+				LOGGER.warn("Failed to create AutograderSubmission: " + directory.getName() + ". mkdir failed.");
 			}
 		}
 	}
 	
 	private String generateDirectoryName() {
-		return submissionInfo.user_id + "_" + submissionInfo.submitted_at;
+		return submissionInfo.user_id + "_" + submissionInfo.attempt;
 	}
 
 	public AutograderSubmission(User student) {

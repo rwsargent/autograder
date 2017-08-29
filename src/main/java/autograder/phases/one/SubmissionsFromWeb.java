@@ -1,37 +1,34 @@
 package autograder.phases.one;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.inject.Inject;
 
 import autograder.canvas.responses.Submission;
-import autograder.configuration.Configuration;
 import autograder.portal.PortalConnection;
 
 public class SubmissionsFromWeb implements SubmissionDownloader {
-	private Configuration mConfig;
-	private PortalConnection mPortal;
+	private PortalConnection portal;
+	private SubmissionFilter filter;
 	
 	@Inject
-	public SubmissionsFromWeb(Configuration configuration, PortalConnection portal) {
-		mConfig = configuration;
-		mPortal = portal;
+	public SubmissionsFromWeb(PortalConnection portal, SubmissionFilter submissionFilter) {
+		this.portal = portal;
+		this.filter = submissionFilter;
 	}
 	
 	@Override
 	public List<Submission> downloadSubmissions() {
-		String studentsToGradeCsv = mConfig.studentsToGradeCsv;
-		if (studentsToGradeCsv == null) {
-			return Arrays.asList(mPortal.getAllSubmissions());
-		}
-		
 		ArrayList<Submission> submissions = new ArrayList<>();
-		String[] students = studentsToGradeCsv.split(",");
-		for(String student : students) {
-			submissions.add(mPortal.getUserSubmissions(student));
+		Submission[] allSubmissions = portal.getAllSubmissions();
+		
+		for(Submission possibleSubmission : allSubmissions) {
+			if(filter.allow(possibleSubmission)) {
+				submissions.add(possibleSubmission);
+			}
 		}
 		return submissions;
+		
 	}
 }

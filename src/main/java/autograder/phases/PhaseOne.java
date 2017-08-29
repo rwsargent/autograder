@@ -82,7 +82,7 @@ public class PhaseOne {
 					subsToRemove.add(submission);
 				}
 			}
-			fullSubmissions.remove(subsToRemove);
+			fullSubmissions.removeAll(subsToRemove);
 			
 			// create AutograderSubmission
 			fullSubmissions.stream()
