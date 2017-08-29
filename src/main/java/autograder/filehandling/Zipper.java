@@ -1,25 +1,26 @@
 package autograder.filehandling;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Zipper implements AutoCloseable {
+public class Zipper implements Closeable, AutoCloseable {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Zipper.class);
 	private FileOutputStream fout;
 	private ZipOutputStream zipWriter;
 	byte[] buffer;
-	
-	public Zipper(File destination) throws FileNotFoundException {
+
+	public void init(File destination) throws IOException { 
 		fout = new FileOutputStream(destination);
 		zipWriter = new ZipOutputStream(fout);
 		buffer = new byte[1024];
@@ -43,9 +44,23 @@ public class Zipper implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		fout.flush();
 		zipWriter.flush();
 		zipWriter.close();
+	}
+
+	public ZipFile zipDirectory(File assignmentRootDir) {
+		return null;
+	}
+	
+	public void zipDirRecur(String level, File entry) throws IOException {
+		if(entry.isDirectory()) {
+			for(File file : entry.listFiles()) {
+				zipDirRecur(level + entry.getName(), file);
+			}
+		} else {
+			addEntry(level + entry.getName(), entry);
+		}
 	}
 }
