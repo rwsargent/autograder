@@ -25,7 +25,7 @@ public interface Constants {
 	}
 	
 	public interface CanvasApi {
-		public static final String SUMBISSION_COMMENT_TEXT = "comment[comment_text]";
+		public static final String SUMBISSION_COMMENT_TEXT = "comment[text_comment]";
 	}
 	
 	public interface SubmissionProperties {
