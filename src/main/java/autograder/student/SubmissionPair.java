@@ -8,12 +8,12 @@ import autograder.canvas.responses.User;
 
 public class SubmissionPair {
 
-	private Set<Student> students;
-	public Student submitter;
-	public Student partner;
+	private Set<AutograderSubmission> students;
+	public AutograderSubmission submitter;
+	public AutograderSubmission partner;
 	public boolean sorted;
 	
-	public SubmissionPair(Student... students) {
+	public SubmissionPair(AutograderSubmission... students) {
 		if(students.length == 0) {
 			return;
 		}
@@ -48,7 +48,7 @@ public class SubmissionPair {
 		}
 	}
 	
-	public Set<Student> getStudents() {
+	public Set<AutograderSubmission> getStudents() {
 		return students;
 	}
 	
@@ -68,12 +68,12 @@ public class SubmissionPair {
 		return (hash << 5) - hash ; // hash * 31
 	}
 	
-	public static SubmissionPair createSingleStudentPair(Student student) {
+	public static SubmissionPair createSingleStudentPair(AutograderSubmission student) {
 		User fakeUser = new User();
 		fakeUser.name = "invalid_submission" + System.currentTimeMillis();
 		fakeUser.sortableName = "invalid_submission" + System.currentTimeMillis();
 		fakeUser.id = 0;
-		Student fakeStudent = new Student(fakeUser);
+		AutograderSubmission fakeStudent = new AutograderSubmission(fakeUser);
 		SubmissionPair pair = new SubmissionPair();
 		pair.submitter = student;
 		pair.partner = fakeStudent;

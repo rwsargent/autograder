@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import com.google.inject.Inject;
+
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.configuration.TeacherAssistantRegistry;
+import autograder.student.AutograderSubmission;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer.SubmissionData;
 
@@ -20,6 +23,15 @@ import autograder.student.SubmissionPairer.SubmissionData;
  */
 public class PartitionSubmissions {
 	
+	private Configuration configuration;
+	private TeacherAssistantRegistry mTARegistry;
+	
+	@Inject	
+	public PartitionSubmissions(Configuration config, TeacherAssistantRegistry TARegistry) {
+		configuration = config;
+		mTARegistry = TARegistry;
+	}
+	
 	/**
 	 * Randomly divy up the pairs and invalid submissions in {@code submissionData} among the tas. The basis of the algorithm is have a one to many 
 	 * relationship between a TA and a submission. The submissions are shuffled, then each TA gets a subsection of the list according to their workload.
@@ -28,18 +40,19 @@ public class PartitionSubmissions {
 	 * @param submissionData - Collection of partnerships and invalid submissions in an instance of {@link SubmissionData}
 	 * @return
 	 */
-	public static HashMap<String, Set<SubmissionPair>> partition(List<TAInfo> tas, SubmissionData submissionData) {
-		// Create a mapping of TAs to a submission set, create a shuffleable collection from the submissions 
+	public HashMap<String, Set<SubmissionPair>> partition(SubmissionData submissionData) {
+		// Create a mapping of TAs to a submission set, create a shuffleable collection from the submissions
+		List<TAInfo> tas = mTARegistry.toList();
 		HashMap<String, Set<SubmissionPair>> tasToSubmissions = new HashMap<>();
 		tas.forEach(ta -> tasToSubmissions.put(ta.name, new HashSet<>()));
 		List<SubmissionPair> submissions = new ArrayList<>(submissionData.pairs);
 
 		// add invalid submissions to the list to be shufffled
-		for(Student student : submissionData.invalidStudents) {
+		for(AutograderSubmission student : submissionData.invalidStudents) {
 			submissions.add(SubmissionPair.createSingleStudentPair(student));
 		}
 		
-		Collections.shuffle(submissions, new Random(Configuration.getConfiguration().graderClassName.toString().hashCode()));
+		Collections.shuffle(submissions, new Random(configuration.graderClassName.toString().hashCode()));
 		
 		// Calculate a subList for each ta
 		int start = 0;

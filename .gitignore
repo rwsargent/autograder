@@ -12,6 +12,9 @@ submissions
 extraclasspathfiles
 graders
 ta.csv
+all.log
+**.saved
+configuration.json
 
 # Directories #
 /build/

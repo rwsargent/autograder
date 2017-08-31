@@ -6,72 +6,38 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.phases.two.workers.ExternalProcessWorker;
+import autograder.student.AutograderSubmission;
 
-public class Jarrer {
-	private static final Logger LOGGER = Logger.getLogger(Jarrer.class.getName());
+/**
+ * This will build a jar for a student and his or her compiled source code.
+ * @param student
+ * @return
+ */
+public class Jarrer extends ExternalProcessWorker {
 	
-	protected Configuration mConfiguration;
+	@Inject
 	public Jarrer(Configuration configuration) {
-		mConfiguration = configuration;
+		super(configuration);
 	}
 	
-	/**
-	 * This will build a jar for a student and his or her compiled source code.
-	 * @param student
-	 * @return
-	 */
-	public boolean buildJarFor(Student student) {
-		File file = student.getClassesDirectory();
-		if (!file.exists()) {
-			System.out.println("The classes directory in student " + student + " does not exist.");
-			return false;
-		}
-
-		StringBuilder jarCommand = new StringBuilder();
-		jarCommand.append("jar ");
-		jarCommand.append("cfe ");
-		jarCommand.append(outputFile(student)).append(' ');
-		
-		try {
-			String entryPoint = resolveEntryPoint(student.getClassesDirectory());
-			jarCommand.append(entryPoint).append(' ');
-		} catch (IllegalStateException | IOException e) {
-			LOGGER.info("Could not build execuable jar " + e.getMessage());
-			return false;
-		}
-		
-		jarCommand.append("-C classes . ");
-		
-		return executeCommand(student, jarCommand);
+	@Override
+	public void doWork(AutograderSubmission student) {
+		setStudent(student);
+		setRedirects(null, new File(student.directory, "jar_error.txt"));
+		waitOnProccess(buildAndStartProcess());
 	}
-
-	private boolean executeCommand(Student student, StringBuilder jarCommand) {
-		ProcessBuilder processBuilder = new ProcessBuilder(jarCommand.toString().split(" ")); 
-		processBuilder.directory(student.getSourceDirectory());
-		Process jarring;
-		try {
-			jarring = processBuilder.start();
-			int retValue = jarring.waitFor();
-			if(retValue != 0){
-				LOGGER.severe("Jarring completed, but exited with error code: " + retValue + " for " + student);
-			}
-		} catch (IOException | InterruptedException e) {
-			LOGGER.severe("Jarring failed for " + student + ". "  + e.getMessage());
-			return false;
-		}
-		return true;
-	}
-
-	private String outputFile(Student student) {
-		return student.studentDirectory.getAbsolutePath() + File.separatorChar + mConfiguration.assignment + ".jar";
+	
+	private String outputFile(AutograderSubmission student) {
+		return student.directory.getAbsolutePath() + File.separatorChar + mConfig.assignment + ".jar";
 	}
 	
 	/**
@@ -87,14 +53,14 @@ public class Jarrer {
 		Path classesPath = Paths.get(classes.toURI());
 		
 		// If we know the package and name:
-		String relativeMainClass = mConfiguration.mainClass.replace('.', '/') + ".class";
+		String relativeMainClass = mConfig.mainClass.replace('.', '/') + ".class";
 		if(classesPath.resolve(relativeMainClass).toFile().exists()) {
-			return mConfiguration.mainClass;
+			return mConfig.mainClass;
 		}
 		
 		// Student didn't follow directions, let's try to find a file with the same name.
-		int lastDot = mConfiguration.mainClass.lastIndexOf('.');
-		String mainClassName = mConfiguration.mainClass;
+		int lastDot = mConfig.mainClass.lastIndexOf('.');
+		String mainClassName = mConfig.mainClass;
 		if(lastDot > 0) {
 			mainClassName = mainClassName.substring(lastDot);
 		}
@@ -111,5 +77,24 @@ public class Jarrer {
 		} else {
 			throw new IllegalStateException("Too many files matched the main class");
 		}
+	}
+
+	@Override
+	protected String[] buildProcessCommand() {
+		StringBuilder jarCommand = new StringBuilder();
+		jarCommand.append("jar ");
+		jarCommand.append("cfe ");
+		jarCommand.append(outputFile(mStudent)).append(' ');
+		
+		try {
+			String entryPoint = resolveEntryPoint(mStudent.getClassesDirectory());
+			jarCommand.append(entryPoint).append(' ');
+		} catch (IllegalStateException | IOException e) {
+			logger.severe("Could not build execuable jar " + e.getMessage());
+			throw new IllegalStateException();
+		}
+		
+		jarCommand.append("-C classes . ");
+		return jarCommand.toString().split(" ");
 	}
 }

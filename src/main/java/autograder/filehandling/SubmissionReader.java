@@ -16,10 +16,9 @@ import org.apache.commons.io.FilenameUtils;
 
 import autograder.Constants;
 import autograder.configuration.ConfigurationException;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 import autograder.student.StudentSubmissionRegistry;
 
-@Deprecated
 public class SubmissionReader {
 	private static Logger LOGGER = Logger.getLogger(SubmissionReader.class.getName());
 	private byte[] buffer = new byte[1024]; // no need to allocate this more than once an object;
@@ -36,7 +35,7 @@ public class SubmissionReader {
 		}
 	}
 	
-	private void unzip(String destDirectory, ZipFile zip, Student student) throws ZipException, IOException {
+	private void unzip(String destDirectory, ZipFile zip, AutograderSubmission student) throws ZipException, IOException {
 		Enumeration<? extends ZipEntry> entries = zip.entries();
 		while(entries.hasMoreElements()) {
 			ZipEntry zipEntry = entries.nextElement();
@@ -45,13 +44,13 @@ public class SubmissionReader {
 				Matcher match = submissionPattern.matcher(entryName);
 				if(match.matches()) {
 					String studentName = match.group(Constants.NAME_GROUP);
-					Student studentSubmission = submissionRegistry.getStudentByName(studentName);
+					AutograderSubmission studentSubmission = submissionRegistry.getStudentByName(studentName);
 					String fileName = match.group(Constants.SUBMISSION_NAME_GROUP);
 					if(studentSubmission == null) {
 						studentSubmission = submissionRegistry.createStudentSubmission(studentName, match.group(Constants.CANVAS_ID_GROUP));
 					}
 					if(isValidFile(fileName)) {
-						writeSubmissionToFile(new File(studentSubmission.studentDirectory.getPath() + "/" + fileName), zipEntry, zip);
+						writeSubmissionToFile(new File(studentSubmission.directory.getPath() + "/" + fileName), zipEntry, zip);
 						if(fileName.endsWith(".properties")) {
 							studentSubmission.createAssignmentProperties();
 						}

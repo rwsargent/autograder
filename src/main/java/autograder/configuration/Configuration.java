@@ -4,14 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import autograder.Constants;
 
 public class Configuration extends AbstractProperties {
 	
-	private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
-
+	public Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
 	public String assignment; 
 	
@@ -36,40 +40,38 @@ public class Configuration extends AbstractProperties {
 	public String studentFilePath;
 	public String submission;
 	
-	@Optional(defaultValue="")
-	public String mainClass;
-	
 	public String ignorePattern;
 	
 	public String studentsToGradeCsv;
 	
-	@Optional(defaultValue="")
-	public String extraBundledFilesCsv;
-	
-	@Optional
-	public String junitPlugin;
-
 	public String validFileExtensions;
 	public String validFileNames;
 	
+	@Optional(defaultValue="")
+	public String mainClass;
 	
-	private volatile static Configuration mInstance;
+	@Optional(defaultValue="")
+	public String extraBundledFilesCsv;
+
+	@Optional
+	public String junitPlugin;
 	
-	public static synchronized Configuration getConfiguration() {
-		return getConfiguration(null);
-	}
+	@Optional(defaultValue="")
+	public String graderJVMOptions;
 	
-	public static synchronized Configuration getConfiguration(String configPath) {
-		if(mInstance == null) {
-			mInstance = new Configuration();
-			File configFile = mInstance.findPropertyFile(configPath);
-			mInstance.loadConfiguration(configFile);
-		}
-		return mInstance;
-	}
+	@Optional(defaultValue = "60")
+	public String timeout;
+
+	@Optional
+	public String outputDestination;
+
+	public int defaultDuration;
+
+	public boolean rerun;
 	
-	private Configuration() {
-		// make the default constructor private so it cannot be instantiated outside of this class
+	@Inject
+	public Configuration(@Named("configpath") String configPath) {
+		loadConfiguration(findPropertyFile(configPath));
 	}
 	
 	private void loadConfiguration(File configFile) {
@@ -79,8 +81,8 @@ public class Configuration extends AbstractProperties {
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
 		}
-		fillProperties(properties, mInstance);
-		LOGGER.info("Configuration successfully loaded");
+		fillProperties(properties, this);
+		LOGGER.info("Configuration successfully loaded.");
 	}
 
 	@Override

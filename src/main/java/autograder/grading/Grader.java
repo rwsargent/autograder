@@ -5,16 +5,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+
 import autograder.configuration.Configuration;
-import autograder.grading.jarring.Jarrer;
-import autograder.student.Student;
+import autograder.phases.two.Worker;
+import autograder.student.AutograderSubmission;
 
 /**
  * {@link Grader} pulls job from a supplied workqueue of {@link WorkJob}, and compiles and grades the student
@@ -22,23 +23,22 @@ import autograder.student.Student;
  * @author Ryans
  *
  */
-public class Grader extends Thread {
-	Student mStudent;
+public class Grader implements Worker {
+	AutograderSubmission mStudent;
 	String mGraderClassName, mGraderPath;
 	ProcessBuilder processBuilder;
-	Queue<WorkJob> workQueue;
 	Logger logger;
-	Jarrer mJarrer;
 	
-	public Grader(Queue<WorkJob> queue) {
-		workQueue = queue;
-		
-		mGraderClassName = Configuration.getConfiguration().graderClassName;
-		mGraderPath = findFile(Configuration.getConfiguration().graderFile);
-//		mJunitPluginPath = findFile(Configuration.getConfiguration().junitPlugin);
-		logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
-		mJarrer = new Jarrer(Configuration.getConfiguration());
+	protected Configuration mConfig;
+	
+	@Inject
+	public Grader(Configuration configuration) {
+		 mConfig = configuration;
+		 mGraderClassName = mConfig.graderClassName;
+		 mGraderPath = findFile(mConfig.graderFile);
+		 logger = Logger.getLogger(Grader.class.getName() + " " + Thread.currentThread().getName());
 	}
+	
 	
 	private String findFile(String configPath) {
 		File grader = new File(configPath);
@@ -48,34 +48,30 @@ public class Grader extends Thread {
 		return getClass().getResource(configPath).toString();
 	}
 
-	@Override
-	public void run() {
-		WorkJob job = null;
-		System.out.println("Thread: " + currentThread() + " is starting to grade");
-		while(!workQueue.isEmpty()) {
-			job = workQueue.poll();
-			if(job == null) {
-				continue;
-			}
-			try {
-				System.out.println("Grading: " + job.getStudent());
-				compileAndRunGrader(job.getStudent());
-			} catch (Exception e ) {
-				logger.severe(e.getMessage());
-			}
-		}
-		System.out.println("Thread: " + currentThread() + " finished grading.");
-	}
 	
-	public void compileAndRunGrader(Student student) {
+//	public void run() {
+//		WorkJob job = null;
+//		while(!workQueue.isEmpty()) {
+//			job = workQueue.poll();
+//			if(job == null) {
+//				continue;
+//			}
+//			try {
+//				System.out.println("Grading: " + job.getStudent());
+//				compileAndRunGrader(job.getStudent());
+//			} catch (Exception e ) {
+//				logger.severe(e.getMessage());
+//			}
+//		}
+//		System.out.println("Thread: " + currentThread() + " finished grading.");
+//	}
+	
+	public void compileAndRunGrader(AutograderSubmission student) {
 		mStudent = student;
 		try {
 			if(compile()) {
 				runGrader();
-				if(StringUtils.isNotBlank(Configuration.getConfiguration().mainClass)) {
-					if(mJarrer.buildJarFor(mStudent)) {
-						
-					};
+				if(StringUtils.isNotBlank(mConfig.mainClass)) {
 				}
 			}
 		} catch (IOException | InterruptedException e) {
@@ -88,7 +84,7 @@ public class Grader extends Thread {
 	}
 	
 	private boolean compile() throws IOException, InterruptedException {
-		File compErrorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/comp_error.rws");
+		File compErrorFile = new File(mStudent.directory.getAbsolutePath() + "/comp_error.rws");
 		
 		String command = createJavacCommand();
 		if(command == null) { // we didn't find any java files
@@ -140,7 +136,7 @@ public class Grader extends Thread {
 	}
 
 	private String generateClassPathString() {
-		File libs = new File(Configuration.getConfiguration().extraClassPathFiles);// System.getProperty("java.class.path");
+		File libs = new File(mConfig.extraClassPathFiles);// System.getProperty("java.class.path");
 		StringBuilder sb = new StringBuilder();
 		for(File jar : libs.listFiles((file, name) -> FilenameUtils.getExtension(name).equals("jar"))) {
 			sb.append(jar.getAbsolutePath()).append(File.pathSeparatorChar);
@@ -160,11 +156,11 @@ public class Grader extends Thread {
 	
 	private void runGrader() throws IOException, InterruptedException {
 		String[] testCommand = generateJavaGraderCommand().split(" ");
-		File errorFile = new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output_error.rws");
+		File errorFile = new File(mStudent.directory.getAbsolutePath() + "/grader_output_error.rws");
 		
 		processBuilder.command(testCommand);
-		processBuilder.directory(mStudent.studentDirectory);
-		processBuilder.redirectOutput(Redirect.to(new File(mStudent.studentDirectory.getAbsolutePath() + "/grader_output.rws")));
+		processBuilder.directory(mStudent.directory);
+		processBuilder.redirectOutput(Redirect.to(new File(mStudent.directory.getAbsolutePath() + "/grader_output.rws")));
 		processBuilder.redirectError(Redirect.to(errorFile));
 		Process test = processBuilder.start();
 		boolean timeout = test.waitFor(60, TimeUnit.SECONDS);
@@ -194,12 +190,12 @@ public class Grader extends Thread {
 		StringBuilder sb = new StringBuilder("java -cp ");
 		sb.append("./source/classes");
 		sb.append(File.pathSeparatorChar);
-		sb.append(findFile(Configuration.getConfiguration().extraClassPathFiles));
+		sb.append(findFile(mConfig.extraClassPathFiles));
 		sb.append(File.pathSeparatorChar);
 		sb.append(generateClassPathString());
 		sb.append(' ');
 		sb.append("-Xms1024m -Xmx2048m").append(' ');
-		sb.append(Configuration.getConfiguration().graderClassName); // changed for JUnit
+		sb.append(mConfig.graderClassName); // changed for JUnit
 //		sb.append("graders.ProgrammingChallengeGrader"); // changed for JUnit
 		sb.append(' ').append(buildArguments());
 		return sb.toString();
@@ -207,5 +203,15 @@ public class Grader extends Thread {
 
 	private String buildArguments() {
 		return "assignment05.SortGrader";
+	}
+
+	@Override
+	public void doWork(AutograderSubmission student) {
+		mStudent = student;
+		try {
+			runGrader();
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

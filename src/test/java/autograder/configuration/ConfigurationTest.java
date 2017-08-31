@@ -14,8 +14,7 @@ public class ConfigurationTest {
 	
 	@Test
 	public void configurationTest() {
-		
-		Configuration conf = Configuration.getConfiguration("src/test/resources/configuration_test.properties");
+		Configuration conf = new Configuration("src/test/resources/configuration_test.properties");
 		assertEquals("Tester", conf.graderClassName);
 		assertEquals("username_test", conf.smtpUsername);
 		assertEquals("password_test", conf.smtpPassword);

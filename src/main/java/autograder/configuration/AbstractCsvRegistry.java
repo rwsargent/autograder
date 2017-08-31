@@ -13,6 +13,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import com.google.inject.Inject;
+
 /**
  * The idea behind this class to handling parsing CSV in a generic fashion. It will fill map,
  * with a key from a specified value of the CSV, with objects of the Type the subclass of {@link AbstractCsvRegistry} is
@@ -25,6 +27,12 @@ public abstract class AbstractCsvRegistry<RegistryObject> {
 	
 	protected Map<String, RegistryObject> map;
 	protected static Logger LOGGER;
+	protected Configuration mConfig;
+	
+	@Inject
+	public AbstractCsvRegistry(Configuration configuration) {
+		mConfig = configuration;
+	}
 	
 	protected void configure() {
 		map = new HashMap<>();

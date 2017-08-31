@@ -19,6 +19,19 @@ public interface Constants {
 		public static final String[] TA_CSV_HEADERS = new String[] {TA_NAME_HEADER,TA_EMAIL_HEADER, TA_HOURS_HEADER};
 	}
 	
+	public interface MetaData {
+		public static final String SUBMISSION = "submission.json";
+		public static final String STUDENT_INFO = "studentInfo.json";
+	}
+	
+	public interface CanvasApi {
+		public static final String SUMBISSION_COMMENT_TEXT = "comment[comment_text]";
+	}
+	
+	public interface SubmissionProperties {
+		public static final String COMPILED = "compiled";
+	}
+	
 	public static final String FILE_REGEX = "([a-zA-Z\\-]+)(-late)?_(\\d*)_(\\d*)_(.*)";
 	public static final String LINK_REGEX = "[<](https://utah.instructure.com/api/v1/[a-zA-Z0-9/?&=_]+)[>]; rel=\"next\"";
 	public static final int NAME_GROUP = 1;
@@ -28,9 +41,12 @@ public interface Constants {
 	
 	public static List<String> VALID_FILE_TYPES = Arrays.asList(".pdf", ".properties", ".java");
 	
-	public static final String DEFAULT_CONFIGURATION = "configuration.properties";
+	public static final String DEFAULT_CONFIGURATION = "configuration.json";
 	public static final String DEFAULT_CLASS_LIST = "class_list.csv";
 	
 	public static final String SUBMISSIONS = "submissions";
 	public static final String ZIPS = "outgoing";
+	public static final String BUNDLED_TIMESTAMP = "YY-MM-dd'T'kk.mm.ss";
+	public String PREVIOUS_RUNS = "previousRuns";
+	public String COMPILE_ERROR_FILENAME = "compile_error.txt";
 }

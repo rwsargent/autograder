@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import autograder.Constants;
 import autograder.configuration.Configuration;
-import autograder.student.Student;
+import autograder.student.AutograderSubmission;
 import autograder.student.SubmissionPair;
 
 public class Bundler {
@@ -27,16 +27,20 @@ public class Bundler {
 	private List<String> validFileExtensions = Arrays.asList("pdf", "rws", "txt", "jar", "md");
 	private List<String> validFileNames = Arrays.asList("i_worked_with", "README", "readme", "partner_evaluation");
 	
+	private Configuration mConfig;
+	
 	public Bundler(Configuration config) {
 		validFileExtensions = Arrays.asList(config.validFileExtensions.split(","));
 		validFileNames = Arrays.asList(config.validFileNames.split(","));
+		
+		mConfig = config;
 	}
 	
 	public Map<String, File> bundleStudents(HashMap<String, Set<SubmissionPair>> studentToTaMap) {
 		HashMap<String, File> taToBigZipMap = new HashMap<>();
 		for(String ta: studentToTaMap.keySet()) {
 			System.out.println("Bundling " + ta + "'s students");
-			File taZipFile = new File(String.format("%s/%s/%s-grading.zip", Constants.ZIPS, ta, Configuration.getConfiguration().assignment));
+			File taZipFile = new File(String.format("%s/%s/%s-grading.zip", Constants.ZIPS, ta, mConfig.assignment));
 			taZipFile.getParentFile().mkdirs();
 			try(FileOutputStream fout = new FileOutputStream(taZipFile);
 					ZipOutputStream zipWriter = new ZipOutputStream(new BufferedOutputStream(fout))) {
@@ -70,10 +74,10 @@ public class Bundler {
 	}
 
 	private void writeExtraFilesToZip(ZipOutputStream zipWriter) throws IOException {
-		if(StringUtils.isBlank(Configuration.getConfiguration().extraBundledFilesCsv)) {
+		if(StringUtils.isBlank(mConfig.extraBundledFilesCsv)) {
 			return;
 		}
-		for(String dependency : Configuration.getConfiguration().extraBundledFilesCsv.split(",")) {
+		for(String dependency : mConfig.extraBundledFilesCsv.split(",")) {
 			String dependencyFileName = FilenameUtils.getName(dependency);
 			File dependencyFile = new File(dependency);
 			if(dependencyFile.isDirectory()) {
@@ -87,11 +91,11 @@ public class Bundler {
 	}
 
 	private void writeAssignmentFileToZip(ZipOutputStream zipWriter) throws IOException {
-		String graderFileName = FilenameUtils.getName(Configuration.getConfiguration().graderFile);
-		writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(Configuration.getConfiguration().graderFile));
+		String graderFileName = FilenameUtils.getName(mConfig.graderFile);
+		writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(mConfig.graderFile));
 	}
 
-	private void writeFilesToZip(Student student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {
+	private void writeFilesToZip(AutograderSubmission student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {
 		if(student.studentInfo.name.equals("placeholder") || student.studentInfo.name.startsWith("invalid")) { // skip nonexistant students
 			return; 
 		}
@@ -110,7 +114,7 @@ public class Bundler {
 				System.out.println(e.getMessage());
 			}
 		}
-		recursiveWriteToZip(zipWriter, student.studentDirectory, parentDirectory +student.studentInfo.name);
+		recursiveWriteToZip(zipWriter, student.directory, parentDirectory +student.studentInfo.name);
 	}
 
 	private void recursiveWriteToZip(ZipOutputStream zipWriter, File studentRoot, String name) throws IOException {
