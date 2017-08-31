@@ -20,7 +20,9 @@ import autograder.modules.DefaultModule;
 
 public class Main {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+	
 	public static void main(String... args ) {
+		
 		while(true) {
 			long starttime = System.currentTimeMillis();
 			String configpath = args.length > 0 ? args[0] : Constants.DEFAULT_CONFIGURATION;
@@ -39,9 +41,8 @@ public class Main {
 			setup(args, configuration);
 			AbstractModule module = getModule(configuration);
 			
-			Injector injector = Guice.createInjector(module);
+			Injector injector = Guice.createInjector(module);	
 			Autograder autograder = injector.getInstance(Autograder.class);
-			
 			autograder.execute();
 			
 			try {

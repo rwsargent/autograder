@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,11 @@ public class WrapUpGraderRun {
 		} catch (IOException e) {
 			LOGGER.error("Could not fully zip up a run of " + configuration.assignment, e);
 		} finally {
-			IOUtils.closeQuietly(zipper);
+			try {
+				zipper.close();;
+			} catch (IOException e) {
+				LOGGER.error(e.getMessage(), e);
+			}
 		}
 		
 		try {

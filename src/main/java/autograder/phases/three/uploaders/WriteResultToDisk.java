@@ -10,6 +10,7 @@ import com.google.common.io.Files;
 
 import autograder.phases.three.SubmissionUploader;
 import autograder.student.AutograderSubmission;
+import autograderutils.AutograderResult;
 
 public class WriteResultToDisk implements SubmissionUploader {
 
@@ -18,7 +19,10 @@ public class WriteResultToDisk implements SubmissionUploader {
 	@Override
 	public void upload(AutograderSubmission submission) {
 		try {
-			Files.write(submission.getResult().buildSummary().getBytes(), new File(submission.getDirectory(), buildFileNameForSubmission(submission)));
+			AutograderResult result = submission.getResult();
+			if(result != null) {
+				Files.write(result.buildSummary().getBytes(), new File(submission.getDirectory(), buildFileNameForSubmission(submission)));
+			}
 		} catch (IOException e) {
 			LOGGER.error("IOException for " + submission + " while writing result file to disk.", e);
 		}

@@ -31,11 +31,13 @@ public class Autograder {
 	public void execute() {
 		LOGGER.info("Starting autograder run");
 		AutograderSubmissionMap studentMap = phaseOne.setupSubmissions(config.assignment, config.rerun);
+		if(studentMap.size() == 0) {
+			return;
+		}
 		try {
 			this.phaseTwo.phaseTwo(studentMap);
 		} catch (InterruptedException e) {
 			LOGGER.error("Phase two was interrupted", e);
-			//Mail me?
 			return; 
 		}
 		this.phaseThree.wrapItUp(studentMap);

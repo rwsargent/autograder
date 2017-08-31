@@ -84,6 +84,10 @@ public class PhaseOne {
 			}
 			fullSubmissions.removeAll(subsToRemove);
 			
+			if(fullSubmissions.size() == 0) {
+				LOGGER.info("No new submissions this run");
+			}
+			
 			// create AutograderSubmission
 			fullSubmissions.stream()
 				.map(parser::parseAndCreateSubmission)

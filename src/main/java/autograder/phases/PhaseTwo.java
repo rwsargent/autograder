@@ -27,11 +27,14 @@ import autograder.student.AutograderSubmissionMap;
  */
 public class PhaseTwo {
 	private Provider<Set<Worker>> mWorkers;
+
+	private SecurityManager securityManager;
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(PhaseTwo.class);
 	@Inject
-	public PhaseTwo(Provider<Set<Worker>> workers) {
+	public PhaseTwo(Provider<Set<Worker>> workers, SecurityManager securityManager) {
 		mWorkers = workers;
+		this.securityManager = securityManager;
 	}
 	
 	/**
@@ -40,19 +43,34 @@ public class PhaseTwo {
 	 * @return - Students randomly partitioned amongst the students in 
 	 * @throws InterruptedException
 	 */
+	@SuppressWarnings("deprecation")
 	public AutograderSubmissionMap phaseTwo(AutograderSubmissionMap studentMap) throws InterruptedException {
+		LOGGER.info("Phase two starting...");
+		System.setSecurityManager(securityManager);
 		ExecutorService threadPool = startWork(studentMap.listStudents());
 		threadPool.shutdown();
 		threadPool.awaitTermination(8, TimeUnit.HOURS);
+		System.setSecurityManager(null);
+		
+		// kill running threads?
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		for(Thread t : threadSet) {
+			if(t.getName().contains("Thread-"))  {
+				LOGGER.info("Killing " + t.getName());
+				t.stop();
+			}
+		}
+		LOGGER.info("Phase two finished");
 		return studentMap;
 	}
 	
 	// Trying out the ExecutorService. Each job is a run through all the workers for each student.
 	private ExecutorService startWork(List<AutograderSubmission> queue) {
+		
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
 		for(AutograderSubmission student : queue) {
 			threadPool.submit(() -> {
-				LOGGER.info("Starting work on " + student.studentInfo.name);
+				LOGGER.info("Starting work on " + student);
 				try{ 
 					for(Worker worker : mWorkers.get()) {
 						worker.doWork(student);

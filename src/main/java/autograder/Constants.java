@@ -46,7 +46,7 @@ public interface Constants {
 	
 	public static final String SUBMISSIONS = "submissions";
 	public static final String ZIPS = "outgoing";
-	public static final String BUNDLED_TIMESTAMP = "YY-MM-ddTkk.mm.ss";
+	public static final String BUNDLED_TIMESTAMP = "YY-MM-dd'T'kk.mm.ss";
 	public String PREVIOUS_RUNS = "previousRuns";
 	public String COMPILE_ERROR_FILENAME = "compile_error.txt";
 }

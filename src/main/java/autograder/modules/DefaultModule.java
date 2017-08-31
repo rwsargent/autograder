@@ -1,5 +1,7 @@
 package autograder.modules;
 
+import java.security.Policy;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.multibindings.Multibinder;
@@ -19,10 +21,13 @@ import autograder.phases.one.SubmissionFilter;
 import autograder.phases.one.SubmissionsFromWeb;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
+import autograder.phases.three.uploaders.WriteResultToDisk;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.InternalJavaCompiler;
 import autograder.phases.two.workers.JUnitGrader;
 import autograder.portal.PortalConnection;
+import autograder.security.AutograderPolicy;
+import autograder.security.AutograderSecurityManager;
 
 public class DefaultModule extends AbstractModule {
 	private Configuration config;
@@ -47,7 +52,12 @@ public class DefaultModule extends AbstractModule {
 		bind(SubmissionDownloader.class).to(getSubmissionDownloader());
 		bind(SubmissionFilter.class).to(getSubmissionFilter());
 		
+		//Security
+		bind(SecurityManager.class).to(getSecurityManager());
+		bind(Policy.class).to(getPolicy());
+		
 		Multibinder<SubmissionUploader> submissionUploaders = Multibinder.newSetBinder(binder(), SubmissionUploader.class);
+		submissionUploaders.addBinding().to(WriteResultToDisk.class);
 		submissionUploaders.addBinding().toInstance(submission -> {
 			System.out.println(submission.getDirectory());
 			System.out.println(submission.getResult().getFeedback());
@@ -57,6 +67,14 @@ public class DefaultModule extends AbstractModule {
 		assignmentUploaders.addBinding().toInstance(submission -> System.out.println("Assignment uploader size: " + submission.size()));
 		
 		setFileDirectors();
+	}
+
+	private Class<? extends Policy> getPolicy() {
+		return AutograderPolicy.class;
+	}
+
+	private Class<? extends SecurityManager> getSecurityManager() {
+		return AutograderSecurityManager.class;	
 	}
 
 	private Class<? extends SubmissionFilter> getSubmissionFilter() {

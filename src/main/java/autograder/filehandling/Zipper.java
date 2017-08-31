@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -51,21 +53,51 @@ public class Zipper implements Closeable, AutoCloseable {
 	}
 
 	public void zipDirectory(File assignmentRootDir, Predicate<String> filenameFilter) throws IOException {
-		zipDirRecur("", assignmentRootDir, filenameFilter);
+		List<File> files = listFiles(new ArrayList<>(), assignmentRootDir, filenameFilter);
+		createZipFile(files, assignmentRootDir);
 	}
 	
 	public void zipDirRecur(String level, File entry, Predicate<String> filenameFilter) throws IOException {
-		if(filenameFilter != null) {
-			if(filenameFilter.test(entry.getName())) {
-				addEntry(level + entry.getName(), entry);
+		String entryname = level + "/" + entry.getName();
+		if(entry.isDirectory()) {
+			ZipEntry newEntry = new ZipEntry(entryname);
+			zipWriter.putNextEntry(newEntry);
+			zipWriter.closeEntry();
+			for(File file : entry.listFiles()) {
+				zipDirRecur(entryname, file, filenameFilter);
 			}
 		} else {
-			addEntry(level + entry.getName(), entry);
-		}
-		if(entry.isDirectory()) {
-			for(File file : entry.listFiles()) {
-				zipDirRecur(level + entry.getName(), file, filenameFilter);
+			if(filenameFilter != null) {
+				if(filenameFilter.test(entry.getName())) {
+					addEntry(entryname, entry);
+				}
+			} else {
+				addEntry(entryname, entry);
 			}
+		}
+	}
+	
+	private List<File> listFiles(List<File> listFiles, File inputDirectory, Predicate<String> filenameFilter) throws IOException {
+        File[] allFiles = inputDirectory.listFiles();
+        for (File file : allFiles) {
+            if (file.isDirectory()) {
+                listFiles(listFiles, file, filenameFilter);
+            } else {
+                listFiles.add(file);
+            }
+        }
+        return listFiles;
+    }
+	
+	private void createZipFile(List<File> listFiles, File inputDirectory) throws IOException {
+		for (File file : listFiles) {
+			String filePath = file.getCanonicalPath();
+			int lengthDirectoryPath = inputDirectory.getCanonicalPath().length();
+			int lengthFilePath = file.getCanonicalPath().length();
+
+			// Get path of files relative to input directory.
+			String zipFilePath = filePath.substring(lengthDirectoryPath + 1, lengthFilePath);
+			addEntry(zipFilePath, file);
 		}
 	}
 }
