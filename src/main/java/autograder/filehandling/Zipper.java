@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
@@ -50,17 +50,22 @@ public class Zipper implements Closeable, AutoCloseable {
 		zipWriter.close();
 	}
 
-	public ZipFile zipDirectory(File assignmentRootDir) {
-		return null;
+	public void zipDirectory(File assignmentRootDir, Predicate<String> filenameFilter) throws IOException {
+		zipDirRecur("", assignmentRootDir, filenameFilter);
 	}
 	
-	public void zipDirRecur(String level, File entry) throws IOException {
-		if(entry.isDirectory()) {
-			for(File file : entry.listFiles()) {
-				zipDirRecur(level + entry.getName(), file);
+	public void zipDirRecur(String level, File entry, Predicate<String> filenameFilter) throws IOException {
+		if(filenameFilter != null) {
+			if(filenameFilter.test(entry.getName())) {
+				addEntry(level + entry.getName(), entry);
 			}
 		} else {
 			addEntry(level + entry.getName(), entry);
+		}
+		if(entry.isDirectory()) {
+			for(File file : entry.listFiles()) {
+				zipDirRecur(level + entry.getName(), file, filenameFilter);
+			}
 		}
 	}
 }

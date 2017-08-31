@@ -11,8 +11,8 @@ import autograder.configuration.AbstractCsvRegistry;
 import autograder.configuration.Configuration;
 
 /**
- * Ideally, you want to use the Canvas API to download all possible students. If you don't have access to the API, 
- * then this is a singleton that will read in a csv of all the students, their Canvas id, and their UID. 
+ * Ideally, you want to use the CanvasApi API to download all possible students. If you don't have access to the API, 
+ * then this is a singleton that will read in a csv of all the students, their CanvasApi id, and their UID. 
  * @author Ryan
  * @deprecated Use {@link CanvasConnection#getAllStudents()} instead of a flat CSV file. 
  */

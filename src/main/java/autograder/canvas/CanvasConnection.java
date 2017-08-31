@@ -11,7 +11,7 @@ import autograder.configuration.Configuration;
 import autograder.portal.PortalConnection;
 
 /** 
- * This hits a select few endpoints of the Canvas API by Instructure. 
+ * This hits a select few endpoints of the CanvasApi API by Instructure. 
  * @author Ryan
  *
  */

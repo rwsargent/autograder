@@ -24,8 +24,12 @@ public interface Constants {
 		public static final String STUDENT_INFO = "studentInfo.json";
 	}
 	
-	public interface Canvas {
-		public static final String SUBISSION_COMMENT = "comment[comment_text]";
+	public interface CanvasApi {
+		public static final String SUMBISSION_COMMENT_TEXT = "comment[comment_text]";
+	}
+	
+	public interface SubmissionProperties {
+		public static final String COMPILED = "compiled";
 	}
 	
 	public static final String FILE_REGEX = "([a-zA-Z\\-]+)(-late)?_(\\d*)_(\\d*)_(.*)";
@@ -42,4 +46,7 @@ public interface Constants {
 	
 	public static final String SUBMISSIONS = "submissions";
 	public static final String ZIPS = "outgoing";
+	public static final String BUNDLED_TIMESTAMP = "YY-MM-ddTkk.mm.ss";
+	public String PREVIOUS_RUNS = "previousRuns";
+	public String COMPILE_ERROR_FILENAME = "compile_error.txt";
 }
