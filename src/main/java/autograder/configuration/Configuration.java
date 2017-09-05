@@ -68,6 +68,10 @@ public class Configuration extends AbstractProperties {
 	public int defaultDuration;
 
 	public boolean rerun;
+
+	public boolean runContinuously;
+
+	public int adjustedTotal;
 	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {

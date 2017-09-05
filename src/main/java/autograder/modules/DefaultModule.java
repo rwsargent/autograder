@@ -21,7 +21,7 @@ import autograder.phases.one.SubmissionFilter;
 import autograder.phases.one.SubmissionsFromWeb;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
-import autograder.phases.three.uploaders.PostFeedbackCommentsUploader;
+import autograder.phases.three.uploaders.GradeSubmissionUploader;
 import autograder.phases.three.uploaders.WriteResultToDisk;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.InternalJavaCompiler;
@@ -59,7 +59,8 @@ public class DefaultModule extends AbstractModule {
 		
 		Multibinder<SubmissionUploader> submissionUploaders = Multibinder.newSetBinder(binder(), SubmissionUploader.class);
 		submissionUploaders.addBinding().to(WriteResultToDisk.class);
-		submissionUploaders.addBinding().to(PostFeedbackCommentsUploader.class);
+//		submissionUploaders.addBinding().to(PostFeedbackCommentsUploader.class);
+		submissionUploaders.addBinding().to(GradeSubmissionUploader.class);
 		
 		Multibinder<AssignmentUploader> assignmentUploaders = Multibinder.newSetBinder(binder(), AssignmentUploader.class);
 		assignmentUploaders.addBinding().toInstance(submission -> System.out.println("Assignment uploader size: " + submission.size()));

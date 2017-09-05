@@ -23,11 +23,11 @@ public class Main {
 	
 	public static void main(String... args ) {
 		
-		while(true) {
+		Configuration configuration = null;
+		do {
 			long starttime = System.currentTimeMillis();
 			String configpath = args.length > 0 ? args[0] : Constants.DEFAULT_CONFIGURATION;
 			Gson gson = new Gson();
-			Configuration configuration = null;
 			try(FileReader reader = new FileReader(new File(configpath))) {
 				configuration = gson.fromJson(reader, Configuration.class);
 			} catch (FileNotFoundException e) {
@@ -54,7 +54,7 @@ public class Main {
 				LOGGER.error(e.getMessage(), e);
 				return;
 			}
-		}
+		} while(configuration != null && configuration.runContinuously); 
 	}
 
 	private static long getTimeoutDuration(long starttime, Configuration configuration) {

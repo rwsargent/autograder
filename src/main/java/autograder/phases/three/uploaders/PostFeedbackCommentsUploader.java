@@ -38,6 +38,7 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 		LOGGER.info("Posting feedback comments to " + submission);
 		Map<String, String> data = new HashMap<>();
 		data.put(Constants.CanvasApi.SUMBISSION_COMMENT_TEXT, getSubmissionCommentText(submission));
+		
 		portal.gradeStudentSubmission(Integer.toString(submission.studentInfo.id), config.canvasAssignmentId, data);
 	}
 
