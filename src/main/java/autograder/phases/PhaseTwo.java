@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import autograder.configuration.Configuration;
 import autograder.phases.two.Worker;
 import autograder.student.AutograderSubmission;
 import autograder.student.AutograderSubmissionMap;
@@ -29,12 +30,15 @@ public class PhaseTwo {
 	private Provider<Set<Worker>> mWorkers;
 
 	private SecurityManager securityManager;
-	
+
+	private Configuration config;
 	private static Logger LOGGER = LoggerFactory.getLogger(PhaseTwo.class);
+	
 	@Inject
-	public PhaseTwo(Provider<Set<Worker>> workers, SecurityManager securityManager) {
+	public PhaseTwo(Provider<Set<Worker>> workers, SecurityManager securityManager, Configuration configuration) {
 		mWorkers = workers;
 		this.securityManager = securityManager;
+		this.config = configuration;
 	}
 	
 	/**
@@ -49,7 +53,7 @@ public class PhaseTwo {
 		System.setSecurityManager(securityManager);
 		ExecutorService threadPool = startWork(studentMap.listStudents());
 		threadPool.shutdown();
-		threadPool.awaitTermination(8, TimeUnit.HOURS);
+		threadPool.awaitTermination(10, TimeUnit.MINUTES);
 		System.setSecurityManager(null);
 		
 		// kill running threads?
@@ -67,7 +71,7 @@ public class PhaseTwo {
 	// Trying out the ExecutorService. Each job is a run through all the workers for each student.
 	private ExecutorService startWork(List<AutograderSubmission> queue) {
 		
-		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
+		ExecutorService threadPool = Executors.newFixedThreadPool(getThreadPoolCount());
 		for(AutograderSubmission student : queue) {
 			threadPool.submit(() -> {
 				LOGGER.info("Starting work on " + student);
@@ -81,5 +85,13 @@ public class PhaseTwo {
 			});
 		}
 		return threadPool;
+	}
+
+	private int getThreadPoolCount() {
+		int threadCount = config.threadCount == 0 ? Runtime.getRuntime().availableProcessors() : config.threadCount;
+		if(threadCount <= 1 ) {
+			threadCount = 2;
+		}
+		return threadCount;
 	}
 }
