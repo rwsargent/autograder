@@ -24,6 +24,7 @@ public class Main {
 	public static void main(String... args ) {
 		
 		Configuration configuration = null;
+		setup(args);
 		do {
 			long starttime = System.currentTimeMillis();
 			String configpath = args.length > 0 ? args[0] : Constants.DEFAULT_CONFIGURATION;
@@ -38,13 +39,14 @@ public class Main {
 				return;
 			}
 			
-			setup(args, configuration);
 			AbstractModule module = getModule(configuration);
 			
-			Injector injector = Guice.createInjector(module);	
-			Autograder autograder = injector.getInstance(Autograder.class);
-			autograder.execute();
-			
+			if(module != null) {
+				Injector injector = Guice.createInjector(module);	
+				Autograder autograder = injector.getInstance(Autograder.class);
+				autograder.execute();
+			}
+				
 			try {
 				long timeout = getTimeoutDuration(starttime, configuration);
 				if(timeout > 0) {
@@ -65,11 +67,21 @@ public class Main {
 		return minDuration - programDuration;
 	}
 
-	private static DefaultModule getModule(Configuration configuration) {
-		return new DefaultModule(configuration);
+	private static AbstractModule getModule(Configuration configuration) {
+		if (configuration.moduleClass == null) {
+			return new DefaultModule(configuration);
+		} else {
+			try {
+				Class<?> moduleClass = Main.class.getClassLoader().loadClass(configuration.moduleClass);
+				return (AbstractModule) moduleClass.newInstance();
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				LOGGER.error("Could not load module class " + configuration.moduleClass, e);
+				return null;
+			}
+		}
 	}
 	
-	public static void setup(String[] args, Configuration configuration) {
+	public static void setup(String[] args) {
 		CmdLineParser parser = new CmdLineParser();
 		CommandLine commandLine = parser.parse(args);
 		if(commandLine.hasOption("h")) {

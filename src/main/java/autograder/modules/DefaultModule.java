@@ -21,7 +21,6 @@ import autograder.phases.one.SubmissionFilter;
 import autograder.phases.one.SubmissionsFromWeb;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
-import autograder.phases.three.uploaders.GradeSubmissionUploader;
 import autograder.phases.three.uploaders.WriteResultToDisk;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.InternalJavaCompiler;
@@ -41,10 +40,6 @@ public class DefaultModule extends AbstractModule {
 	public void configure() {
 		bind(Configuration.class).toInstance(this.config);
 		
-		Multibinder<Worker> workerBinder = Multibinder.newSetBinder(binder(), Worker.class);
-		workerBinder.addBinding().to(InternalJavaCompiler.class);
-		workerBinder.addBinding().to(JUnitGrader.class);
-
 		bind(String.class).annotatedWith(Names.named("configpath")).toInstance(configPathString());
 		bind(String.class).annotatedWith(Names.named("assignment")).toInstance(getAssignment());
 		
@@ -57,34 +52,48 @@ public class DefaultModule extends AbstractModule {
 		bind(SecurityManager.class).to(getSecurityManager());
 		bind(Policy.class).to(getPolicy());
 		
+		Multibinder<Worker> workerBinder = Multibinder.newSetBinder(binder(), Worker.class);
+		addPhaseTwoWorkers(workerBinder);
+		
 		Multibinder<SubmissionUploader> submissionUploaders = Multibinder.newSetBinder(binder(), SubmissionUploader.class);
-		submissionUploaders.addBinding().to(WriteResultToDisk.class);
-//		submissionUploaders.addBinding().to(PostFeedbackCommentsUploader.class);
-		submissionUploaders.addBinding().to(GradeSubmissionUploader.class);
+		addSubmissionUploaders(submissionUploaders);
 		
 		Multibinder<AssignmentUploader> assignmentUploaders = Multibinder.newSetBinder(binder(), AssignmentUploader.class);
-		assignmentUploaders.addBinding().toInstance(submission -> System.out.println("Assignment uploader size: " + submission.size()));
+		addAssignmentUploaders(assignmentUploaders);
 		
 		setFileDirectors();
 	}
 
-	private Class<? extends Policy> getPolicy() {
+	protected void addAssignmentUploaders(Multibinder<AssignmentUploader> assignmentUploaders) {
+		assignmentUploaders.addBinding().toInstance(submission -> System.out.println("Assignment uploader size: " + submission.size()));
+	}
+
+	protected void addSubmissionUploaders(Multibinder<SubmissionUploader> submissionUploaders) {
+		submissionUploaders.addBinding().to(WriteResultToDisk.class);
+	}
+
+	protected void addPhaseTwoWorkers(Multibinder<Worker> workerBinder) {
+		workerBinder.addBinding().to(InternalJavaCompiler.class);
+		workerBinder.addBinding().to(JUnitGrader.class);
+	}
+
+	protected Class<? extends Policy> getPolicy() {
 		return AutograderPolicy.class;
 	}
 
-	private Class<? extends SecurityManager> getSecurityManager() {
+	protected Class<? extends SecurityManager> getSecurityManager() {
 		return AutograderSecurityManager.class;	
 	}
 
-	private Class<? extends SubmissionFilter> getSubmissionFilter() {
+	protected Class<? extends SubmissionFilter> getSubmissionFilter() {
 		return OnlyAttemptedSubmissions.class;
 	}
 
-	private Class<? extends PortalConnection> getPortal() {
+	protected Class<? extends PortalConnection> getPortal() {
 		return CanvasConnection.class;
 	}
 
-	private Class<? extends SubmissionDownloader> getSubmissionDownloader() {
+	protected Class<? extends SubmissionDownloader> getSubmissionDownloader() {
 		return SubmissionsFromWeb.class;
 	}
 
@@ -107,7 +116,5 @@ public class DefaultModule extends AbstractModule {
 		directorBindings.addBinding("pdf").to(DefaultFileDirector.class);
 		directorBindings.addBinding("zip").to(DefaultFileDirector.class);
 		directorBindings.addBinding("txt").to(DefaultFileDirector.class);
-		
-		
 	}
 }

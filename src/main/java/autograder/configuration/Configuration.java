@@ -72,6 +72,10 @@ public class Configuration extends AbstractProperties {
 	public boolean runContinuously;
 
 	public int adjustedTotal;
+
+	public String moduleClass;
+
+	public int threadCount;
 	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {
