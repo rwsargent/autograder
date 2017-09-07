@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.cli.CommandLine;
 import org.slf4j.Logger;
@@ -73,8 +75,10 @@ public class Main {
 		} else {
 			try {
 				Class<?> moduleClass = Main.class.getClassLoader().loadClass(configuration.moduleClass);
-				return (AbstractModule) moduleClass.newInstance();
-			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				Constructor<?> moduleConstructor = moduleClass.getConstructor(Configuration.class);
+				return (AbstractModule) moduleConstructor.newInstance(configuration);
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException 
+					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				LOGGER.error("Could not load module class " + configuration.moduleClass, e);
 				return null;
 			}
