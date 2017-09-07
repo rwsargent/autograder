@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
@@ -13,6 +11,8 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -29,7 +29,6 @@ import autograder.student.StudentErrorRegistry;
  * SubmissionParser will create a student for every submission it receives,
  * and write whatever attachemnts it has to disk. 
  * @author ryansargent
- *
  */
 public class SubmissionParser {
 	
@@ -40,7 +39,7 @@ public class SubmissionParser {
 	protected Unzipper unzipper;
 	private String assignment;
 	
-	private Logger LOGGER = Logger.getLogger(SubmissionParser.class.getName());
+	private Logger LOGGER = LoggerFactory.getLogger(SubmissionParser.class);
 	private Map<String, FileDirector> fileDirectors;
 	
 	@Inject
@@ -58,6 +57,7 @@ public class SubmissionParser {
 		AutograderSubmission autoSubmission = new AutograderSubmission(submission, new File("submissions/" + assignment));
 	  	if(submission.attachments != null ) {
 			for(Attachment attachment : submission.attachments) {
+				LOGGER.debug("Downloading " + attachment.filename + " for " + submission);
 				writeAttatchmentToDisk(autoSubmission, attachment);
 			}
 		}
@@ -78,12 +78,12 @@ public class SubmissionParser {
 			} else {
 				FileDirector fileDirector = fileDirectors.get(FilenameUtils.getExtension(attachment.filename));
 				if(fileDirector == null) {
-					LOGGER.log(Level.FINE, "Skipping " + attachment.filename + " as it has an non-configured extension.");
+					LOGGER.debug("Skipping " + attachment.filename + " as it has an non-configured extension.");
 				}
 				fileDirector.directFile(bais, submission, attachment.filename);
 			}
 		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "Couldn't unzip attachment for " + submission, e);
+			LOGGER.error("Couldn't unzip attachment for " + submission, e);
 		}
 	}
 

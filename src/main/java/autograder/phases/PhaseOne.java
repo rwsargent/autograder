@@ -51,13 +51,16 @@ public class PhaseOne {
 	public AutograderSubmissionMap setupSubmissions(String assignment, boolean rerun) {
 		AutograderSubmissionMap submissionMap = new AutograderSubmissionMap();
 		if(rerun) {
+			LOGGER.info("Reruning autograder's previous group of submissions");
 			File assignmentDirectory = Paths.get("submissions", assignment).toFile();
 			if(!assignmentDirectory.exists()) {
 				throw new IllegalStateException("Can't find " + assignmentDirectory.getAbsolutePath() + ". Are you sure you should be re-running?");
 			}
 			// read submissions and meta data from disk.
 			Gson gson = new Gson();
-			for (File assignmentDir : assignmentDirectory.listFiles()) {
+			File[] listFiles = assignmentDirectory.listFiles();
+			LOGGER.debug("Found " + listFiles.length + " files to rerun.");
+			for (File assignmentDir : listFiles) {
 				// read meta files
 				try {
 					File meta = new File(assignmentDir, "meta");
@@ -74,9 +77,11 @@ public class PhaseOne {
 			}
 		} else {
 			// Get get all possible submissions
+			LOGGER.debug("Downloading most recent submissions");
 			List<Submission> fullSubmissions = submissionDownloader.downloadSubmissions();
 			List<Submission> subsToRemove = new ArrayList<>();
 			
+			LOGGER.debug("Removing already seen submissions.");
 			for(Submission submission : fullSubmissions) {
 				if(seenSubmissions.alreadySeenSubmission(submission)) {
 					subsToRemove.add(submission);
@@ -90,6 +95,7 @@ public class PhaseOne {
 			
 			// create AutograderSubmission
 			fullSubmissions.stream()
+				.peek(submission -> LOGGER.info("Creating " + submission))
 				.map(parser::parseAndCreateSubmission)
 				.peek(studentDownloader::fillUser)
 				.peek(submission -> submission.writeMetaData())
