@@ -51,7 +51,7 @@ public class InternalJavaCompiler implements Worker {
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 		StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.getDefault(), Charset.defaultCharset());
 		File[] sourceFiles = submission.getSourceDirectory().listFiles(file -> FilenameUtils.getExtension(file.getName()).equals("java"));
-		if(sourceFiles.length == 0) {
+		if(sourceFiles == null || sourceFiles.length == 0) {
 			LOGGER.debug("Skipping student " + submission + " for not having any source files to compile!");
 			submission.setProperty("compiled", "false");
 			return;

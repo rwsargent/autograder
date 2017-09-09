@@ -62,3 +62,5 @@ TA-grading-instructions.txt
 *.zip
 
 src/main/java/frakenstein/**/*
+
+autograder.policy

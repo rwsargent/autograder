@@ -41,10 +41,10 @@ public class AutograderSubmission {
 		directory = new File(parentDir, generateDirectoryName());
 		
 		if(!directory.exists()) {
-			if(directory.mkdir()) {
+			if(directory.mkdirs()) {
 				LOGGER.info("Created AutograderSubmission: " + directory.getName());
 			} else {
-				LOGGER.warn("Failed to create AutograderSubmission: " + directory.getName() + ". mkdir failed.");
+				LOGGER.warn("Failed to create AutograderSubmission: " + directory.getName() + " mkdir failed.");
 			}
 		}
 	}
