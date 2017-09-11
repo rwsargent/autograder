@@ -29,6 +29,15 @@ import autograder.portal.PortalConnection;
 import autograder.security.AutograderPolicy;
 import autograder.security.AutograderSecurityManager;
 
+import static autograder.Constants.Names.*;
+
+/**
+ * This is the Default configuration for the Autograder.
+ * 
+ * Any specialized configurations should extend this one, and override the 
+ * desired behavior.
+ * @author ryansargent
+ */
 public class DefaultModule extends AbstractModule {
 	private Configuration config;
 
@@ -40,8 +49,8 @@ public class DefaultModule extends AbstractModule {
 	public void configure() {
 		bind(Configuration.class).toInstance(this.config);
 		
-		bind(String.class).annotatedWith(Names.named("configpath")).toInstance(configPathString());
-		bind(String.class).annotatedWith(Names.named("assignment")).toInstance(getAssignment());
+		bind(String.class).annotatedWith(Names.named(CONFIG_PATH)).toInstance(configPathString());
+		bind(String.class).annotatedWith(Names.named(ASSIGNMENT)).toInstance(getAssignment());
 		
 		bind(PortalConnection.class).to(getPortal());
 		bind(StudentDownloader.class).to(getStudentDownloader());
@@ -65,7 +74,7 @@ public class DefaultModule extends AbstractModule {
 	}
 
 	protected void addAssignmentUploaders(Multibinder<AssignmentUploader> assignmentUploaders) {
-		assignmentUploaders.addBinding().toInstance(submission -> System.out.println("Assignment uploader size: " + submission.size()));
+		// no-op
 	}
 
 	protected void addSubmissionUploaders(Multibinder<SubmissionUploader> submissionUploaders) {

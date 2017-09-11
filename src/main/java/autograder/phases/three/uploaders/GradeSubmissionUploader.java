@@ -15,6 +15,10 @@ import autograder.portal.PortalConnection;
 import autograder.student.AutograderSubmission;
 import autograderutils.AutograderResult;
 
+/**
+ * Uploads 
+ * @author ryansargent
+ */
 public class GradeSubmissionUploader implements SubmissionUploader {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(GradeSubmissionUploader.class);
