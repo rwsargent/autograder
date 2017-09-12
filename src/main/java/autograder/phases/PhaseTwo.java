@@ -52,8 +52,14 @@ public class PhaseTwo {
 		LOGGER.info("Phase two starting...");
 		System.setSecurityManager(securityManager);
 		ExecutorService threadPool = startWork(studentMap.listStudents());
+		LOGGER.info("Jobs are queued");
 		threadPool.shutdown();
-		threadPool.awaitTermination(10, TimeUnit.MINUTES);
+		if(!threadPool.awaitTermination(getTimeout(), TimeUnit.MINUTES)) {
+			LOGGER.warn("Threadpool had to be forcibly terminated while grading.");
+		} else {
+			LOGGER.info("Jobs finished cleanly");
+		}
+		
 		System.setSecurityManager(null);
 		
 		// kill running threads?
@@ -66,6 +72,10 @@ public class PhaseTwo {
 		}
 		LOGGER.info("Phase two finished");
 		return studentMap;
+	}
+
+	private long getTimeout() {
+		return config.phaseTwoTimeout <= 0 ? 10 : config.phaseTwoTimeout;
 	}
 	
 	// Trying out the ExecutorService. Each job is a run through all the workers for each student.

@@ -76,6 +76,8 @@ public class Configuration extends AbstractProperties {
 	public String moduleClass;
 
 	public int threadCount;
+
+	public long phaseTwoTimeout;
 	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {
