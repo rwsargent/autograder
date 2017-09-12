@@ -42,21 +42,23 @@ public class Main {
 			}
 			
 			AbstractModule module = getModule(configuration);
-			
+			LOGGER.info("Running with " + module.getClass().getSimpleName());
 			if(module != null) {
 				Injector injector = Guice.createInjector(module);	
 				Autograder autograder = injector.getInstance(Autograder.class);
 				autograder.execute();
 			}
-				
-			try {
-				long timeout = getTimeoutDuration(starttime, configuration);
-				if(timeout > 0) {
-					Thread.sleep(timeout);
+			
+			if(configuration != null && configuration.runContinuously) {
+				try {
+					long timeout = getTimeoutDuration(starttime, configuration);
+					if(timeout > 0) {
+						Thread.sleep(timeout);
+					}
+				} catch (InterruptedException e) {
+					LOGGER.error(e.getMessage(), e);
+					return;
 				}
-			} catch (InterruptedException e) {
-				LOGGER.error(e.getMessage(), e);
-				return;
 			}
 		} while(configuration != null && configuration.runContinuously); 
 	}
