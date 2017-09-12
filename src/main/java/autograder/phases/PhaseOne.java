@@ -27,8 +27,22 @@ import autograder.student.AutograderSubmissionMap;
 
 /**
  * The Setup
+ * 
+ * Phase One's main purpose is to download the submissions, arrange them of the file 
+ * system and create an AutograderSubmission map
+ * 
+ * Plugin points include: <br/>
+ * {@link SubmissionDownloader} 
+ * 		- Start of parsing submissions. This object can have data to link to attachments
+ * {@link SubmissionBuilder} 
+ * 		- Using POJO from submissionDownloader, start building file system and internal object
+ * {@link SeenSubmissions}
+ * 	    - Used to cull unwanted submissions that SubmissionDownloader might produced
+ * {@link StudentDownloader}
+ *      - Used to flesh out submission details, if they didn't come down with SubmissionDownloader
+ *  {@link SubmissionParser}
+ *  	- Filters out files to write to disk for AutograderSubmission
  * @author ryans 2017
- *
  */
 public class PhaseOne {
 	protected SubmissionDownloader submissionDownloader;
@@ -39,6 +53,14 @@ public class PhaseOne {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(PhaseOne.class);
 	
+	/**
+	 * For a description of parameters, see plugin points in the class definition
+	 * @param submissionDownloader
+	 * @param subBuilder
+	 * @param seenSubmissions
+	 * @param studentDownloader
+	 * @param parser
+	 */
 	@Inject
 	public PhaseOne(SubmissionDownloader submissionDownloader, SubmissionBuilder subBuilder, SeenSubmissions seenSubmissions, StudentDownloader studentDownloader, SubmissionParser parser) {
 		this.submissionDownloader = submissionDownloader;
@@ -48,6 +70,15 @@ public class PhaseOne {
 		this.parser = parser;
 	}
 	
+	/**
+	 * 
+	 * @param assignment 
+	 * 	- The name of the assignment the autograder is currently running
+	 * @param rerun
+	 * 	- Whether or not to read from disk from a previous run, or to pull from SubmissionDownloader
+	 * @return
+	 * 	- and {@link AutograderSubmissionMap} that reprents this autograder run's submissions.
+	 */
 	public AutograderSubmissionMap setupSubmissions(String assignment, boolean rerun) {
 		AutograderSubmissionMap submissionMap = new AutograderSubmissionMap();
 		if(rerun) {
