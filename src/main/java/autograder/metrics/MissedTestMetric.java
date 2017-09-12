@@ -45,10 +45,10 @@ public class MissedTestMetric {
 		}
 		data.sort(null);
 		StringBuilder textOutput = new StringBuilder();
-		textOutput.append("Total submission count: " + submissions.size());
+		textOutput.append("Total submission count: " + submissions.size() + "\n");
 		for(DataPoint dp : data) {
 			double percentage = 100 * (dp.frequency / (double) submissions.size());
-			textOutput.append(String.format("%-" + longestTestName + "s: %02.2f%% (%d)\n", dp.testName, percentage, dp.frequency));
+			textOutput.append(String.format("%-" + longestTestName + "s %02.2f%% (%d)\n", dp.testName, percentage, dp.frequency));
 		}
 		return textOutput.toString();
 	}
@@ -62,8 +62,8 @@ public class MissedTestMetric {
 				Matcher matcher = failureName.matcher(line);
 				if(matcher.find()) {
 					String testName = matcher.group(1);
-					int failedTestFrequency = testHistogram.get(testName) == null ? 0 : testHistogram.get(testName);
-					testHistogram.put(testName, failedTestFrequency++);
+					int failedTestFrequency = testHistogram.containsKey(testName) ? testHistogram.get(testName) : 0 ;
+					testHistogram.put(testName, ++failedTestFrequency);
 				}
 			}
 		}
