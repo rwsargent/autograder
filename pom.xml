@@ -78,7 +78,7 @@
 	<dependency>
 	    <groupId>com.google.inject</groupId>
 	    <artifactId>guice</artifactId>
-	    <version>4.1</version>
+	    <version>4.1.0</version>
 	</dependency>
     <dependency>
       <groupId>com.google.inject.extensions</groupId>
@@ -86,41 +86,17 @@
       <version>4.1.0</version>
     </dependency>
 	<dependency>
-	  <groupId>com.google.inject</groupId>
-	  <artifactId>guice</artifactId>
-	  <version>4.1.0</version>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-math3</artifactId>
+	    <version>3.6.1</version>
 	</dependency>
-	
 	<dependency>
 	  <groupId>com.github.rwsargent</groupId>
 	  <artifactId>autograder-utils</artifactId>
 	  <version>1.1</version>
 	</dependency>
-	<dependency>
-		<groupId>junit</groupId>
-		<artifactId>junit</artifactId>
-		<version>4.11</version>
-	</dependency>
   </dependencies>
   <build>
-	<plugins>
-		<plugin>
-			<artifactId>maven-assembly-plugin</artifactId>
-			<executions>
-				<execution>
-					<phase>package</phase>
-					<goals>
-						<goal>single</goal>
-					</goals>
-				</execution>
-			</executions>
-			<configuration>
-				<descriptorRefs>
-					<descriptorRef>jar-with-dependencies</descriptorRef>
-				</descriptorRefs>
-			</configuration>
-		</plugin>
-	</plugins>
     <pluginManagement>
 	    <plugins>
 	        <plugin>
