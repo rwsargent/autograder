@@ -44,8 +44,8 @@ public class Configuration extends AbstractProperties {
 	
 	public String studentsToGradeCsv;
 	
-	public String validFileExtensions;
-	public String validFileNames;
+	public String[] validFileExtensions;
+	public String[] validFileNames;
 	
 	@Optional(defaultValue="")
 	public String mainClass;

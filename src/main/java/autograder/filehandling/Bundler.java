@@ -14,33 +14,81 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import autograder.Constants;
 import autograder.configuration.Configuration;
 import autograder.student.AutograderSubmission;
+import autograder.student.AutograderSubmissionMap;
 import autograder.student.SubmissionPair;
 
 public class Bundler {
 	private  byte[] buffer = new byte[1024];
-	private List<String> validFileExtensions = Arrays.asList("pdf", "rws", "txt", "jar", "md");
-	private List<String> validFileNames = Arrays.asList("i_worked_with", "README", "readme", "partner_evaluation");
+	private List<String> validFileExtensions;
+	private List<String> validFileNames;
 	
-	private Configuration mConfig;
+	private Configuration config;
 	
-	public Bundler(Configuration config) {
-		validFileExtensions = Arrays.asList(config.validFileExtensions.split(","));
-		validFileNames = Arrays.asList(config.validFileNames.split(","));
+	private final Logger LOGGER = LoggerFactory.getLogger(Bundler.class);
+	
+	@Inject
+	public Bundler(Configuration configuration) {
+		validFileExtensions = Arrays.asList(config.validFileExtensions);
+		validFileNames = Arrays.asList(config.validFileNames);
 		
-		mConfig = config;
+		config = configuration;
+	}
+	
+	public Map<String, File> bundle(AutograderSubmissionMap submissions, Map<String, List<String>> groups) {
+		LOGGER.info("Bundling for " + groups.keySet().toString());
+		Map<String, File> output = new HashMap<>();
+		for(String group : groups.keySet()) {
+			List<String> submissionsInGroup = groups.get(group);
+			File destination = new File(buildOutputDestinationFilename(group));
+			destination.getParentFile().mkdirs();
+			output.put(group, destination);
+			try(Zipper zipper = new Zipper()) {
+				zipper.init(destination);
+				for(String submissionId : submissionsInGroup) {
+					AutograderSubmission submission = submissions.get(submissionId);
+					String topLevel = submission.studentInfo.sortableName;
+					zipper.addEntry(topLevel, null);
+					
+					//add base files 
+					for(File file : submission.getDirectory().listFiles()) {
+						if(!file.isDirectory()) {
+							zipper.addEntry(topLevel + file.getName(), file);
+						}
+					}
+					
+					//add source files
+					File sourceDirectory = submission.getSourceDirectory();
+					if(sourceDirectory != null && sourceDirectory.list().length != 0 ) {
+						zipper.addEntry(topLevel + "/src/");
+						for(File sourceFile : sourceDirectory.listFiles()) {
+							if(!sourceFile.isDirectory()) {
+								zipper.addEntry(topLevel + "/src/" + sourceFile.getName(), sourceFile);
+							}
+						}
+					}
+				}
+			} catch (IOException e) {
+				LOGGER.error("While trying to bundle for: " + group, " an error occured.", e);
+			}
+		}
+		return output;
 	}
 	
 	public Map<String, File> bundleStudents(HashMap<String, Set<SubmissionPair>> studentToTaMap) {
 		HashMap<String, File> taToBigZipMap = new HashMap<>();
 		for(String ta: studentToTaMap.keySet()) {
 			System.out.println("Bundling " + ta + "'s students");
-			File taZipFile = new File(String.format("%s/%s/%s-grading.zip", Constants.ZIPS, ta, mConfig.assignment));
+			File taZipFile = new File(buildOutputDestinationFilename(ta));
 			taZipFile.getParentFile().mkdirs();
 			try(FileOutputStream fout = new FileOutputStream(taZipFile);
 					ZipOutputStream zipWriter = new ZipOutputStream(new BufferedOutputStream(fout))) {
@@ -65,6 +113,10 @@ public class Bundler {
 		return taToBigZipMap;
 	}
 
+	private String buildOutputDestinationFilename(String group) {
+		return String.format("%s/%s/%s-grading.zip", Constants.ZIPS, group, config.assignment);
+	}
+
 	private String getParentDirectoryName(SubmissionPair pair) {
 		if(pair.partner.studentInfo.sortableName.startsWith("invalid")) {
 			return pair.submitter.studentInfo.sortableName + "/";
@@ -74,10 +126,10 @@ public class Bundler {
 	}
 
 	private void writeExtraFilesToZip(ZipOutputStream zipWriter) throws IOException {
-		if(StringUtils.isBlank(mConfig.extraBundledFilesCsv)) {
+		if(StringUtils.isBlank(config.extraBundledFilesCsv)) {
 			return;
 		}
-		for(String dependency : mConfig.extraBundledFilesCsv.split(",")) {
+		for(String dependency : config.extraBundledFilesCsv.split(",")) {
 			String dependencyFileName = FilenameUtils.getName(dependency);
 			File dependencyFile = new File(dependency);
 			if(dependencyFile.isDirectory()) {
@@ -91,8 +143,8 @@ public class Bundler {
 	}
 
 	private void writeAssignmentFileToZip(ZipOutputStream zipWriter) throws IOException {
-		String graderFileName = FilenameUtils.getName(mConfig.graderFile);
-		writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(mConfig.graderFile));
+		String graderFileName = FilenameUtils.getName(config.graderFile);
+		writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(config.graderFile));
 	}
 
 	private void writeFilesToZip(AutograderSubmission student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {

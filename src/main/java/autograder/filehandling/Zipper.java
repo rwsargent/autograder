@@ -30,19 +30,25 @@ public class Zipper implements Closeable, AutoCloseable {
 	
 	public void addEntry(String entryName, File data) throws IOException {
 		ZipEntry newEntry = new ZipEntry(entryName);
-		try(FileInputStream in = new FileInputStream(data.getAbsolutePath())) {
-			zipWriter.putNextEntry(newEntry);
-			int len;
-			while ((len = in.read(buffer)) > 0) {
-				zipWriter.write(buffer, 0, len);
-			}
-			zipWriter.closeEntry();
-		} catch (ZipException e) {
-			if(e.getMessage().contains("uplicate")) {
-				//if there's a duplicate entry, I'm ok with it.
-				LOGGER.warn("Duplicate entry while zipping " + entryName);
+		zipWriter.putNextEntry(newEntry);
+		if(data != null) {
+			try(FileInputStream in = new FileInputStream(data.getAbsolutePath())) {
+				int len;
+				while ((len = in.read(buffer)) > 0) {
+					zipWriter.write(buffer, 0, len);
+				}
+			} catch (ZipException e) {
+				if(e.getMessage().contains("uplicate")) {
+					//if there's a duplicate entry, I'm ok with it.
+					LOGGER.warn("Duplicate entry while zipping " + entryName);
+				}
 			}
 		}
+		zipWriter.closeEntry();
+	}
+	
+	public void addEntry(String entryName) throws IOException {
+		addEntry(entryName, null);
 	}
 
 	@Override
