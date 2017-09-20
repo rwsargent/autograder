@@ -26,7 +26,7 @@ public class EmailBundleToTasUploader implements AssignmentUploader{
 	private final Logger LOGGER = LoggerFactory.getLogger(EmailBundleToTasUploader.class);
 
 	@Inject
-	public EmailBundleToTasUploader(Configuration configuration, Bundler bundler, Mailer emailer) {
+	public EmailBundleToTasUploader(Configuration configuration, SubmissionPartitioner partitioner, Bundler bundler, Mailer emailer) {
 		this.config = configuration;
 		this.bundler = bundler;
 		this.emailer = emailer;
@@ -57,7 +57,6 @@ public class EmailBundleToTasUploader implements AssignmentUploader{
 	}
 
 	private Map<String, List<String>> tasToStudents() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
