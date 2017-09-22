@@ -23,7 +23,16 @@ import autograder.student.AutograderSubmissionMap;
  * each student in the StudentMap. This returns a partition of the students per the ta.csv file to hand off
  * to the Uploader phase (PhaseThree). 
  * 
- * @author ryansargent
+ * <h4> Plugin Points </h4>
+ * 
+ * Workers 
+ * 	- This set of {@link Worker} object will be executed one after another per submission. While the 
+ * 	workers are synchronized for each submission, submissions are run in parallel. 
+ * 
+ * {@link SecurityManager}
+ * 	- There's a chance that code will be run that didn't originate from the Autograder during the worker 
+ *  process. The SecurityManager will help sandbox the environment. 
+ * @author ryansargent 2017
  *
  */
 public class PhaseTwo {
@@ -42,10 +51,17 @@ public class PhaseTwo {
 	}
 	
 	/**
+	 * During phase two, each student submissions queued as a job on a threadPool 
+	 * (as an {@link ExecutorService}). Submissions will be run in parallel to each other, 
+	 * however each worker will be run synchronized per worker (one after another). 
 	 * 
-	 * @param studentMap - All student submissions we know about. 
-	 * @return - Students randomly partitioned amongst the students in 
+	 * The executor service will forcibly shut down after a configurable
+	 * amount of time (in minutes), defaulted to 10. 
+	 * 
+	 * @param studentMap - All submissions for this autograder run 
+	 * @return - the same studentMap supplied. 
 	 * @throws InterruptedException
+	 *  	- If an interruption occurs during the multithreading
 	 */
 	@SuppressWarnings("deprecation")
 	public AutograderSubmissionMap phaseTwo(AutograderSubmissionMap studentMap) throws InterruptedException {

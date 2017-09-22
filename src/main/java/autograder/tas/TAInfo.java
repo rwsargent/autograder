@@ -8,6 +8,7 @@ import java.util.List;
  *
  */
 public class TAInfo {
+	
 	public String name;
 	public String email;
 	public double hours;
