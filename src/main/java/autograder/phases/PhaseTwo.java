@@ -63,7 +63,6 @@ public class PhaseTwo {
 	 * @throws InterruptedException
 	 *  	- If an interruption occurs during the multithreading
 	 */
-	@SuppressWarnings("deprecation")
 	public AutograderSubmissionMap phaseTwo(AutograderSubmissionMap studentMap) throws InterruptedException {
 		LOGGER.info("Phase two starting...");
 		System.setSecurityManager(securityManager);
@@ -79,6 +78,16 @@ public class PhaseTwo {
 		System.setSecurityManager(null);
 		
 		// kill running threads?
+		killInfiniteThreadsGeneratedByJUnit();
+		
+		LOGGER.info("Phase two finished");
+		return studentMap;
+	}
+
+	// Yeah yeah yeah, it's a hack. So sue me. Teach students 
+    // to stop writing infinite loops, and I won't have to do this.
+	@SuppressWarnings("deprecation")
+	private void killInfiniteThreadsGeneratedByJUnit() {
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		for(Thread t : threadSet) {
 			if(t.getName().contains("Thread-"))  {
@@ -86,10 +95,8 @@ public class PhaseTwo {
 				t.stop();
 			}
 		}
-		LOGGER.info("Phase two finished");
-		return studentMap;
 	}
-
+	
 	private long getTimeout() {
 		return config.phaseTwoTimeout <= 0 ? 10 : config.phaseTwoTimeout;
 	}

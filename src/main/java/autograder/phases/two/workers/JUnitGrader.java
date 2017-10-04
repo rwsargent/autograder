@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -37,7 +38,7 @@ public class JUnitGrader implements Worker {
 
 	@Override
 	public void doWork(AutograderSubmission submission) {
-		LOGGER.info("Grading " + submission.studentInfo.name);
+		LOGGER.info("Grading " + submission.studentInfo.name + "(" + submission.toString() + ")");
 		List<URL> javaBinaryUrls = new ArrayList<>();
 		try {
 			javaBinaryUrls.add(submission.getClassesDirectory().toURI().toURL());
@@ -76,6 +77,7 @@ public class JUnitGrader implements Worker {
 		} catch (IOException e1) {
 			LOGGER.error("Trouble closing the IOStream for " + submission, e1);
 		};
+		
 	}
 
 	private List<URL> getUrlsFromExtraClassPath() throws MalformedURLException {

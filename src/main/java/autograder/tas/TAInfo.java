@@ -8,7 +8,6 @@ import java.util.List;
  *
  */
 public class TAInfo {
-	
 	public String name;
 	public String email;
 	public double hours;
@@ -19,5 +18,10 @@ public class TAInfo {
 		this.name = name;
 		this.email = email;
 		this.hours = hours;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s, %s, (%d)", name, email, students == null ? 0 : students.size());
 	}
 }
