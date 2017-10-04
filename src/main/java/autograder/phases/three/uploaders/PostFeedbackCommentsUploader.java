@@ -3,9 +3,6 @@ package autograder.phases.three.uploaders;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import autograder.Constants;
 import autograder.configuration.Configuration;
+import autograder.mailer.Mailer;
 import autograder.phases.three.SubmissionUploader;
 import autograder.portal.PortalConnection;
 import autograder.student.AutograderSubmission;
@@ -26,11 +24,13 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 	
 	private PortalConnection portal;
 	private Configuration config;
+	private Mailer mailer;
 
 	@Inject
-	public PostFeedbackCommentsUploader(PortalConnection portal, Configuration configuration) {
+	public PostFeedbackCommentsUploader(PortalConnection portal, Configuration configuration, Mailer emailer) {
 		this.portal = portal;
 		this.config = configuration;
+		this.mailer = emailer;
 	}
 	
 	@Override
@@ -38,6 +38,7 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 		LOGGER.info("Posting feedback comments to " + submission);
 		Map<String, String> data = new HashMap<>();
 		data.put(Constants.CanvasApi.SUMBISSION_COMMENT_TEXT, getSubmissionCommentText(submission));
+		data.put(Constants.CanvasApi.GROUP_COMMENT, "true");
 		
 		portal.gradeStudentSubmission(Integer.toString(submission.studentInfo.id), config.canvasAssignmentId, data);
 	}
@@ -61,8 +62,15 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 		}
 		
 		if(StringUtils.isEmpty(feedback)) {
-			feedback = "The autograder didn't produce any feedback for you. Contact the TAs with this information:\n"
-					+ submission + " - " +  new SimpleDateFormat(Constants.BUNDLED_TIMESTAMP).format(Date.from(Instant.now())); 
+			mailer.sendMail(config.senderEmail, "Autograder Error", 
+					"Student name: " + submission.studentInfo.name + "\n" + 
+					"Student Id:" + submission.studentInfo.id + ", " + submission.studentInfo.sis_user_id + "\n" + 
+				    "Student UID: " + submission.studentInfo.sis_user_id +
+				    "Submission: " + submission);
+			
+			feedback = "The autograder didn't produce any feedback for you. This is most likely an error on the Autograder's side. " + 
+					"If the assignment is past due, do NOT resubmit. " 
+					+ "If you have received this message multiple times, contact the administrator. Otherwise, resubmit after a few minutes."; 
 		}
 		
 		return feedback;
