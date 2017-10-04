@@ -1,8 +1,26 @@
 package autograder.modules;
 
-import java.security.Policy;
+import static autograder.Constants.Names.ASSIGNMENT;
+import static autograder.Constants.Names.CONFIG_PATH;
+import static autograder.Constants.Names.TAS;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.Policy;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Provider;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
@@ -28,8 +46,7 @@ import autograder.phases.two.workers.JUnitGrader;
 import autograder.portal.PortalConnection;
 import autograder.security.AutograderPolicy;
 import autograder.security.AutograderSecurityManager;
-
-import static autograder.Constants.Names.*;
+import autograder.tas.TAInfo;
 
 /**
  * This is the Default configuration for the Autograder.
@@ -40,7 +57,8 @@ import static autograder.Constants.Names.*;
  */
 public class DefaultModule extends AbstractModule {
 	private Configuration config;
-
+	protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	
 	public DefaultModule(Configuration configuration) {
 		this.config = configuration;
 	}
@@ -51,6 +69,7 @@ public class DefaultModule extends AbstractModule {
 		
 		bind(String.class).annotatedWith(Names.named(CONFIG_PATH)).toInstance(configPathString());
 		bind(String.class).annotatedWith(Names.named(ASSIGNMENT)).toInstance(getAssignment());
+		bind(new TypeLiteral<Map<String, TAInfo>>(){}).annotatedWith(Names.named(TAS)).toProvider(getTaInfo());
 		
 		bind(PortalConnection.class).to(getPortal());
 		bind(StudentDownloader.class).to(getStudentDownloader());
@@ -73,6 +92,19 @@ public class DefaultModule extends AbstractModule {
 		setFileDirectors();
 	}
 
+	private Provider<Map<String, TAInfo>> getTaInfo() {
+		Gson gson = new Gson();
+		try(FileInputStream file = new FileInputStream(new File(config.taFilePath));
+				InputStreamReader reader = new InputStreamReader(file)) {
+			TypeToken<Map<String, TAInfo>> type = new TypeToken<Map<String, TAInfo>>(){};
+			final Map<String, TAInfo> taInfo = gson.fromJson(reader, type.getType());
+			return () ->  taInfo;
+		} catch (IOException e) {
+			LOGGER.error("Could not read TA file.", e);
+		};
+		return () -> new HashMap<>();
+	}
+	
 	protected void addAssignmentUploaders(Multibinder<AssignmentUploader> assignmentUploaders) {
 		// no-op
 	}
@@ -126,4 +158,6 @@ public class DefaultModule extends AbstractModule {
 		directorBindings.addBinding("zip").to(DefaultFileDirector.class);
 		directorBindings.addBinding("txt").to(DefaultFileDirector.class);
 	}
+	
+	
 }

@@ -1,8 +1,11 @@
 package autograder.modules;
 
+import org.mockito.Mockito;
+
 import com.google.inject.multibindings.Multibinder;
 
 import autograder.configuration.Configuration;
+import autograder.mailer.Mailer;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
 import autograder.phases.three.uploaders.AssignmentMetricsUploader;
@@ -17,6 +20,12 @@ public class GradingModule extends DefaultModule {
 
 	public GradingModule(Configuration configuration) {
 		super(configuration);
+	}
+	
+	@Override
+	public void configure() {
+		super.configure();
+		bind(Mailer.class).toInstance(Mockito.mock(Mailer.class));
 	}
 	
 	@Override
