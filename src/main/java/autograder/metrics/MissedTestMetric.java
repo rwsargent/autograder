@@ -30,12 +30,31 @@ import autograder.student.AutograderSubmissionMap;
  * </pre>
  * @author ryansargent
  */
-public class MissedTestMetric {
+public class MissedTestMetric implements MetricReport {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MissedTestMetric.class);
 	private static final Pattern failureName = Pattern.compile("TEST FAILED: ([a-zA-Z]+)");
+	private HashMap<String, Integer> testHistogram;
+	private int submissionCount = 0;
 	
-	public String getHistogramSummary(AutograderSubmissionMap submissions) {
-		Map<String, Integer> testHistogram = buildHistogram(submissions);
+	/**
+	 * Text summary of all miss tests. Give their name, failed count, and percentage of students who
+	 * missed.
+	 * 
+	 * @param submissions
+	 * @return
+	 */
+	public String getHistogramSummary(AutograderSubmissionMap submissions) { 
+		return getHistogramSummary(-1);
+	}
+	
+	/**
+	 * @param limit - use the top LIMIT number of data points. If limit is <= 0, use all.
+	 * @return
+	 */
+	public String getHistogramSummary(int limit) {
+		if(testHistogram == null) {
+			throw new IllegalStateException("Please call 'calculateMetrics' first");
+		}
 		
 		List<DataPoint> data = new ArrayList<>();
 		int longestTestName = 0;
@@ -44,10 +63,13 @@ public class MissedTestMetric {
 			longestTestName = Math.max(longestTestName, datapoint.getKey().length());
 		}
 		data.sort(null);
+		if(limit > 0) {
+			data = data.subList(0, limit);
+		}
 		StringBuilder textOutput = new StringBuilder();
-		textOutput.append("Total submission count: " + submissions.size() + "\n");
+		textOutput.append("Total submission count: " + submissionCount + "\n");
 		for(DataPoint dp : data) {
-			double percentage = 100 * (dp.frequency / (double) submissions.size());
+			double percentage = 100 * (dp.frequency / (double) submissionCount);
 			textOutput.append(String.format("%-" + longestTestName + "s %02.2f%% (%d)\n", dp.testName, percentage, dp.frequency));
 		}
 		return textOutput.toString();
@@ -55,7 +77,8 @@ public class MissedTestMetric {
 	
 	protected Map<String, Integer> buildHistogram(AutograderSubmissionMap submissions) {
 		LOGGER.info("Analyzing all missed test cases.");
-		HashMap<String, Integer> testHistogram = new HashMap<>();
+		testHistogram = new HashMap<>();
+		submissionCount = submissions.size();
 		
 		for(AutograderSubmission submission : submissions.listStudents()) {
 			for(String line : submission.getResult().buildTestResults().split("\n")) {
@@ -68,6 +91,16 @@ public class MissedTestMetric {
 			}
 		}
 		return testHistogram;
+	}
+	
+	@Override
+	public String generateMetricReport() {
+		return "Missed Tests Information\n**********\n" + getHistogramSummary(-1);
+	}
+
+	@Override
+	public void calculateMetrics(AutograderSubmissionMap submissions) {
+		buildHistogram(submissions);
 	}
 	
 	protected class DataPoint implements Comparable<DataPoint>{
@@ -84,4 +117,6 @@ public class MissedTestMetric {
 			return  o.frequency - this.frequency;
 		}
 	}
+
+	
 }
