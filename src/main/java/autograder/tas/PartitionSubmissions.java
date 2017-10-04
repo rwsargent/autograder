@@ -42,7 +42,7 @@ public class PartitionSubmissions {
 	 */
 	public HashMap<String, Set<SubmissionPair>> partition(SubmissionData submissionData) {
 		// Create a mapping of TAs to a submission set, create a shuffleable collection from the submissions
-		List<TAInfo> tas = mTARegistry.toList();
+		List<TAInfo> tas = new ArrayList<>(); // mTARegistry.toList();
 		HashMap<String, Set<SubmissionPair>> tasToSubmissions = new HashMap<>();
 		tas.forEach(ta -> tasToSubmissions.put(ta.name, new HashSet<>()));
 		List<SubmissionPair> submissions = new ArrayList<>(submissionData.pairs);

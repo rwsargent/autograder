@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import autograder.Constants;
 import autograder.configuration.Configuration;
 import autograder.student.AutograderSubmission;
-import autograder.student.AutograderSubmissionMap;
 import autograder.student.SubmissionPair;
 
 public class Bundler {
@@ -38,31 +37,30 @@ public class Bundler {
 	
 	@Inject
 	public Bundler(Configuration configuration) {
-		validFileExtensions = Arrays.asList(config.validFileExtensions);
-		validFileNames = Arrays.asList(config.validFileNames);
+		validFileExtensions = Arrays.asList(configuration.validFileExtensions);
+		validFileNames = Arrays.asList(configuration.validFileNames);
 		
 		config = configuration;
 	}
 	
-	public Map<String, File> bundle(AutograderSubmissionMap submissions, Map<String, List<String>> groups) {
+	public Map<String, File> bundle(Map<String, List<AutograderSubmission>> groups) {
 		LOGGER.info("Bundling for " + groups.keySet().toString());
 		Map<String, File> output = new HashMap<>();
 		for(String group : groups.keySet()) {
-			List<String> submissionsInGroup = groups.get(group);
+			List<AutograderSubmission> submissionsInGroup = groups.get(group);
 			File destination = new File(buildOutputDestinationFilename(group));
 			destination.getParentFile().mkdirs();
 			output.put(group, destination);
 			try(Zipper zipper = new Zipper()) {
 				zipper.init(destination);
-				for(String submissionId : submissionsInGroup) {
-					AutograderSubmission submission = submissions.get(submissionId);
+				for(AutograderSubmission submission : submissionsInGroup) {
 					String topLevel = submission.studentInfo.sortableName;
-					zipper.addEntry(topLevel, null);
+//					zipper.addEntry(topLevel);
 					
 					//add base files 
 					for(File file : submission.getDirectory().listFiles()) {
 						if(!file.isDirectory()) {
-							zipper.addEntry(topLevel + file.getName(), file);
+							zipper.addEntry(topLevel +"/" + file.getName(), file);
 						}
 					}
 					
@@ -83,7 +81,7 @@ public class Bundler {
 		}
 		return output;
 	}
-	
+
 	public Map<String, File> bundleStudents(HashMap<String, Set<SubmissionPair>> studentToTaMap) {
 		HashMap<String, File> taToBigZipMap = new HashMap<>();
 		for(String ta: studentToTaMap.keySet()) {

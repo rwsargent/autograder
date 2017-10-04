@@ -13,55 +13,54 @@ import org.slf4j.LoggerFactory;
 
 import autograder.configuration.Configuration;
 import autograder.filehandling.Bundler;
+import autograder.filehandling.SubmissionPartitioner;
 import autograder.mailer.Mailer;
 import autograder.phases.three.AssignmentUploader;
+import autograder.student.AutograderSubmission;
 import autograder.student.AutograderSubmissionMap;
 
+/**
+ * 
+ * @author ryans
+ */
 public class EmailBundleToTasUploader implements AssignmentUploader{
 	
 	private Bundler bundler;
 	private Mailer emailer;
 	private Configuration config;
 	
+	
 	private final Logger LOGGER = LoggerFactory.getLogger(EmailBundleToTasUploader.class);
+	private SubmissionPartitioner partitioner;
 
 	@Inject
-	public EmailBundleToTasUploader(Configuration configuration, SubmissionPartitioner partitioner, Bundler bundler, Mailer emailer) {
+	public EmailBundleToTasUploader(Configuration configuration, Bundler bundler, Mailer emailer, SubmissionPartitioner partitioner) {
 		this.config = configuration;
 		this.bundler = bundler;
 		this.emailer = emailer;
+		this.partitioner = partitioner;
 	}
 
 	@Override
 	public void upload(AutograderSubmissionMap submissions) {
 		LOGGER.info("Starting to bundle and email for this assignment.");
 		// we need to read file somehow
-		Map<String, List<String>> tasToStudents = tasToStudents();
-		Map<String, File> results = bundler.bundle(submissions, tasToStudents);
-		for(Entry<String, File> result : results.entrySet()) {
-			emailer.sendMailWithAttachment(getRecipient(result.getKey()), 
+		Map<String, List<AutograderSubmission>> tasToStudents = partitioner.partition(submissions);
+		Map<String, File> bundledSubmissions = bundler.bundle(tasToStudents);
+		for(Entry<String, File> taToBundle : bundledSubmissions.entrySet()) {
+			LOGGER.info("Emailing bundled filed to: " + taToBundle.getKey());
+			emailer.sendMailWithAttachment(taToBundle.getKey(), 
 					emailSubject(), 
 					emailBody(), 
-					result.getValue());
+					taToBundle.getValue());
 		}
-		
 	}
 	
-	// need TA to Student map
-	private String getRecipient(String key) {
-		return null;
-	}
-
 	private String emailSubject() {
 		return StringUtils.capitalize(config.assignment) + " Grading Distrubution";
-	}
-
-	private Map<String, List<String>> tasToStudents() {
-		return null;
 	}
 	
 	private String emailBody() {
 		return "TAs Rule!\nHappy grading!";
 	}
-
 }

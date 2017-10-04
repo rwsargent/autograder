@@ -26,6 +26,7 @@ public interface Constants {
 	
 	public interface CanvasApi {
 		public static final String SUMBISSION_COMMENT_TEXT = "comment[text_comment]";
+		public static final String GROUP_COMMENT = "comment[group_comment]";
 		public static final String GRADE = "submission[posted_grade]";
 	}
 	
@@ -36,6 +37,7 @@ public interface Constants {
 	public interface Names {
 		public static final String ASSIGNMENT = "assignment";
 		public static final String CONFIG_PATH = "configpath";
+		public static final String TAS = "tas";
 	}
 	
 	public static final String FILE_REGEX = "([a-zA-Z\\-]+)(-late)?_(\\d*)_(\\d*)_(.*)";
