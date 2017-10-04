@@ -54,6 +54,7 @@ local.properties
 *~
 configuration.properties
 ta.csv
+ta.json
 resources/**
 analysis-document.txt
 TA-grading-instructions.txt
