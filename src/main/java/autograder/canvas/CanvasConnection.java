@@ -59,7 +59,7 @@ public class CanvasConnection extends Network implements PortalConnection{
 
 	@Override
 	public User getStudentById(String id) {
-		return httpGetCall(String.format("users/%s/profile", id), User.class);
+		return httpGetCall(String.format("users/%s", id), User.class);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package autograder.phases.one;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.inject.Inject;
@@ -11,6 +13,8 @@ import autograder.student.AutograderSubmission;
 public class StudentDownloaderImpl implements StudentDownloader {
 	public static Logger LOGGER = Logger.getLogger(StudentDownloaderImpl.class.getName());
 	private PortalConnection mPortal;
+	
+	private Map<Integer, User> userMap;
 
 	@Inject
 	public StudentDownloaderImpl(PortalConnection portal) {
@@ -25,6 +29,14 @@ public class StudentDownloaderImpl implements StudentDownloader {
 
 	@Override
 	public void fillUser(AutograderSubmission submission) {
-		submission.setUser(mPortal.getStudentById(Integer.toString(submission.submissionInfo.user_id)));
+		if(userMap == null) {
+			userMap = new HashMap<>();
+			User[] users = getStudents();
+			for(User user : users) {
+				userMap.put(user.id, user);
+			}
+		}
+		User studentById = userMap.get(submission.submissionInfo.user_id);
+		submission.setUser(studentById);
 	}
 }
