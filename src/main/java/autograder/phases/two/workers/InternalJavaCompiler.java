@@ -48,14 +48,16 @@ public class InternalJavaCompiler implements Worker {
 			LOGGER.error("Could not find a default Java Compiler from the tool provider.");
 			return;
 		}
-		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-		StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.getDefault(), Charset.defaultCharset());
+		
 		File[] sourceFiles = submission.getSourceDirectory().listFiles(file -> FilenameUtils.getExtension(file.getName()).equals("java"));
 		if(sourceFiles == null || sourceFiles.length == 0) {
 			LOGGER.debug("Skipping student " + submission + " for not having any source files to compile!");
 			submission.setProperty("compiled", "false");
 			return;
 		}
+		
+		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+		StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.getDefault(), Charset.defaultCharset());
 		Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjects(sourceFiles);
 		
 		List<String> compilerOptions = Arrays.asList("-cp", generateClassPathString(), "-d", submission.getClassesDirectory().getAbsolutePath());
