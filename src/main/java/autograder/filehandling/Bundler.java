@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class Bundler {
 					
 					//add base files 
 					for(File file : submission.getDirectory().listFiles()) {
-						if(!file.isDirectory()) {
+						if(!file.isDirectory() && FileUtils.sizeOf(file) > 0) {
 							zipper.addEntry(topLevel +"/" + file.getName(), file);
 						}
 					}
