@@ -43,7 +43,7 @@ public class WrapUpGraderRun {
 		try {
 			parentDirs.mkdirs();
 			zipper.init(new File(parentDirs, generateFilename()));
-			zipper.zipDirectory(assignmentRootDir, file -> !file.getName().endsWith(".class"));
+			zipper.zipDirectory(assignmentRootDir, file -> !file.getName().endsWith(".class") || (!file.isDirectory() && FileUtils.sizeOf(file) > 0));
 		} catch (IOException e) {
 			LOGGER.error("Could not fully zip up a run of " + configuration.assignment, e);
 		} finally {
