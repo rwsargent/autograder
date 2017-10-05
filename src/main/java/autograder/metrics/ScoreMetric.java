@@ -30,7 +30,7 @@ public class ScoreMetric implements MetricReport{
 		int idx = 0;
 		
 		for(AutograderSubmission submission : submissions.listStudents()) {
-			data[idx] = calculator.calculateGrade(submission);
+			data[idx++] = calculator.calculateGrade(submission);
 		}
 		metrics = Metrics.calculate(data);
 	}
