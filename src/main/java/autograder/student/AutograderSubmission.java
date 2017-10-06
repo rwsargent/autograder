@@ -1,5 +1,8 @@
 package autograder.student;
 
+import static autograder.Constants.MetaData.STUDENT_INFO;
+import static autograder.Constants.MetaData.SUBMISSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -18,11 +21,8 @@ import autograder.canvas.responses.Submission;
 import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
 import autograder.configuration.ConfigurationException;
-import autograderutils.AutograderResult;
-
-import static autograder.Constants.MetaData.*;
+import autograderutils.results.AutograderResult;
 public class AutograderSubmission {
-	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutograderSubmission.class);
 	

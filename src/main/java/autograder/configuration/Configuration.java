@@ -47,22 +47,16 @@ public class Configuration extends AbstractProperties {
 	public String[] validFileExtensions;
 	public String[] validFileNames;
 	
-	@Optional(defaultValue="")
 	public String mainClass;
 	
-	@Optional(defaultValue="")
-	public String extraBundledFilesCsv;
+	public String extraBundledFilesCsv = "";
 
-	@Optional
 	public String junitPlugin;
 	
-	@Optional(defaultValue="")
-	public String graderJVMOptions;
+	public String graderJVMOptions = "";
 	
-	@Optional(defaultValue = "60")
-	public String timeout;
+	public long processTimeoutSeconds;
 
-	@Optional
 	public String outputDestination;
 
 	public int defaultDuration;

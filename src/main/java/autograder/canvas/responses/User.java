@@ -24,4 +24,8 @@ public class User implements Serializable{
 	public String enrollments;
 	public String email;
 	public String local;
+	
+	public static String forFileName(User user) {
+		return user.sortableName.replace(", ", "_");
+	}
 }

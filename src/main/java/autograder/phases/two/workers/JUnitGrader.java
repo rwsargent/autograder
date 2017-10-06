@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 import autograder.configuration.Configuration;
 import autograder.phases.two.Worker;
 import autograder.student.AutograderSubmission;
-import autograderutils.AutograderResult;
 import autograderutils.JUnitPlugin;
+import autograderutils.results.JUnitAutograderResult;
 
 /**
  * This class uses the Autograder-Utils {@link JUnitPlugin}, with a URLClassLoader that is
@@ -64,7 +64,7 @@ public class JUnitGrader implements Worker {
 			
 			try {
 				Class<?> loadClass = classLoader.loadClass(configuration.graderClassName);
-				AutograderResult result = grader.grade(loadClass);
+				JUnitAutograderResult result = grader.grade(loadClass);
 				if(result == null) {
 					LOGGER.warn("Result is null for " + submission);
 				}

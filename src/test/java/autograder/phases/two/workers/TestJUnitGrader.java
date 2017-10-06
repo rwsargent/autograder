@@ -6,7 +6,7 @@ import org.junit.Test;
 import autograder.configuration.Configuration;
 import autograder.student.AutograderSubmission;
 import autograder.testutils.TestUtils;
-import autograderutils.AutograderResult;
+import autograderutils.results.AutograderResult;
 
 public class TestJUnitGrader {
 	

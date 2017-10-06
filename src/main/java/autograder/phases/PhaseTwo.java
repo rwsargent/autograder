@@ -122,8 +122,8 @@ public class PhaseTwo {
 
 	private int getThreadPoolCount() {
 		int threadCount = config.threadCount == 0 ? Runtime.getRuntime().availableProcessors() : config.threadCount;
-		if(threadCount <= 1 ) {
-			threadCount = 2;
+		if(threadCount < 1 ) {
+			threadCount = 1;
 		}
 		return threadCount;
 	}
