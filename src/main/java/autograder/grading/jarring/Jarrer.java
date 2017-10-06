@@ -30,14 +30,31 @@ public class Jarrer extends ExternalProcessWorker {
 	}
 	
 	@Override
-	public void doWork(AutograderSubmission student) {
-		setStudent(student);
-		setRedirects(null, new File(student.directory, "jar_error.txt"));
-		waitOnProccess(buildAndStartProcess());
+	protected String[] buildProcessCommand() {
+		StringBuilder jarCommand = new StringBuilder();
+		jarCommand.append("jar ");
+		jarCommand.append("cfe ");
+		jarCommand.append(outputFile(submission)).append(' ');
+		
+		try {
+			String entryPoint = resolveEntryPoint(submission.getClassesDirectory());
+			jarCommand.append(entryPoint).append(' ');
+		} catch (IllegalStateException | IOException e) {
+			LOGGER.error("Could not build execuable jar " + e.getMessage(), e);
+			throw new IllegalStateException();
+		}
+		
+		jarCommand.append("-C classes . ");
+		return jarCommand.toString().split(" ");
 	}
 	
+	@Override
+	protected void onExit(Process processs, boolean timedOut) {
+		//no-op
+	}
+
 	private String outputFile(AutograderSubmission student) {
-		return student.directory.getAbsolutePath() + File.separatorChar + mConfig.assignment + ".jar";
+		return student.directory.getAbsolutePath() + File.separatorChar + config.assignment + ".jar";
 	}
 	
 	/**
@@ -53,14 +70,14 @@ public class Jarrer extends ExternalProcessWorker {
 		Path classesPath = Paths.get(classes.toURI());
 		
 		// If we know the package and name:
-		String relativeMainClass = mConfig.mainClass.replace('.', '/') + ".class";
+		String relativeMainClass = config.mainClass.replace('.', '/') + ".class";
 		if(classesPath.resolve(relativeMainClass).toFile().exists()) {
-			return mConfig.mainClass;
+			return config.mainClass;
 		}
 		
 		// Student didn't follow directions, let's try to find a file with the same name.
-		int lastDot = mConfig.mainClass.lastIndexOf('.');
-		String mainClassName = mConfig.mainClass;
+		int lastDot = config.mainClass.lastIndexOf('.');
+		String mainClassName = config.mainClass;
 		if(lastDot > 0) {
 			mainClassName = mainClassName.substring(lastDot);
 		}
@@ -77,24 +94,5 @@ public class Jarrer extends ExternalProcessWorker {
 		} else {
 			throw new IllegalStateException("Too many files matched the main class");
 		}
-	}
-
-	@Override
-	protected String[] buildProcessCommand() {
-		StringBuilder jarCommand = new StringBuilder();
-		jarCommand.append("jar ");
-		jarCommand.append("cfe ");
-		jarCommand.append(outputFile(mStudent)).append(' ');
-		
-		try {
-			String entryPoint = resolveEntryPoint(mStudent.getClassesDirectory());
-			jarCommand.append(entryPoint).append(' ');
-		} catch (IllegalStateException | IOException e) {
-			logger.severe("Could not build execuable jar " + e.getMessage());
-			throw new IllegalStateException();
-		}
-		
-		jarCommand.append("-C classes . ");
-		return jarCommand.toString().split(" ");
 	}
 }

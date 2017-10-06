@@ -32,18 +32,13 @@ public class ExternalJavaCompiler extends ExternalProcessWorker {
 
 	@Override
 	public void doWork(AutograderSubmission student) {
-		setStudent(student);
-		setRedirects(null, new File(mStudent.directory.getAbsolutePath() + "/compile_error.txt"));
 		createClassesDirectoryInSourceDir();
-		int retvalue = waitOnProccess(buildAndStartProcess());
-		if(retvalue != 0) {
-			//compilation failed.
-		}
+		super.doWork(student);
 	}
 
 	@Override
 	protected String[] buildProcessCommand() {
-		File source = mStudent.getSourceDirectory();
+		File source = submission.getSourceDirectory();
 		if(source == null) {
 			return new String[]{"echo", "\"No Source Directory\""};
 		}
@@ -59,16 +54,21 @@ public class ExternalJavaCompiler extends ExternalProcessWorker {
 		if(!foundJavaFile) {
 			return null;
 		}
-		sb.append(findFile(mConfig.graderFile));
+		sb.append(findFileAsPath(config.graderFile));
 		return sb.toString().split(" ");
 	}
 	
 	private void createClassesDirectoryInSourceDir() {
-		File classes = new File(mStudent.getSourceDirectoryPath() + "/classes");
+		File classes = submission.getClassesDirectory();
 		if (!classes.exists()) {
-			if(!classes.mkdir()) {
+			if(!classes.mkdirs()) {
 				throw new RuntimeException("Could not create classes directory");
 			}
 		}
+	}
+
+	@Override
+	protected void onExit(Process processs, boolean timedOut) {
+		// no-op
 	}
 }
