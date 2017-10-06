@@ -38,7 +38,7 @@ public class CopyToDestinationUploader implements SubmissionUploader {
 	}
 
 	private String getOutputContents(AutograderSubmission submission) {
-		return submission.getResult().buildSummary();
+		return submission.getResult().getSummary();
 	}
 
 	private String getDestination() {

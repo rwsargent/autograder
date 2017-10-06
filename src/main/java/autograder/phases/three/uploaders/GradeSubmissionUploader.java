@@ -54,7 +54,7 @@ public class GradeSubmissionUploader implements SubmissionUploader {
 		if(submission.submissionInfo.late) {
 			comment += "A 10% late penalty has been applied.\n";
 		}
-		comment += submission.getResult().buildTestResults();
+		comment += submission.getResult().getTestResults();
 		return comment;
 	}
 }

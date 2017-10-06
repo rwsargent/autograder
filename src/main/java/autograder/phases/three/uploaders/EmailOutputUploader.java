@@ -29,7 +29,7 @@ public class EmailOutputUploader implements SubmissionUploader {
 			return;
 		}
 		
-		String buildSummary = submission.getResult().buildSummary();
+		String buildSummary = submission.getResult().getSummary();
 		mailer.sendMail(submission.studentInfo.email, "Autograder result for " + configuration.assignment, 
 				buildSummary);
 	}
