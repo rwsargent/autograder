@@ -53,11 +53,11 @@ public class Metrics {
 		StringBuilder sb = new StringBuilder();
 		// -7, for the length of "median"
 		sb.append(String.format("%-8s %02.2f\n", "max", max));
-		sb.append(String.format("%-8s %02.2f", "min", min));
-		sb.append(String.format("%-8s %02.2f", "mean", mean));
-		sb.append(String.format("%-8s %2s", "mode", Arrays.toString(mode)));
-		sb.append(String.format("%-8s %02.2f", "median", median));
-		sb.append(String.format("%-8s %02.2f", "std dev", stdv));
+		sb.append(String.format("%-8s %02.2f\n", "min", min));
+		sb.append(String.format("%-8s %02.2f\n", "mean", mean));
+		sb.append(String.format("%-8s %2s\n", "mode", Arrays.toString(mode)));
+		sb.append(String.format("%-8s %02.2f\n", "median", median));
+		sb.append(String.format("%-8s %02.2f\n", "std dev", stdv));
 		
 		return sb.toString();
 	}

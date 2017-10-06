@@ -81,7 +81,7 @@ public class MissedTestMetric implements MetricReport {
 		submissionCount = submissions.size();
 		
 		for(AutograderSubmission submission : submissions.listStudents()) {
-			for(String line : submission.getResult().buildTestResults().split("\n")) {
+			for(String line : submission.getResult().getTestResults().split("\n")) {
 				Matcher matcher = failureName.matcher(line);
 				if(matcher.find()) {
 					String testName = matcher.group(1);
