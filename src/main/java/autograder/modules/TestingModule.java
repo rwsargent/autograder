@@ -13,6 +13,9 @@ import autograder.phases.three.SubmissionUploader;
 import autograder.phases.three.uploaders.EmailBundleToTasUploader;
 import autograder.phases.three.uploaders.FullAssignmentUpload;
 import autograder.phases.three.uploaders.WrapUpGraderRun;
+import autograder.phases.two.Worker;
+import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
+import autograder.phases.two.workers.InternalJavaCompiler;
 
 public class TestingModule extends DefaultModule {
 
@@ -24,17 +27,20 @@ public class TestingModule extends DefaultModule {
 	public void configure() {
 		super.configure();
 		bind(SubmissionPartitioner.class).to(PredefinedPartition.class);
-		
 		bind(Mailer.class).toInstance(Mockito.mock(Mailer.class)); // don't want to mail anything
 		bind(WrapUpGraderRun.class).toInstance(Mockito.mock(WrapUpGraderRun.class));
 	}
 	
 	@Override
+	protected void addPhaseTwoWorkers(Multibinder<Worker> workerBinder) {
+		workerBinder.addBinding().to(InternalJavaCompiler.class);
+		workerBinder.addBinding().to(ExternalAutograderUtilsProcess.class);
+	}
+	
+	@Override
 	protected void addSubmissionUploaders(Multibinder<SubmissionUploader> submissionUploaders) {
-		super.addSubmissionUploaders(submissionUploaders);
 		submissionUploaders.addBinding().toInstance(sub -> {
-			System.out.println(sub);
-			System.out.println(sub.getResult().buildSummary());
+			System.out.println(sub + ": " + sub.getResult().getTestResults());
 		});
 	}
 	

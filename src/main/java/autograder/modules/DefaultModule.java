@@ -27,6 +27,10 @@ import com.google.inject.name.Names;
 
 import autograder.canvas.CanvasConnection;
 import autograder.configuration.Configuration;
+import autograder.metrics.MetricReport;
+import autograder.metrics.MissedTestMetric;
+import autograder.metrics.ScoreMetric;
+import autograder.metrics.SubmissionAttemptMetrics;
 import autograder.phases.one.BinaryFileDirector;
 import autograder.phases.one.DefaultFileDirector;
 import autograder.phases.one.FileDirector;
@@ -78,10 +82,13 @@ public class DefaultModule extends AbstractModule {
 		
 		//Security
 		bind(SecurityManager.class).to(getSecurityManager());
-		bind(Policy.class).to(getPolicy());
+//		bind(Policy.class).to(getPolicy());
 		
 		Multibinder<Worker> workerBinder = Multibinder.newSetBinder(binder(), Worker.class);
 		addPhaseTwoWorkers(workerBinder);
+		
+		Multibinder<MetricReport> metricsBinder = Multibinder.newSetBinder(binder(), MetricReport.class);
+		addMetricReports(metricsBinder);
 		
 		Multibinder<SubmissionUploader> submissionUploaders = Multibinder.newSetBinder(binder(), SubmissionUploader.class);
 		addSubmissionUploaders(submissionUploaders);
@@ -90,6 +97,12 @@ public class DefaultModule extends AbstractModule {
 		addAssignmentUploaders(assignmentUploaders);
 		
 		setFileDirectors();
+	}
+
+	private void addMetricReports(Multibinder<MetricReport> metricsBinder) {
+		metricsBinder.addBinding().to(ScoreMetric.class);
+		metricsBinder.addBinding().to(SubmissionAttemptMetrics.class);
+		metricsBinder.addBinding().to(MissedTestMetric.class);
 	}
 
 	private Provider<Map<String, TAInfo>> getTaInfo() {
@@ -118,9 +131,9 @@ public class DefaultModule extends AbstractModule {
 		workerBinder.addBinding().to(JUnitGrader.class);
 	}
 
-	protected Class<? extends Policy> getPolicy() {
-		return AutograderPolicy.class;
-	}
+//	protected Class<? extends Policy> getPolicy() {
+//		return AutograderPolicy.class;
+//	}
 
 	protected Class<? extends SecurityManager> getSecurityManager() {
 		return AutograderSecurityManager.class;	
