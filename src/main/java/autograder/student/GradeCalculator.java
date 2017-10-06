@@ -3,7 +3,7 @@ package autograder.student;
 import javax.inject.Inject;
 
 import autograder.configuration.Configuration;
-import autograderutils.AutograderResult;
+import autograderutils.results.AutograderResult;
 
 public class GradeCalculator {
 	
@@ -23,6 +23,9 @@ public class GradeCalculator {
 	public double calculateGrade(AutograderSubmission submission) {
 		double total = calculateOutOf(submission.getResult());
 		double score = ((double) submission.getResult().getScore() / total) * 100;
+		if(Double.isNaN(score)) {
+			score = 0;
+		}
 		if (submission.submissionInfo.late) {
 			score -= 10;
 			if (score < 0) { // possible to get negative percentages here, bound it at 0.
