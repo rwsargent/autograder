@@ -85,26 +85,6 @@ public class Zipper implements Closeable, AutoCloseable {
 		createZipFile(files, assignmentRootDir);
 	}
 	
-	public void zipDirRecur(String level, File entry, Predicate<String> filenameFilter) throws IOException {
-		String entryname = level + "/" + entry.getName();
-		if(entry.isDirectory()) {
-			ZipEntry newEntry = new ZipEntry(entryname);
-			zipWriter.putNextEntry(newEntry);
-			zipWriter.closeEntry();
-			for(File file : entry.listFiles()) {
-				zipDirRecur(entryname, file, filenameFilter);
-			}
-		} else {
-			if(filenameFilter != null) {
-				if(filenameFilter.test(entry.getName())) {
-					addEntry(entryname, entry);
-				}
-			} else {
-				addEntry(entryname, entry);
-			}
-		}
-	}
-	
 	private List<File> listFiles(List<File> listFiles, File inputDirectory, Predicate<File> fileFilter) throws IOException {
         File[] allFiles = inputDirectory.listFiles();
         for (File file : allFiles) {
