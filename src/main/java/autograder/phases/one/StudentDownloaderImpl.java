@@ -2,7 +2,9 @@ package autograder.phases.one;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -11,7 +13,7 @@ import autograder.portal.PortalConnection;
 import autograder.student.AutograderSubmission;
 
 public class StudentDownloaderImpl implements StudentDownloader {
-	public static Logger LOGGER = Logger.getLogger(StudentDownloaderImpl.class.getName());
+	private final Logger LOGGER = LoggerFactory.getLogger(StudentDownloaderImpl.class);
 	private PortalConnection mPortal;
 	
 	private Map<Integer, User> userMap;
