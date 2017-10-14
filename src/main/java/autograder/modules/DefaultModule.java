@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.Policy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +47,6 @@ import autograder.phases.two.Worker;
 import autograder.phases.two.workers.InternalJavaCompiler;
 import autograder.phases.two.workers.JUnitGrader;
 import autograder.portal.PortalConnection;
-import autograder.security.AutograderPolicy;
 import autograder.security.AutograderSecurityManager;
 import autograder.tas.TAInfo;
 
