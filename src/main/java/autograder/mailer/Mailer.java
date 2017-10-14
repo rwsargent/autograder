@@ -35,6 +35,7 @@ public class Mailer {
 	
 	@Inject
 	public Mailer(Configuration configuration) {
+		config = configuration;
 		configureProperties();
 	}
 	
