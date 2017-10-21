@@ -11,7 +11,6 @@ import java.util.Set;
 import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
-import autograder.configuration.TeacherAssistantRegistry;
 import autograder.student.AutograderSubmission;
 import autograder.student.SubmissionPair;
 import autograder.student.SubmissionPairer.SubmissionData;
@@ -24,12 +23,10 @@ import autograder.student.SubmissionPairer.SubmissionData;
 public class PartitionSubmissions {
 	
 	private Configuration configuration;
-	private TeacherAssistantRegistry mTARegistry;
 	
 	@Inject	
-	public PartitionSubmissions(Configuration config, TeacherAssistantRegistry TARegistry) {
+	public PartitionSubmissions(Configuration config) {
 		configuration = config;
-		mTARegistry = TARegistry;
 	}
 	
 	/**
