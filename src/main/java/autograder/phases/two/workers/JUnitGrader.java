@@ -2,6 +2,7 @@ package autograder.phases.two.workers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +65,11 @@ public class JUnitGrader implements Worker {
 			
 			try {
 				Class<?> loadClass = classLoader.loadClass(configuration.graderClassName);
+				// students code will run inside "Grade"
+				PrintStream stdOut = System.out;
+				System.setOut(new PrintStream(new NullOutputStream()));
 				JUnitAutograderResult result = grader.grade(loadClass);
+				System.setOut(stdOut);
 				if(result == null) {
 					LOGGER.warn("Result is null for " + submission);
 				}
