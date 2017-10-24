@@ -11,7 +11,7 @@ import autograder.phases.one.SourceFileDirector;
 
 public class AutograderTestModule extends AbstractModule {
 
-	public static final String TEST_CONFIG_PATH = "src/test/resources/configuration_test.properties";
+	public static final String TEST_CONFIG_PATH = "src/test/resources/configuration_test.json";
 
 	@Override
 	protected void configure() {

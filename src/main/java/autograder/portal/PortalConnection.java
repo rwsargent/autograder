@@ -1,5 +1,6 @@
 package autograder.portal;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import autograder.canvas.responses.Submission;
@@ -11,6 +12,6 @@ public interface PortalConnection {
 	public Submission[] getSubmissions();
 	public Submission[] getAllSubmissions();
 	public Submission getUserSubmissions(String student);
-	public byte[] downloadFile(String url);
+	public InputStream downloadFile(String url);
 	public void gradeStudentSubmission(String student, String assignment, Map<String, String> data);
 }

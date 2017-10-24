@@ -1,8 +1,9 @@
 package autograder.filehandling;
 
-import java.io.ByteArrayInputStream;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
@@ -64,15 +65,16 @@ public class SubmissionParser {
 		return autoSubmission;
 	}
 	
-	private void writeAttatchmentToDisk(AutograderSubmission submission, Attachment attachment) {
+	public void writeAttatchmentToDisk(AutograderSubmission submission, Attachment attachment) {
 		if (excludePattern.matcher(attachment.filename).find()) {
 			return;
 		}
-		byte[] filedata = connection.downloadFile(attachment.url);
-		try (ByteArrayInputStream bais = new ByteArrayInputStream(filedata)) {
+		
+		try (InputStream filedata = connection.downloadFile(attachment.url);
+				BufferedInputStream bufferedInput = new BufferedInputStream(filedata)) {
 			// special case for zip files...oh well.
 			if (canBeUnzipped(attachment)) {
-				ZipInputStream zipStream = new ZipInputStream(bais);
+				ZipInputStream zipStream = new ZipInputStream(bufferedInput);
 				unzipper.unzipForSubmission(zipStream, submission);
 				IOUtils.closeQuietly(zipStream);
 			} else {
@@ -80,7 +82,7 @@ public class SubmissionParser {
 				if(fileDirector == null) {
 					LOGGER.debug("Skipping " + attachment.filename + " as it has an non-configured extension.");
 				}
-				fileDirector.directFile(bais, submission, attachment.filename);
+				fileDirector.directFile(bufferedInput, submission, attachment.filename);
 			}
 		} catch (IOException e) {
 			LOGGER.error("Couldn't unzip attachment for " + submission, e);

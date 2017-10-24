@@ -1,6 +1,8 @@
 package autograder.canvas;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,14 +59,14 @@ public abstract class Network {
 		token = configuration.canvasToken;
 	}
 	
-	public byte[] downloadFile(String url) {
+	public InputStream downloadFile(String url) {
 		HttpClient client = HttpClients.createDefault();
 		HttpGet request = new HttpGet(url);
 		try {
 			HttpResponse response = client.execute(request);
-			return EntityUtils.toByteArray(response.getEntity());
+			return response.getEntity().getContent();
 		} catch (IOException e) {
-			return new byte[0];
+			return new ByteArrayInputStream(new byte[0]);
 		}
 	}
 	

@@ -15,6 +15,7 @@ import autograder.phases.three.uploaders.FullAssignmentUpload;
 import autograder.phases.three.uploaders.GradeSubmissionUploader;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
+import autograder.phases.two.workers.InternalJavaCompiler;
 
 /**
  * This module is designed for a single-run instance of the Autograder, 
@@ -36,7 +37,7 @@ public class GradingModule extends DefaultModule {
 	
 	@Override
 	protected void addPhaseTwoWorkers(Multibinder<Worker> workerBinder) {
-//		workerBinder.addBinding().to(InternalJavaCompiler.class);
+		workerBinder.addBinding().to(InternalJavaCompiler.class);
 		workerBinder.addBinding().to(ExternalAutograderUtilsProcess.class);
 	}
 	

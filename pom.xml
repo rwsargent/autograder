@@ -95,6 +95,17 @@
 	  <artifactId>autograder-utils</artifactId>
 	  <version>1.1</version>
 	</dependency>
+	<dependency>
+	    <groupId>org.jfree</groupId>
+	    <artifactId>jfreechart</artifactId>
+	    <version>1.0.19</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.jfree</groupId>
+	    <artifactId>jfreesvg</artifactId>
+	    <version>3.2</version>
+	</dependency>
+	
   </dependencies>
   <build>
     <pluginManagement>

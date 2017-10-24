@@ -10,9 +10,11 @@ import autograder.filehandling.SubmissionPartitioner;
 import autograder.mailer.Mailer;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
-import autograder.phases.three.uploaders.FullAssignmentUpload;
+import autograder.phases.three.uploaders.AssignmentMetricsUploader;
 import autograder.phases.three.uploaders.WrapUpGraderRun;
+import autograder.phases.three.uploaders.WriteResultToDisk;
 import autograder.phases.two.Worker;
+import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
 import autograder.phases.two.workers.InternalJavaCompiler;
 import autograder.phases.two.workers.JUnitGrader;
 
@@ -38,14 +40,15 @@ public class TestingModule extends DefaultModule {
 	
 	@Override
 	protected void addSubmissionUploaders(Multibinder<SubmissionUploader> submissionUploaders) {
+		submissionUploaders.addBinding().to(WriteResultToDisk.class);
 		submissionUploaders.addBinding().toInstance(sub -> {
-			System.out.println(sub + ": " + sub.getResult().getSummary());
+			System.out.println(sub + ": " + sub.getResult().getScore());
 		});
 	}
 	
 	@Override
 	protected void addAssignmentUploaders(Multibinder<AssignmentUploader> assignmentUploaders) {
 		super.addAssignmentUploaders(assignmentUploaders);
-		assignmentUploaders.addBinding().to(FullAssignmentUpload.class);
+		assignmentUploaders.addBinding().to(AssignmentMetricsUploader.class);
 	}
 }

@@ -45,8 +45,8 @@ public class CanvasConnection extends Network implements PortalConnection{
 		return httpGetCall(String.format("courses/%s/assignments/%s/submissions",courseId, assignmentId), Submission[].class);
 	}
 
-	public Submission[] getUserSubmissions(User student) {
-		return httpGetCall(String.format("courses/%s/assignments/%s/submissions/%d", configuration.canvasCourseId, configuration.canvasAssignmentId, student.id), Submission[].class);
+	public Submission getUserSubmissions(User student, String assignmentId) {
+		return httpGetCall(String.format("courses/%s/assignments/%s/submissions/%d", configuration.canvasCourseId, assignmentId, student.id), Submission.class);
 	}
 	
 	public Submission getUserSubmissions(String uid) {

@@ -73,6 +73,10 @@ public class Configuration extends AbstractProperties {
 
 	public long phaseTwoTimeout;
 	
+	public String[] extraAssignments;
+	
+	public Configuration() {}
+	
 	@Inject
 	public Configuration(@Named("configpath") String configPath) {
 		loadConfiguration(findPropertyFile(configPath));

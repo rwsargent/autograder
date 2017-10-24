@@ -2,7 +2,9 @@ package autograder.phases.three.uploaders;
 
 import static autograder.Constants.Names.ASSIGNMENT;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.io.Files;
 
 import autograder.Constants;
+import autograder.metrics.GraphingTool;
 import autograder.metrics.MetricReport;
 import autograder.phases.three.AssignmentUploader;
 import autograder.student.AutograderSubmissionMap;
@@ -32,11 +35,13 @@ public class AssignmentMetricsUploader implements AssignmentUploader {
 	private final Logger LOGGER = LoggerFactory.getLogger(AssignmentMetricsUploader.class);
 	private String assignment;
 	private Set<MetricReport> metricReports;
+	private GraphingTool grapher;
 
 	@Inject
-	public AssignmentMetricsUploader(@Named(ASSIGNMENT)String assignment, Set<MetricReport> metricReports) {
+	public AssignmentMetricsUploader(@Named(ASSIGNMENT)String assignment, Set<MetricReport> metricReports, GraphingTool grapher) {
 		this.assignment = assignment;
 		this.metricReports = metricReports;
+		this.grapher = grapher;
 	}
 	
 	/**
@@ -60,6 +65,14 @@ public class AssignmentMetricsUploader implements AssignmentUploader {
 			Files.write(report.toString(), new File(outputDir, ASSIGNMENT_METRICS_FILENAME), Charset.defaultCharset());
 		} catch (IOException e) {
 			LOGGER.error("Could not write historgram text file for " + assignment, e);
+		}
+		
+		//Histograpm of Scores
+		try(FileOutputStream fos = new FileOutputStream(new File(outputDir, assignment + "_histogram.png"));
+				BufferedOutputStream bufOutput = new BufferedOutputStream(fos)) {
+			grapher.writeScoreHistorgram(submissions, assignment + " Scores", bufOutput);
+		} catch (IOException e) {
+			LOGGER.error("Could not write historgram graph for " + assignment, e);
 		}
 	}
 }
