@@ -14,7 +14,6 @@ import autograder.phases.three.uploaders.AssignmentMetricsUploader;
 import autograder.phases.three.uploaders.WrapUpGraderRun;
 import autograder.phases.three.uploaders.WriteResultToDisk;
 import autograder.phases.two.Worker;
-import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
 import autograder.phases.two.workers.InternalJavaCompiler;
 import autograder.phases.two.workers.JUnitGrader;
 

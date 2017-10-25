@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,6 +51,7 @@ public class JUnitGrader implements Worker {
 		}
 		
 		URL[] urls = javaBinaryUrls.toArray(new URL[javaBinaryUrls.size()]);
+		LOGGER.trace("Classpath: " + Arrays.toString(urls));
 		try(URLClassLoader classLoader = new URLClassLoader(urls, getClass().getClassLoader())) {
 			JUnitPlugin grader = null;
 			try {
