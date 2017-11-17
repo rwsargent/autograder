@@ -48,7 +48,7 @@ public class SaveResultUploader implements SubmissionUploader {
 	}
 
 	private String createSaveFileName(AutograderSubmission submission) {
-		return submission.submissionInfo.attempt + ".result";
+		return submission.studentInfo.id + "_" + submission.submissionInfo.attempt + ".result";
 	}
 
 	private File createDirectory(String name) {

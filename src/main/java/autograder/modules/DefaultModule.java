@@ -42,6 +42,7 @@ import autograder.phases.one.SubmissionFilter;
 import autograder.phases.one.SubmissionsFromWeb;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
+import autograder.phases.three.uploaders.SaveResultUploader;
 import autograder.phases.three.uploaders.WriteResultToDisk;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.InternalJavaCompiler;
@@ -122,16 +123,13 @@ public class DefaultModule extends AbstractModule {
 
 	protected void addSubmissionUploaders(Multibinder<SubmissionUploader> submissionUploaders) {
 		submissionUploaders.addBinding().to(WriteResultToDisk.class);
+		submissionUploaders.addBinding().to(SaveResultUploader.class);
 	}
 
 	protected void addPhaseTwoWorkers(Multibinder<Worker> workerBinder) {
 		workerBinder.addBinding().to(InternalJavaCompiler.class);
 		workerBinder.addBinding().to(JUnitGrader.class);
 	}
-
-//	protected Class<? extends Policy> getPolicy() {
-//		return AutograderPolicy.class;
-//	}
 
 	protected Class<? extends SecurityManager> getSecurityManager() {
 		return AutograderSecurityManager.class;	
