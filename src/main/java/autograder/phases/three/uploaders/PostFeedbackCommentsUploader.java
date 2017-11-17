@@ -16,6 +16,7 @@ import autograder.Constants;
 import autograder.configuration.Configuration;
 import autograder.mailer.Mailer;
 import autograder.phases.three.SubmissionUploader;
+import autograder.phases.three.uploaders.feedback.CommentContentGetter;
 import autograder.portal.PortalConnection;
 import autograder.student.AutograderSubmission;
 
@@ -26,11 +27,14 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 	private Configuration config;
 	private Mailer mailer;
 
+	private CommentContentGetter commentGetter;
+
 	@Inject
-	public PostFeedbackCommentsUploader(PortalConnection portal, Configuration configuration, Mailer emailer) {
+	public PostFeedbackCommentsUploader(PortalConnection portal, Configuration configuration, Mailer emailer, CommentContentGetter commentContent) {
 		this.portal = portal;
 		this.config = configuration;
 		this.mailer = emailer;
+		this.commentGetter = commentContent;
 	}
 	
 	@Override
@@ -45,9 +49,6 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 
 	private String getSubmissionCommentText(AutograderSubmission submission) {
 		String feedback = "";
-		if(submission.getResult() != null && submission.getResult().getFeedback() != null) {
-			feedback = submission.getResult().getFeedback();
-		}
 		
 		if(submission.getProperty(Constants.SubmissionProperties.COMPILED, "").equals("false")) {
 			File compErrorOutput = new File(submission.getDirectory(), Constants.COMPILE_ERROR_FILENAME);
@@ -59,6 +60,10 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 					LOGGER.error("Tried to get compilation text for " + submission, e);
 				}
 			}
+		}
+		
+		if(submission.getResult() != null && submission.getResult().getFeedback() != null) {
+			feedback += commentGetter.getComment(submission);
 		}
 		
 		if(StringUtils.isEmpty(feedback)) {
