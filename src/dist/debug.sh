@@ -1,0 +1,1 @@
+java -cp resources:libs/*: -Djava.security.policy=resources/autograder.policy -agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n autograder.Main &

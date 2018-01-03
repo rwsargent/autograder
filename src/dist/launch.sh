@@ -1,0 +1,1 @@
+java -cp resources:libs/*: -Djava.security.policy=resources/autograder.policy autograder.Main > /dev/null &

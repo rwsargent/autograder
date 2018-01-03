@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+  <Properties>
+    <Property name="logdir">logs</Property>
+  </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%t] %-5level %c{2} - %msg%n" />
+        </Console>
+        <RollingFile name="LogFile" fileName="${logdir}/autograder.log" filePattern="${logdir}/autograder-%d{yyyy-MM-dd}.log" immediateFlush="true" append="true">
+            <PatternLayout pattern="%d{MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n"/>
+            <Policies>
+              <TimeBasedTriggeringPolicy interval ="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="LogFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

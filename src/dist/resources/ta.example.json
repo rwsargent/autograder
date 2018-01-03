@@ -1,0 +1,16 @@
+{
+  "John": {
+    "students": [
+    	"uid"
+    ], 
+    "name": "John", 
+    "email": "john@gmail.com"
+  }, 
+  "Sam": {
+    "students": [
+    	"uid"
+    ], 
+    "name": "Sam", 
+    "email": "sam@gmail.com"
+  }
+}

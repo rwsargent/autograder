@@ -31,7 +31,7 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/lib</outputDirectory>
+      <outputDirectory>/libs</outputDirectory>
       <useProjectArtifact>true</useProjectArtifact>
       <scope>runtime</scope>
     </dependencySet>
