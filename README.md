@@ -26,3 +26,6 @@ I'll fix those tests one day
 From your Project Manager view in eclipse, right click on empty space, select "Import", and under "General" select "Existing Projects into Workspace." Browse to the root directory of this repo, and the rest should fall into place. 
 
 ***
+
+#### Configuration
+Please see the [Configuration Documentation](src/dist/README.md)
