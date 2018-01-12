@@ -28,4 +28,4 @@ From your Project Manager view in eclipse, right click on empty space, select "I
 ***
 
 #### Configuration
-Please see the [Configuration Documentation](src/dist/README.md)
+Copy configuration.example.json out of the src/dist folder and rename it "configuration.json". Please see the [Configuration Documentation](src/dist/README.md) for further details. 
