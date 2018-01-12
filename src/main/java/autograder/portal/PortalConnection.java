@@ -14,4 +14,6 @@ public interface PortalConnection {
 	public Submission getUserSubmissions(String student);
 	public InputStream downloadFile(String url);
 	public void gradeStudentSubmission(String student, String assignment, Map<String, String> data);
+	
+	public Submission[] getAllSubmissions(String courseId, String assignmentId);
 }

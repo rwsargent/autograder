@@ -24,7 +24,7 @@ import autograder.student.AutograderSubmission;
  * 
  * The file is simply a list of submission ids, separated by new lines
  * 
- * It's saved the basedir/assignmentname/
+ * It's saved the basedir/saved/assignmentname.saved
  * @author ryans
  */
 public class SeenSubmissions {
@@ -54,7 +54,7 @@ public class SeenSubmissions {
 
 	// at cwd level
 	private Path generatePath() {
-		return Paths.get(assignmentName + ".saved");
+		return Paths.get("saved", assignmentName + ".saved");
 	}
 	
 	public boolean alreadySeenSubmission(Submission submission) {
@@ -78,6 +78,7 @@ public class SeenSubmissions {
 	 */
 	public String save() {
 		Path savePath = generatePath();
+		savePath.toFile().mkdirs();
 		try(BufferedWriter writer = Files.newBufferedWriter(savePath)) {
 			for(String id : submissionIds) {
 				writer.write(id + "\n");

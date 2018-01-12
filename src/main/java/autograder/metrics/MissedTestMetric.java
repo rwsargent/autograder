@@ -32,7 +32,7 @@ import autograder.student.AutograderSubmissionMap;
  */
 public class MissedTestMetric implements MetricReport {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MissedTestMetric.class);
-	private static final Pattern failureName = Pattern.compile("TEST FAILED: ([a-zA-Z]+)");
+	private static final Pattern failureName = Pattern.compile("$TEST FAILED: ([a-zA-Z_$][a-zA-Z\\d_$]*)");
 	private HashMap<String, Integer> testHistogram;
 	private int submissionCount = 0;
 	

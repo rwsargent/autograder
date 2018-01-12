@@ -81,8 +81,9 @@ public class SubmissionParser {
 				FileDirector fileDirector = fileDirectors.get(FilenameUtils.getExtension(attachment.filename));
 				if(fileDirector == null) {
 					LOGGER.debug("Skipping " + attachment.filename + " as it has an non-configured extension.");
+				} else {
+					fileDirector.directFile(bufferedInput, submission, attachment.filename);
 				}
-				fileDirector.directFile(bufferedInput, submission, attachment.filename);
 			}
 		} catch (IOException e) {
 			LOGGER.error("Couldn't unzip attachment for " + submission, e);

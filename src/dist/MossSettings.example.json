@@ -1,0 +1,11 @@
+{
+	"courseToAssignments" : {
+		"cid" : ["aid1"],
+		"cid2" : ["aid2"]
+	},
+	
+	"baseFilePaths" : ["baseOne", "baseTwo"],
+	"userId" : "123456789",
+	"recipients" : ["john@fake.com"],
+	"language" : "java"
+}

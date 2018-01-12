@@ -28,4 +28,8 @@ public class User implements Serializable{
 	public static String forFileName(User user) {
 		return user.sortableName.replace(", ", "_");
 	}
+	
+	public String asFileName() {
+		return sortableName.replace(", ", "_");
+	}
 }

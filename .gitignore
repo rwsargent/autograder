@@ -20,6 +20,7 @@ configuration.json
 /build/
 /bin/
 target/
+/moss/
 
  
 # OS Files #
@@ -58,6 +59,7 @@ ta.json
 resources/**
 analysis-document.txt
 TA-grading-instructions.txt
+MossSettings.json
 
 # Ignore zip files, usually don't need them recorded.
 *.zip

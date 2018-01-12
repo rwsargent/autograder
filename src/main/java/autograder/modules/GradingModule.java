@@ -13,6 +13,7 @@ import autograder.phases.three.SubmissionUploader;
 import autograder.phases.three.uploaders.AssignmentMetricsUploader;
 import autograder.phases.three.uploaders.FullAssignmentUpload;
 import autograder.phases.three.uploaders.GradeSubmissionUploader;
+import autograder.phases.three.uploaders.SaveResultUploader;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
 import autograder.phases.two.workers.InternalJavaCompiler;
@@ -44,6 +45,7 @@ public class GradingModule extends DefaultModule {
 	@Override
 	protected void addSubmissionUploaders(Multibinder<SubmissionUploader> submissionUploaders) {
 		super.addSubmissionUploaders(submissionUploaders);
+		submissionUploaders.addBinding().to(SaveResultUploader.class);
 		submissionUploaders.addBinding().to(GradeSubmissionUploader.class);
 	}
 	
