@@ -78,7 +78,7 @@ public class SeenSubmissions {
 	 */
 	public String save() {
 		Path savePath = generatePath();
-		savePath.toFile().mkdirs();
+		savePath.toFile().getParentFile().mkdirs();
 		try(BufferedWriter writer = Files.newBufferedWriter(savePath)) {
 			for(String id : submissionIds) {
 				writer.write(id + "\n");

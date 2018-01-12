@@ -17,7 +17,7 @@ import autograder.student.AutograderSubmission;
 import autograderutils.results.AutograderResult;
 
 /**
- * Persist the result in an easily retreiveable manner
+ * Persist the result in an easily retrievable manner
  * @author ryansargent
  */
 public class SaveResultUploader implements SubmissionUploader {

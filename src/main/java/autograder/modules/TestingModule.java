@@ -14,8 +14,8 @@ import autograder.phases.three.uploaders.AssignmentMetricsUploader;
 import autograder.phases.three.uploaders.SaveResultUploader;
 import autograder.phases.three.uploaders.WrapUpGraderRun;
 import autograder.phases.two.Worker;
-import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
 import autograder.phases.two.workers.InternalJavaCompiler;
+import autograder.phases.two.workers.JUnitGrader;
 
 public class TestingModule extends DefaultModule {
 
@@ -34,7 +34,7 @@ public class TestingModule extends DefaultModule {
 	@Override
 	protected void addPhaseTwoWorkers(Multibinder<Worker> workerBinder) {
 		workerBinder.addBinding().to(InternalJavaCompiler.class);
-		workerBinder.addBinding().to(ExternalAutograderUtilsProcess.class);
+		workerBinder.addBinding().to(JUnitGrader.class);
 	}
 	
 	@Override
