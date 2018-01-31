@@ -47,7 +47,7 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 		portal.gradeStudentSubmission(Integer.toString(submission.studentInfo.id), config.canvasAssignmentId, data);
 	}
 
-	private String getSubmissionCommentText(AutograderSubmission submission) {
+	protected String getSubmissionCommentText(AutograderSubmission submission) {
 		String feedback = "";
 		
 		if(submission.getProperty(Constants.SubmissionProperties.COMPILED, "").equals("false")) {
@@ -73,9 +73,10 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 				    "Student UID: " + submission.studentInfo.sis_user_id +
 				    "Submission: " + submission);
 			
-			feedback = "The autograder didn't produce any feedback for you. This is most likely an error on the Autograder's side. " + 
-					"If the assignment is past due, do NOT resubmit. " 
-					+ "If you have received this message multiple times, contact the administrator. Otherwise, resubmit after a few minutes."; 
+			feedback = "The autograder didn't produce any feedback for you. This is likely caused by an unexpected error while grading your assignment. " + 
+					"Double check that your package, class, and files names are all as expected, and that all necessary files have been submitted. "
+					+ "This includes .java files supplied for the assignment." 
+					+ "If you have received this message multiple times, contact the administrator."; 
 		}
 		
 		return feedback;
