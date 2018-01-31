@@ -60,7 +60,17 @@ public class Main {
 					return;
 				}
 			}
+			logDurationOfRun(starttime);
 		} while(configuration != null && configuration.runContinuously); 
+	}
+
+	private static void logDurationOfRun(long starttime) {
+		long endTime = System.currentTimeMillis();
+		long durationInSeconds = (endTime - starttime) / 1000;
+		long convertedMinues = (durationInSeconds%3600)/60;
+		long convertedSeconds = durationInSeconds%60;
+		
+		LOGGER.info("Run took: " + String.format("%02d:%02d",convertedMinues, convertedSeconds));
 	}
 
 	private static long getTimeoutDuration(long starttime, Configuration configuration) {
