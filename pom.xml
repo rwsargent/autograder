@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.voidstar</groupId>
   <artifactId>autograder</artifactId>
-  <version>2.0</version>
+  <version>2.1</version>
   <name>Autograder</name>
   <description>An autograder for University of Utah's Intro to Data Structures and Algorithms</description>
   <dependencies>
   	<dependency>
   		<groupId>com.github.rwsargent</groupId>
   		<artifactId>autograder-utils</artifactId>
-  		<version>2.0</version>
+  		<version>2.3</version>
   	</dependency>
   	<dependency>
 		<groupId>javax.mail</groupId>
