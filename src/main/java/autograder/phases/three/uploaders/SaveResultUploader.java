@@ -41,7 +41,9 @@ public class SaveResultUploader implements SubmissionUploader {
 		AutograderResult result = submission.getResult();
 		
 		try {
-			Files.write(result.getSummary(), destination, Charset.defaultCharset());
+			if(result != null) {
+				Files.write(result.getSummary(), destination, Charset.defaultCharset());
+			}
 		} catch (IOException e) {
 			LOGGER.error("Could not write result for " + submission.studentInfo.name, e);
 		}
