@@ -14,6 +14,7 @@ import autograder.phases.three.SubmissionUploader;
 import autograder.portal.PortalConnection;
 import autograder.student.AutograderSubmission;
 import autograder.student.GradeCalculator;
+import autograder.student.LatePenalty;
 
 /**
  * Uploads 
@@ -25,34 +26,34 @@ public class GradeSubmissionUploader implements SubmissionUploader {
 	private Configuration configuration;
 	private PortalConnection portal;
 	private GradeCalculator calculator;
+	private LatePenalty latePenalty;
 
 	@Inject
-	public GradeSubmissionUploader(Configuration configuration, PortalConnection protal, GradeCalculator graderCalculator) {
+	public GradeSubmissionUploader(Configuration configuration, PortalConnection protal, GradeCalculator graderCalculator, LatePenalty latePenalty) {
 		this.configuration = configuration;
 		this.portal = protal;
 		this.calculator = graderCalculator;
+		this.latePenalty = latePenalty;
 	}
 	
 	@Override
 	public void upload(AutograderSubmission submission) {
 		LOGGER.info("Posting grade to " + submission);
 		Map<String, String> data = new HashMap<>();
-		
-		data.put(Constants.CanvasApi.SUMBISSION_COMMENT_TEXT, gradingComment(submission));
-		data.put(Constants.CanvasApi.GROUP_COMMENT, "true");
-		
 		double gradePercentage = calculator.calculateGrade(submission);
 		String canvasGrade = gradePercentage+ "%";
+		
 		data.put(Constants.CanvasApi.GRADE, canvasGrade);
+		data.put(Constants.CanvasApi.SUMBISSION_COMMENT_TEXT, gradingComment(submission, canvasGrade));
+		data.put(Constants.CanvasApi.GROUP_COMMENT, "true");
 		
 		portal.gradeStudentSubmission(Integer.toString(submission.studentInfo.id), configuration.canvasAssignmentId, data);
 	}
 
-	private String gradingComment(AutograderSubmission submission) {
-		int outOf = calculator.calculateOutOf(submission.getResult());
-		String comment = "This assignment was graded out of " + outOf + " tests.\n";
+	private String gradingComment(AutograderSubmission submission, String finalScore) {
+		String comment = "Your final score is " + finalScore + " of the assignment's total.\n";
 		if(submission.submissionInfo.late) {
-			comment += "A 10% late penalty has been applied.\n";
+			comment = latePenalty.addLateComment(comment, submission);
 		}
 		comment += submission.getResult().getTestResults();
 		return comment;
