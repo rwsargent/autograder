@@ -3,7 +3,7 @@ package autograder.modules;
 import com.google.inject.multibindings.Multibinder;
 
 import autograder.configuration.Configuration;
-import autograder.filehandling.PredefinedPartition;
+import autograder.filehandling.RandomizedPartitioner;
 import autograder.filehandling.SubmissionPartitioner;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.uploaders.EmailBundleToTasUploader;
@@ -18,7 +18,7 @@ public class DistributionModule extends DefaultModule {
 	@Override
 	public void configure() {
 		super.configure();
-		bind(SubmissionPartitioner.class).to(PredefinedPartition.class);
+		bind(SubmissionPartitioner.class).to(RandomizedPartitioner.class);
 	}
 	
 	@Override

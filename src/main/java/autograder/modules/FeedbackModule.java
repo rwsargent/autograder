@@ -7,6 +7,7 @@ import autograder.phases.three.SubmissionUploader;
 import autograder.phases.three.uploaders.PostFeedbackCommentsUploader;
 import autograder.phases.three.uploaders.SaveResultUploader;
 import autograder.phases.three.uploaders.feedback.CommentContentGetter;
+import autograder.phases.three.uploaders.feedback.RateLimitedFeedback;
 import autograder.phases.three.uploaders.feedback.ScoreFeedbackOnly;
 
 public class FeedbackModule extends DefaultModule {
@@ -18,7 +19,7 @@ public class FeedbackModule extends DefaultModule {
 	@Override
 	public void configure() {
 		super.configure();
-		bind(CommentContentGetter.class).to(ScoreFeedbackOnly.class);
+		bind(CommentContentGetter.class).to(RateLimitedFeedback.class);
 	}
 	
 	@Override

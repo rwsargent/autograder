@@ -47,6 +47,8 @@ import autograder.phases.two.workers.InternalJavaCompiler;
 import autograder.phases.two.workers.JUnitGrader;
 import autograder.portal.PortalConnection;
 import autograder.security.AutograderSecurityManager;
+import autograder.student.LatePenalty;
+import autograder.student.NoLatePenalty;
 import autograder.tas.TAInfo;
 
 /**
@@ -76,7 +78,7 @@ public class DefaultModule extends AbstractModule {
 		bind(StudentDownloader.class).to(getStudentDownloader());
 		bind(SubmissionDownloader.class).to(getSubmissionDownloader());
 		bind(SubmissionFilter.class).to(getSubmissionFilter());
-		
+		bind(LatePenalty.class).to(getLatePenaltyClass());
 		//Security
 		bind(SecurityManager.class).to(getSecurityManager());
 //		bind(Policy.class).to(getPolicy());
@@ -94,6 +96,10 @@ public class DefaultModule extends AbstractModule {
 		addAssignmentUploaders(assignmentUploaders);
 		
 		setFileDirectors();
+	}
+
+	private Class<? extends LatePenalty> getLatePenaltyClass() {
+		return NoLatePenalty.class;
 	}
 
 	private void addMetricReports(Multibinder<MetricReport> metricsBinder) {

@@ -5,12 +5,13 @@ import org.mockito.Mockito;
 import com.google.inject.multibindings.Multibinder;
 
 import autograder.configuration.Configuration;
-import autograder.filehandling.PredefinedPartition;
+import autograder.filehandling.RandomizedPartitioner;
 import autograder.filehandling.SubmissionPartitioner;
 import autograder.mailer.Mailer;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
 import autograder.phases.three.uploaders.AssignmentMetricsUploader;
+import autograder.phases.three.uploaders.CreateStudentToScoreTSV;
 import autograder.phases.three.uploaders.SaveResultUploader;
 import autograder.phases.three.uploaders.WrapUpGraderRun;
 import autograder.phases.two.Worker;
@@ -26,7 +27,7 @@ public class TestingModule extends DefaultModule {
 	@Override
 	public void configure() {
 		super.configure();
-		bind(SubmissionPartitioner.class).to(PredefinedPartition.class);
+		bind(SubmissionPartitioner.class).to(RandomizedPartitioner.class);
 		bind(Mailer.class).toInstance(Mockito.mock(Mailer.class)); // don't want to mail anything
 		bind(WrapUpGraderRun.class).toInstance(Mockito.mock(WrapUpGraderRun.class)); // don't delete anything either
 	}
@@ -48,7 +49,6 @@ public class TestingModule extends DefaultModule {
 	
 	@Override
 	protected void addAssignmentUploaders(Multibinder<AssignmentUploader> assignmentUploaders) {
-		super.addAssignmentUploaders(assignmentUploaders);
 		assignmentUploaders.addBinding().to(AssignmentMetricsUploader.class);
 	}
 }
