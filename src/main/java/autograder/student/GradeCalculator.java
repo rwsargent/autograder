@@ -8,10 +8,12 @@ import autograderutils.results.AutograderResult;
 public class GradeCalculator {
 	
 	private Configuration configuration;
+	private LatePenalty latePenalty;
 
 	@Inject
-	public GradeCalculator(Configuration configuration) {
+	public GradeCalculator(Configuration configuration, LatePenalty latePenalty) {
 		this.configuration = configuration;
+		this.latePenalty = latePenalty;
 	}
 	
 	/**
@@ -21,17 +23,22 @@ public class GradeCalculator {
 	 * @return a double between 0 and 100. 
 	 */
 	public double calculateGrade(AutograderSubmission submission) {
+		if(submission.getResult() == null) {
+			return 0;
+		}
 		double total = calculateOutOf(submission.getResult());
 		double score = ((double) submission.getResult().getScore() / total) * 100;
 		if(Double.isNaN(score)) {
 			score = 0;
 		}
-		if (submission.submissionInfo.late) {
-			score -= 10;
-			if (score < 0) { // possible to get negative percentages here, bound it at 0.
-				score = 0;
-			}
-		}
+		score = latePenalty.applyLatePenalty(score, submission);
+				
+//		if (submission.submissionInfo.late) {
+//			score -= 10;
+//			if (score < 0) { // possible to get negative percentages here, bound it at 0.
+//				score = 0;
+//			}
+//		}
 		return score;
 	}
 	
@@ -42,6 +49,9 @@ public class GradeCalculator {
 	 * @return
 	 */
 	public int calculateOutOf(AutograderResult result) {
-		return configuration.adjustedTotal == 0 ? result.getTotal() : configuration.adjustedTotal;
+		if(result != null) {
+			return configuration.adjustedTotal == 0 ? result.getTotal() : configuration.adjustedTotal;
+		}
+		return 0;
 	}
 }
