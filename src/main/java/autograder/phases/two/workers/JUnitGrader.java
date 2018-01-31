@@ -65,21 +65,23 @@ public class JUnitGrader implements Worker {
 				LOGGER.error("Can't instantiate grader", e);
 			}
 			
+			Class<?> loadClass;
 			try {
-				Class<?> loadClass = classLoader.loadClass(configuration.graderClassName);
-				// students code will run inside "Grade"
-				PrintStream stdOut = System.out;
-				System.setOut(new PrintStream(new NullOutputStream()));
-				JUnitAutograderResult result = grader.grade(loadClass);
-				System.setOut(stdOut);
-				if(result == null) {
-					LOGGER.warn("Result is null for " + submission);
-				}
-				submission.setResult(result);
-				submission.setProperty("result", "true");
+				loadClass = classLoader.loadClass(configuration.graderClassName);
 			} catch (ClassNotFoundException e) {
 				LOGGER.error("Could not load " + configuration.graderClassName + " to grade the submission for " + submission, e);
+				return;
 			}
+			// students code will run inside "Grade"
+			PrintStream stdOut = System.out;
+			System.setOut(new PrintStream(new NullOutputStream()));
+			JUnitAutograderResult result = grader.grade(loadClass);
+			System.setOut(stdOut);
+			if(result == null) {
+				LOGGER.warn("Result is null for " + submission);
+			}
+			submission.setResult(result);
+			submission.setProperty("result", "true");
 			
 		} catch (IOException e1) {
 			LOGGER.error("Trouble closing the IOStream for " + submission, e1);
