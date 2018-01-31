@@ -74,6 +74,10 @@ public class Configuration extends AbstractProperties {
 	public long phaseTwoTimeout;
 	
 	public String[] extraAssignments;
+
+	public int submissionFeedbackThreshold;
+
+	public double scoreFeedbackThreshold;
 	
 	public Configuration() {}
 	
