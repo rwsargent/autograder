@@ -1,0 +1,34 @@
+{
+    "assignment":"test", 
+    "canvasAssignmentId": "1",
+    
+    "graderClassName" : "assignment02.LibraryGradingSuite",
+
+    "smtpUsername": "*******",
+    "smtpPassword": "*******",
+    "senderEmail":  "*******",
+
+    "taFilePath": "ta.json",
+	
+    "extraClassPathFiles": "extraclasspathfiles",
+
+    "canvasToken": "token",
+    "canvasCourseId": "1",
+
+    "ignorePattern": "\\.huf$|a_few_letters|uncompress|alphabet|simple|green_eggs_and_ham|\w+\.\d+",
+    "extraBundledFilesCsv": "extraclasspathfiles/huffman_files",
+
+    "validFileExtensions": ["pdf","rws","txt","jar","md"],
+    "validFileNames": ["i_worked_with","README","readme","partner_evaluation"],
+    "defaultDuration" : 900000, 
+    "processTimeoutSeconds" : 300,
+    "phaseTwoTimeout" : 60,
+    
+    "threadCount" : 4,
+    
+    "moduleClass" : "autograder.modules.TestingModule",
+    "rerun" : true,
+    "runContinuously" : false, 
+    
+    extraAssignments : []
+}

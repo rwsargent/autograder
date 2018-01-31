@@ -2,11 +2,13 @@
 	"ta1" : {
 		"name" : "ta1",
 		"students" : ["u01", "u02", "u03"],
-		"email": "ta1@cs.utah.edu"
+		"email": "ta1@cs.utah.edu",
+		"hours" : 1
 	}, 
 	"ta2" : {
 		"name" : "ta2",
 		"students" : ["u04", "u05", "u06"],
-		"email": "ta2@cs.utah.edu"
+		"email": "ta2@cs.utah.edu",
+		"hours" : 1
 	}
 }

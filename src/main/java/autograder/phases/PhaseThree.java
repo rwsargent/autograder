@@ -77,5 +77,4 @@ public class PhaseThree {
 		
 		LOGGER.info("Done!");
 	}
-	
 }
