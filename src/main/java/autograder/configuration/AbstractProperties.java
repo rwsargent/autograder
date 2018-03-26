@@ -49,8 +49,12 @@ public abstract class AbstractProperties {
 				field.set(this, value);
 			}
 			fillRemainingProperties();
-		} catch (ClassCastException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+		} catch (ClassCastException | IllegalArgumentException | IllegalAccessException |  SecurityException e) {
 			throw new ConfigurationException(e);
+		} catch (NoSuchFieldException e) {
+			ConfigurationException configurationException = new ConfigurationException("Field not found: " + e.getMessage());
+			configurationException.initCause(e);
+			throw configurationException;
 		}
 	}
 
@@ -96,7 +100,7 @@ public abstract class AbstractProperties {
 		if(!configFile.exists()) {
 			URL configUrl = getClass().getClassLoader().getResource(configurationFileName);
 			if(configUrl == null) {
-				throw new ConfigurationException("Could not find configuration.properties file");
+				throw new ConfigurationException("Could not find .properties file");
 			}
 			configFile = new File(configUrl.getPath());
 		}

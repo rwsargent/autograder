@@ -7,7 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -22,7 +25,7 @@ import autograder.canvas.responses.User;
 import autograder.configuration.AssignmentProperties;
 import autograder.configuration.ConfigurationException;
 import autograderutils.results.AutograderResult;
-public class AutograderSubmission {
+public class AutograderSubmission implements Comparable<AutograderSubmission> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutograderSubmission.class);
 	
@@ -34,6 +37,8 @@ public class AutograderSubmission {
 	public AssignmentProperties assignProps;
 	private File classesDirectory;
 	private AutograderResult result;
+	
+	private static final Pattern ASSIGNMENT_PATTERN = Pattern.compile("assignment.*\\.properties");
 
 	public AutograderSubmission(Submission submission, File parentDir) {
 		Assert.assertNotNull(submission);
@@ -93,12 +98,28 @@ public class AutograderSubmission {
 		return directory.getName();
 	}
 
-	public void createAssignmentProperties() {
-		try {
-			assignProps = new AssignmentProperties(directory.getAbsolutePath() + "/assignment.properties");
-		} catch (ConfigurationException e) {
-			LOGGER.warn(studentInfo.name + " does not have a valid assignment.properties file. " + e.getMessage());
+	public AssignmentProperties createAssignmentProperties() {
+		List<File> possbibleFiles = getPossibleFiles();
+		for(File file : possbibleFiles) {
+			try {
+				assignProps = new AssignmentProperties(file.getAbsolutePath());
+				return assignProps;
+			} catch (ConfigurationException e) {
+				LOGGER.warn(studentInfo.name + " does not have a valid assignment.properties file. " + e.getMessage());
+			}
 		}
+		if(possbibleFiles.isEmpty()) {
+			LOGGER.warn("Could not find a property file for " + studentInfo.name);
+		}
+		return null;
+	}
+	
+	private List<File> getPossibleFiles() {
+		return Arrays.asList(directory.listFiles(file -> ASSIGNMENT_PATTERN.matcher(file.getName()).find()));
+	}
+
+	public AssignmentProperties getAssignmentProperties() {
+		return assignProps;
 	}
 	
 	public void setProperty(String key, String value) {
@@ -151,5 +172,16 @@ public class AutograderSubmission {
 	
 	public AutograderResult getResult() {
 		return this.result;
+	}
+
+	@Override
+	public int compareTo(AutograderSubmission rhs) {
+		if(this.studentInfo == null) {
+			return rhs.submissionInfo == null ? 0 : 1;
+		}
+		if(rhs.studentInfo == null ) {
+			return this.submissionInfo == null ? 0 : -1 ;
+		}
+		return this.studentInfo.sortableName.compareTo(rhs.studentInfo.sortableName);
 	}
 }

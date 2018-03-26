@@ -7,7 +7,7 @@ import autograderutils.results.AutograderResult;
 
 public class GradeCalculator {
 	
-	private Configuration configuration;
+	protected Configuration configuration;
 	private LatePenalty latePenalty;
 
 	@Inject

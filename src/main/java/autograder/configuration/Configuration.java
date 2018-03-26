@@ -79,6 +79,8 @@ public class Configuration extends AbstractProperties {
 
 	public double scoreFeedbackThreshold;
 	
+	public double scaledDouble;
+	
 	public Configuration() {}
 	
 	@Inject

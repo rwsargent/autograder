@@ -27,7 +27,7 @@ public class RateLimitedFeedback implements CommentContentGetter {
 		if(canGiveFeedback(submission, grade)) {
 			int submissionsLeft = config.submissionFeedbackThreshold - submission.submissionInfo.attempt;
 			String submissionsRemaining = "";
-			if(submissionsLeft > 0 ) {
+			if(submissionsLeft >= 0 ) {
 				submissionsRemaining = "You have " + submissionsLeft + " graded submission" + (submissionsLeft == 1 ? "" : "s") + " left\n";
 			}
 			return submissionsRemaining + submission.getResult().getFeedback();

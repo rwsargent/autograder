@@ -1,6 +1,8 @@
 package autograder.student;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -12,7 +14,7 @@ public class SubmissionPairer {
 		SubmissionData submissionData = new SubmissionData();
 		for(AutograderSubmission student : studentMap.listStudents()) {
 			try {
-				if(student.assignProps == null) {
+				if(student.createAssignmentProperties() == null) {
 					submissionData.invalidStudents.add(student);
 					continue;
 				}
@@ -55,7 +57,7 @@ public class SubmissionPairer {
 	}
 
 	public class SubmissionData{
-		public Set<SubmissionPair> pairs = new HashSet<>();
+		public List<SubmissionPair> pairs = new ArrayList<>();
 		public Set<AutograderSubmission> invalidStudents = new HashSet<>();
 	}
 }

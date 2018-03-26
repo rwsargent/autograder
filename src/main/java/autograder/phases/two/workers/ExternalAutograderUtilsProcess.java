@@ -2,6 +2,7 @@ package autograder.phases.two.workers;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -10,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import com.google.inject.Inject;
 
 import autograder.configuration.Configuration;
+import autograder.student.SubmissionPropertyContants;
 import autograderutils.results.AutograderResult;
 import autograderutils.results.JUnitAutograderResultFromFile;
 
@@ -35,6 +37,9 @@ public class ExternalAutograderUtilsProcess extends ExternalProcessWorker {
 			} catch (IOException e) {
 				LOGGER.error(submission + " errored while writing a process time out message.", e);
 			}
+		}
+		if(submission.properties.getProperty(SubmissionPropertyContants.NO_SOURCE) != null) {
+			writeNoSourceFile();
 		}
 		// build result from file and assign to student
 		try(FileInputStream fis = new FileInputStream(stdRedirect.file())) {
@@ -70,5 +75,13 @@ public class ExternalAutograderUtilsProcess extends ExternalProcessWorker {
 		}
 		String configOptions = config.graderJVMOptions == null ? "" : config.graderJVMOptions;
 		return configOptions + options;
+	}
+	
+	private void writeNoSourceFile() {
+		try(FileWriter fw = new FileWriter(stdRedirect.file())) {
+			fw.write("No source code was submitted with this submission.\n-----");
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 	}
 }

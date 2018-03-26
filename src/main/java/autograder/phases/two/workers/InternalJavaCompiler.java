@@ -29,6 +29,7 @@ import autograder.Constants;
 import autograder.configuration.Configuration;
 import autograder.phases.two.Worker;
 import autograder.student.AutograderSubmission;
+import autograder.student.SubmissionPropertyContants;
 
 public class InternalJavaCompiler implements Worker {
 
@@ -52,7 +53,7 @@ public class InternalJavaCompiler implements Worker {
 		File[] sourceFiles = submission.getSourceDirectory().listFiles(file -> FilenameUtils.getExtension(file.getName()).equals("java"));
 		if(sourceFiles == null || sourceFiles.length == 0) {
 			LOGGER.debug("Skipping student " + submission + " for not having any source files to compile!");
-			submission.setProperty("compiled", "false");
+			submission.setProperty(SubmissionPropertyContants.NO_SOURCE, "");
 			return;
 		}
 		

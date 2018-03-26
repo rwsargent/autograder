@@ -79,6 +79,6 @@ public class PostFeedbackCommentsUploader implements SubmissionUploader {
 					+ "If you have received this message multiple times, contact the administrator."; 
 		}
 		
-		return feedback;
+		return feedback + "\n-AutoGrader";
 	}
 }

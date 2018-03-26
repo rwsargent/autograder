@@ -103,7 +103,6 @@ public class PhaseTwo {
 	
 	// Trying out the ExecutorService. Each job is a run through all the workers for each student.
 	private ExecutorService startWork(List<AutograderSubmission> queue) {
-		
 		ExecutorService threadPool = Executors.newFixedThreadPool(getThreadPoolCount());
 		for(AutograderSubmission student : queue) {
 			threadPool.submit(() -> {

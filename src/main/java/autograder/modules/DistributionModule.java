@@ -1,12 +1,15 @@
 package autograder.modules;
 
+import org.mockito.Mockito;
+
 import com.google.inject.multibindings.Multibinder;
 
 import autograder.configuration.Configuration;
-import autograder.filehandling.RandomizedPartitioner;
+import autograder.filehandling.AlphabeticPartitioner;
 import autograder.filehandling.SubmissionPartitioner;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.uploaders.EmailBundleToTasUploader;
+import autograder.phases.three.uploaders.WrapUpGraderRun;
 import autograder.phases.two.Worker;
 
 public class DistributionModule extends DefaultModule {
@@ -18,7 +21,8 @@ public class DistributionModule extends DefaultModule {
 	@Override
 	public void configure() {
 		super.configure();
-		bind(SubmissionPartitioner.class).to(RandomizedPartitioner.class);
+		bind(SubmissionPartitioner.class).to(AlphabeticPartitioner.class);
+		bind(WrapUpGraderRun.class).toInstance(Mockito.mock(WrapUpGraderRun.class));
 	}
 	
 	@Override
@@ -30,5 +34,4 @@ public class DistributionModule extends DefaultModule {
 	protected void addAssignmentUploaders(Multibinder<AssignmentUploader> assignmentUploaders) {
 		assignmentUploaders.addBinding().to(EmailBundleToTasUploader.class);
 	}
-
 }

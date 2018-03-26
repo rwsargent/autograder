@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -83,7 +82,7 @@ public class Bundler {
 		return output;
 	}
 
-	public Map<String, File> bundleStudents(HashMap<String, Set<SubmissionPair>> studentToTaMap) {
+	public Map<String, File> bundlePair(Map<String, List<SubmissionPair>> studentToTaMap) {
 		HashMap<String, File> taToBigZipMap = new HashMap<>();
 		for(String ta: studentToTaMap.keySet()) {
 			System.out.println("Bundling " + ta + "'s students");
@@ -143,7 +142,9 @@ public class Bundler {
 
 	private void writeAssignmentFileToZip(ZipOutputStream zipWriter) throws IOException {
 		String graderFileName = FilenameUtils.getName(config.graderFile);
-		writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(config.graderFile));
+		if(StringUtils.isNotBlank(graderFileName)) {
+			writeZipEntry(zipWriter, new ZipEntry(graderFileName), new File(config.graderFile));
+		}
 	}
 
 	private void writeFilesToZip(AutograderSubmission student, ZipOutputStream zipWriter, String parentDirectory) throws IOException {

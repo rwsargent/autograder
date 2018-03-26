@@ -8,9 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.inject.multibindings.MapBinder;
 import com.google.inject.multibindings.Multibinder;
 
 import autograder.configuration.Configuration;
+import autograder.phases.one.FileDirector;
+import autograder.phases.one.SourceFileDirector;
 import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.uploaders.MossUploader;
 import autograder.phases.two.Worker;
@@ -33,6 +36,12 @@ public class MossModule extends DefaultModule {
 	@Override
 	protected void addPhaseTwoWorkers(Multibinder<Worker> workerBinder) {
 		//NO-OP Phase two, the only work that needs to happen is in the UploadPhase
+	}
+	
+	@Override
+	protected void setFileDirectors() {
+		MapBinder<String, FileDirector> directorBindings = MapBinder.newMapBinder(binder(), String.class, FileDirector.class);
+		directorBindings.addBinding("java").to(SourceFileDirector.class);
 	}
 
 	@Override

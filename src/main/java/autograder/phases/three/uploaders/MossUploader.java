@@ -95,15 +95,15 @@ public class MossUploader implements AssignmentUploader {
 		}
 		
 		LOGGER.info("Submitting files to MOSS");
-		for(String basePath : mossSettings.baseFilePaths) {
-			File baseFile = new File(basePath);
+		File baseDir = new File(mossSettings.baseFileDir);
+		for(File baseFile : baseDir.listFiles(filename -> filename.getName().endsWith(".java"))) {
 			if(!baseFile.exists()) {
-				logError("Base file specified at " + basePath + " does not exist!");
+				logError("Base file specified at " + baseFile + " does not exist!");
 			} else {
 				try {
 					socketClient.uploadBaseFile(baseFile);
 				} catch (IOException e) {
-					logError(basePath, e);
+					logError(baseFile.toString(), e);
 				}
 			}
 		}
@@ -178,9 +178,13 @@ public class MossUploader implements AssignmentUploader {
 			for(String assignment : courseToAssignemnt.getValue()) {
 				Submission[] extraSubmissions = portalConnection.getAllSubmissions(courseId, assignment);
 				for(Submission extraSubmission : extraSubmissions) {
-					AutograderSubmission extraAutograderSubmission = parser.parseAndCreateSubmission(extraSubmission);
-					extraAutograderSubmission.setUser(portalConnection.getStudentById(Integer.toString(extraSubmission.user_id)));
-					submissions.addSubmission(extraAutograderSubmission);
+					try {
+						AutograderSubmission extraAutograderSubmission = parser.parseAndCreateSubmission(extraSubmission);
+						extraAutograderSubmission.setUser(portalConnection.getStudentById(Integer.toString(extraSubmission.user_id)));
+						submissions.addSubmission(extraAutograderSubmission);
+					} catch(Exception e) {
+						LOGGER.info(e.getMessage(), e);
+					}
 				}
 			}
 		}

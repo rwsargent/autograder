@@ -169,7 +169,8 @@ public class DefaultModule extends AbstractModule {
 		directorBindings.addBinding("class").to(BinaryFileDirector.class);
 		directorBindings.addBinding("pdf").to(DefaultFileDirector.class);
 		directorBindings.addBinding("zip").to(DefaultFileDirector.class);
-		directorBindings.addBinding("txt").to(DefaultFileDirector.class);
+//		directorBindings.addBinding("txt").to(DefaultFileDirector.class);
+		directorBindings.addBinding("properties").to(DefaultFileDirector.class);
 	}
 	
 	
