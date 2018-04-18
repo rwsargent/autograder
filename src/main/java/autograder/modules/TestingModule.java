@@ -20,8 +20,6 @@ import autograder.phases.three.uploaders.feedback.RateLimitedFeedback;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
 import autograder.phases.two.workers.InternalJavaCompiler;
-import autograder.student.GradeCalculator;
-import autograder.student.ScaledGradeCalculator;
 
 public class TestingModule extends DefaultModule {
 
@@ -37,7 +35,7 @@ public class TestingModule extends DefaultModule {
 		bind(SubmissionPartitioner.class).to(RandomizedPartitioner.class);
 		bind(Mailer.class).toInstance(Mockito.mock(Mailer.class)); // don't want to mail anything
 		bind(WrapUpGraderRun.class).toInstance(Mockito.mock(WrapUpGraderRun.class)); // don't delete anything either
-		bind(GradeCalculator.class).to(ScaledGradeCalculator.class);
+//		bind(GradeCalculator.class).to(ScaledGradeCalculator.class);
 	}
 	
 	@Override

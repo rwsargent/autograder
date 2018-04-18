@@ -8,7 +8,6 @@ import autograder.phases.three.uploaders.PostFeedbackCommentsUploader;
 import autograder.phases.three.uploaders.SaveResultUploader;
 import autograder.phases.three.uploaders.feedback.CommentContentGetter;
 import autograder.phases.three.uploaders.feedback.RateLimitedFeedback;
-import autograder.phases.three.uploaders.feedback.ScoreFeedbackOnly;
 
 public class FeedbackModule extends DefaultModule {
 

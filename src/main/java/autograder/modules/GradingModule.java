@@ -11,8 +11,8 @@ import autograder.phases.three.AssignmentUploader;
 import autograder.phases.three.SubmissionUploader;
 import autograder.phases.three.uploaders.AssignmentMetricsUploader;
 import autograder.phases.three.uploaders.CreateStudentToScoreTSV;
+import autograder.phases.three.uploaders.EmailBundleToTasUploader;
 import autograder.phases.three.uploaders.FullAssignmentUpload;
-import autograder.phases.three.uploaders.GroupAndDistribute;
 import autograder.phases.three.uploaders.PostFeedbackCommentsUploader;
 import autograder.phases.three.uploaders.SaveResultUploader;
 import autograder.phases.three.uploaders.ScaledGraderUploader;
@@ -22,8 +22,6 @@ import autograder.phases.three.uploaders.feedback.FullFeedbackComment;
 import autograder.phases.two.Worker;
 import autograder.phases.two.workers.ExternalAutograderUtilsProcess;
 import autograder.phases.two.workers.InternalJavaCompiler;
-import autograder.student.GradeCalculator;
-import autograder.student.ScaledGradeCalculator;
 
 /**
  * This module is designed for a single-run instance of the Autograder, 
@@ -43,7 +41,7 @@ public class GradingModule extends DefaultModule {
 //		bind(Mailer.class).toInstance(Mockito.mock(Mailer.class));
 		bind(WrapUpGraderRun.class).toInstance(Mockito.mock(WrapUpGraderRun.class));
 		bind(CommentContentGetter.class).to(FullFeedbackComment.class);
-		bind(GradeCalculator.class).to(ScaledGradeCalculator.class);	
+//		bind(GradeCalculator.class).to(ScaledGradeCalculator.class);	
 	}
 	
 	@Override
@@ -65,7 +63,7 @@ public class GradingModule extends DefaultModule {
 		assignmentUploaders.addBinding().to(FullAssignmentUpload.class);
 		assignmentUploaders.addBinding().to(AssignmentMetricsUploader.class);
 		assignmentUploaders.addBinding().to(CreateStudentToScoreTSV.class);
-//		assignmentUploaders.addBinding().to(EmailBundleToTasUploader.class);
-		assignmentUploaders.addBinding().to(GroupAndDistribute.class);
+		assignmentUploaders.addBinding().to(EmailBundleToTasUploader.class);
+//		assignmentUploaders.addBinding().to(GroupAndDistribute.class);
 	}
 }
